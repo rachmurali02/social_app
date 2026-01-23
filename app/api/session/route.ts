@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
       let session = sessions.get(sessionId)
 
       if (!session) {
-        // If session doesn't exist (e.g. new lambda instance), create it on the fly
         session = {
           sessionId,
           preferences: preferences || null,

@@ -176,7 +176,7 @@ export default function InvitationsPage() {
             <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-12 border border-white/20 text-center">
               <Calendar className="mx-auto mb-4 text-white/40" size={64} />
               <h2 className="text-2xl font-bold text-white mb-2">No Pending Invitations</h2>
-              <p className="text-white/80 mb-6">You&apos;re all caught up! Check back later for new invitations.</p>
+              <p className="text-white/80 mb-6">You're all caught up! Check back later for new invitations.</p>
               <Link
                 href="/meetup"
                 className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-2xl hover:shadow-blue-500/50 transition-all"

@@ -2,10 +2,10 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState } from 'react'
 import { Search, UserPlus, Check, X, Users } from 'lucide-react'
 
-function FriendsContent() {
+export default function FriendsPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -253,7 +253,7 @@ function FriendsContent() {
             {friends.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="mx-auto mb-4 text-white/40" size={64} />
-                <p className="text-white/80 mb-4">You don&apos;t have any friends yet</p>
+                <p className="text-white/80 mb-4">You don't have any friends yet</p>
                 <button
                   onClick={() => router.push('/friends?search=true')}
                   className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all"
@@ -286,19 +286,5 @@ function FriendsContent() {
         )}
       </div>
     </div>
-  )
-}
-
-export default function FriendsPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
-          <div className="text-white text-xl">Loading...</div>
-        </div>
-      }
-    >
-      <FriendsContent />
-    </Suspense>
   )
 }
