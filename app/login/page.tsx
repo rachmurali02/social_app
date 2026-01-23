@@ -44,7 +44,9 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Invalid email or password')
       } else {
+        await new Promise((resolve) => setTimeout(resolve, 100))
         router.push('/dashboard')
+        router.refresh()
       }
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
