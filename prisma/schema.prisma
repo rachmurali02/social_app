@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile       Profile?
+  sentFriendRequests     Friendship[] @relation("FriendRequestSender")
+  receivedFriendRequests Friendship[] @relation("FriendRequestReceiver")
+  createdMeetups         MeetupSession[] @relation("MeetupCreator")
+  participatingMeetups   MeetupParticipant[]
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  bio         String?
+  avatar      String?
+  location    String?
+  preferences Json?    // Store user preferences like favorite activities, etc.
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Friendship {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      User     @relation("FriendRequestSender", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  receiverId  String
+  receiver    User     @relation("FriendRequestReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  status      String   @default("pending") // pending, accepted, blocked
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+model MeetupSession {
+  id              String   @id @default(cuid())
+  creatorId       String
+  creator         User     @relation("MeetupCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  preferences     Json     // { location, radius, time, activity }
+  options         Json     // Array of place options
+  selectedOption  Json?    // The selected place option
+  status          String   @default("pending") // pending, confirmed, cancelled
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  participants    MeetupParticipant[]
+}
+
+model MeetupParticipant {
+  id          String   @id @default(cuid())
+  meetupId    String
+  meetup      MeetupSession @relation(fields: [meetupId], references: [id], onDelete: Cascade)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  status      String   @default("pending") // pending, confirmed, declined
+  confirmedAt DateTime?
+  
+  createdAt   DateTime @default(now())
+
+  @@unique([meetupId, userId])
+  @@index([userId])
+}

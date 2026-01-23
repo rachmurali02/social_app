@@ -1,0 +1,48 @@
+---
+alwaysApply: true
+---
+
+# Node.js Version Check Rule
+
+If the user's Node.js version is below 18.17.0, automatically:
+
+1. **Detect the issue**: Check `node --version` output
+2. **Provide solution**: Guide user to run `npm run check-node` OR install nvm manually
+3. **Auto-install if possible**: The `check-node-version.sh` script will:
+   - Check if nvm is installed
+   - If not, install nvm automatically
+   - Install Node.js 20 (LTS)
+   - Set it as default
+4. **Instruct user**: Always remind user to restart terminal after Node.js upgrade
+
+## Detection Pattern
+
+Look for these patterns in terminal output:
+- `current: { node: 'v12.x.x' }` or lower
+- `EBADENGINE` warnings showing required Node version
+- `Unsupported engine` errors
+
+## Solution Flow
+
+1. Run: `npm run check-node` (automated script)
+2. OR manually:
+   ```bash
+   # Install nvm if not present
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+   
+   # Install Node.js 20
+   source ~/.nvm/nvm.sh
+   nvm install 20
+   nvm use 20
+   nvm alias default 20
+   
+   # Restart terminal
+   ```
+3. Verify: `node --version` should show v20.x.x or higher
+
+## Notes
+
+- The `preinstall` script in package.json automatically checks version before `npm install`
+- The check script is at `scripts/check-node-version.sh`
+- Minimum required: Node.js 18.17.0
+- Recommended: Node.js 20.x.x (LTS)
