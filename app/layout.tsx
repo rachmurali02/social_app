@@ -1,9 +1,5 @@
 import type { Metadata } from 'next'
-<<<<<<< HEAD
 import Providers from './providers'
-=======
-import { Providers } from './providers'
->>>>>>> origin/main
 import './globals.css'
 
 export const metadata: Metadata = {
