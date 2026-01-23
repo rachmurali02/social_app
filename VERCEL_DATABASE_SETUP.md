@@ -11,17 +11,36 @@ Your app is trying to connect to Supabase but can't reach the database server. T
 
 ### Step 1: Get Your Supabase Connection Pooler URL
 
+**Option A: Use the Helper Script (Recommended)**
+```bash
+node scripts/generate-supabase-url.js
+```
+This will guide you through creating the correct connection string.
+
+**Option B: Manual Setup**
+
 1. Go to your Supabase project dashboard
 2. Navigate to **Settings** → **Database**
 3. Scroll down to **Connection Pooling**
 4. Copy the **Connection string** under "Transaction" mode (recommended for Prisma)
 
-It should look like:
+**⚠️ CRITICAL FORMAT:**
+The connection pooler URL must have this exact format:
 ```
-postgresql://postgres.xxxxx:[YOUR-PASSWORD]@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+postgresql://postgres.{PROJECT_REF}:{URL_ENCODED_PASSWORD}@aws-X-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true
 ```
 
-**Important**: Use port `6543` (pooler) NOT `5432` (direct connection)
+**Key points:**
+- Username must be `postgres.{PROJECT_REF}` (NOT just `postgres`)
+- Port must be `6543` (pooler), NOT `5432` (direct)
+- Must include `?pgbouncer=true` at the end
+- Password MUST be URL-encoded if it has special characters
+
+**Example:**
+If your project ref is `seuhldhyhqkgquxjrytz` and password is `MyPass123!`:
+- URL-encoded password: `MyPass123%21`
+- Username: `postgres.seuhldhyhqkgquxjrytz`
+- Full URL: `postgresql://postgres.seuhldhyhqkgquxjrytz:MyPass123%21@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true`
 
 ### Step 2: URL-Encode Your Password
 
