@@ -133,7 +133,7 @@ export default function DashboardPage() {
             ) : friends.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="mx-auto mb-4 text-white/40" size={64} />
-                <p className="text-white/80 mb-4">You don&apos;t have any friends yet</p>
+                <p className="text-white/80 mb-4">You don't have any friends yet</p>
                 <Link
                   href="/friends?search=true"
                   className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all"

@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Session ID required' }, { status: 400 })
       }
 
+<<<<<<< HEAD
       let session = sessions.get(sessionId)
 
       if (!session) {
@@ -59,6 +60,18 @@ export async function POST(request: NextRequest) {
         if (userBConfirmed !== undefined) session.userBConfirmed = userBConfirmed
       }
 
+=======
+      const session = sessions.get(sessionId)
+      if (!session) {
+        return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+      }
+
+      if (preferences !== undefined) session.preferences = preferences
+      if (options !== undefined) session.options = options
+      if (userASelection !== undefined) session.userASelection = userASelection
+      if (userBConfirmed !== undefined) session.userBConfirmed = userBConfirmed
+
+>>>>>>> origin/main
       sessions.set(sessionId, session)
       return NextResponse.json({ session })
     }
