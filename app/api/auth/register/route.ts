@@ -41,9 +41,18 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ user }, { status: 201 })
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
+    }
+    const isPrismaInit = error && typeof error === 'object' && 'name' in error && (error as { name: string }).name === 'PrismaClientInitializationError'
+    const isDbFatal = isPrismaInit || (error && typeof error === 'object' && 'message' in error && typeof (error as { message: string }).message === 'string' && (error as { message: string }).message.includes('FATAL'))
+    if (isDbFatal) {
+      console.error('Registration error (database):', error)
+      return NextResponse.json(
+        { error: 'Database unavailable. Check DATABASE_URL in .env.local and that your database (e.g. Neon/Supabase) is active.' },
+        { status: 503 }
+      )
     }
     console.error('Registration error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

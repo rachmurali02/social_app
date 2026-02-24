@@ -164,7 +164,7 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here
 # Common encodings: ! = %21, @ = %40, # = %23, $ = %24, % = %25, & = %26
 DATABASE_URL="postgresql://postgres:YOUR_URL_ENCODED_PASSWORD@db.seuhldhyhqkgquxjrytz.supabase.co:5432/postgres"
 
-# NextAuth Configuration
+# NextAuth – use the URL you open in the browser (localhost or server URL)
 NEXTAUTH_SECRET="paste_your_generated_secret_here"
 NEXTAUTH_URL="http://localhost:3000"
 ```
@@ -307,6 +307,31 @@ npm uninstall -g prisma
 - Prisma 7 has breaking changes in schema format
 - Solution: Use local Prisma 5 from `node_modules` after `npm install`
 
+### "Database unavailable" (app or Prisma)
+
+**1. Test the connection:**
+```bash
+# Uses DATABASE_URL from .env.local (via dotenv-cli)
+npm run db:push
+```
+Note: Prisma CLI reads `.env` by default; this project’s scripts load `.env.local` so you can keep all env vars in one file.
+If this fails, the error (e.g. "Tenant or user not found", "password authentication failed") points to the fix below.
+
+**If `db:push` hangs** (no error, just sits): the connection never completes—often a **paused Supabase project** or the **pooler** (port 6543) not responding.
+- Stop the command (Ctrl+C). In Supabase Dashboard **restore/unpause** the project if it’s paused.
+- **Use the direct connection:** Project Settings → Database → Connection string → **Session** (host `db.xxx.supabase.co`, port **5432**). Use that URI in `DATABASE_URL`; it usually fails fast instead of hanging.
+- **Optional:** Add `?connect_timeout=10` at the end of `DATABASE_URL` so it fails after 10s (e.g. `.../postgres?connect_timeout=10`).
+
+**2. Fix DATABASE_URL in `.env.local`:**
+- **Neon:** Dashboard → your project → Connection string. Copy the connection string; ensure the project is not suspended.
+- **Supabase:** Dashboard → Project Settings → Database → Connection string (URI). Ensure the project is not paused.
+- **Password:** If the password has `!`, `@`, `#`, etc., URL-encode it (e.g. `!` → `%21`). Use `bash scripts/url-encode-password.sh` or an online encoder.
+- **Format:** `postgresql://USER:PASSWORD@HOST:5432/DATABASE` (no spaces, correct host/port/database name).
+
+**3. Restart:** After changing `.env.local`, restart the dev server (`npm run dev`).
+
+---
+
 ### Error: Database connection failed or Authentication failed
 
 **Common causes:**
@@ -320,12 +345,17 @@ npm uninstall -g prisma
    - Go to Supabase Dashboard → Settings → Database
    - Reset password if needed
 
-3. **Connection string format:** Should be:
+3. **"FATAL: Tenant or user not found"** (Supabase pooler at `*.pooler.supabase.com:6543`):
+   - **Unpause the project:** Supabase free tier pauses projects. Open [Supabase Dashboard](https://supabase.com/dashboard) → your project → **Restore project** if you see “Project is paused”.
+   - **Use the direct connection instead of pooler:** In Dashboard → **Project Settings** → **Database** → **Connection string** → choose **URI** and **Session** (not Transaction). That gives host `db.PROJECT_REF.supabase.co` and port **5432**. Replace your current `DATABASE_URL` in `.env.local` with this string (and URL-encode the password). Then run `npm run db:push` again.
+   - **Neon:** If you use Neon, project may be suspended; copy a fresh connection string from the dashboard and ensure the project is active.
+
+4. **Connection string format:** Should be:
    ```
    postgresql://postgres:ENCODED_PASSWORD@db.PROJECT_ID.supabase.co:5432/postgres
    ```
 
-4. **Get correct connection string from Supabase:**
+5. **Get correct connection string from Supabase:**
    - Supabase Dashboard → Settings → Database
    - Copy "Connection string" → "URI" format
    - Make sure to URL-encode the password part
@@ -338,6 +368,12 @@ bash scripts/url-encode-password.sh
 # Or manually encode: password "abc!123" → "abc%21123"
 # Then update .env.local with the encoded password
 ```
+
+### [next-auth][warn][NEXTAUTH_URL]
+- Set `NEXTAUTH_URL` in `.env.local` to the **exact URL you use to open the app**:
+  - **Same machine:** `http://localhost:3000`
+  - **Server / other devices:** `http://YOUR_SERVER_IP:3000` or `https://your-domain.com` (no trailing slash).
+- Restart the dev server after changing env vars.
 
 ### Port 3000 already in use
 ```bash

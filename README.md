@@ -31,21 +31,22 @@ See **[INSTALLATION.md](./INSTALLATION.md)** for complete step-by-step installat
 4. Run dev server: `npm run dev`
 5. Open http://localhost:3000
 
-## Deployment to Vercel
+## Hosting (share on a domain for ~$0–10/month)
 
-Vercel automatically uses Node.js 18+, so no version upgrade needed for deployment.
+See **[HOSTING.md](./HOSTING.md)** for step-by-step options so anyone can use the app at a URL:
+
+- **Vercel (free)** – recommended for Next.js; free tier + optional custom domain
+- **Railway (~$5/mo)** – simple deploy from GitHub
+- **Render (~$7/mo for always-on)** – free tier can sleep when idle
+- **Custom domain** – buy a domain (~$10–15/year) and point it at your host
+
+## Deployment to Vercel (quick)
 
 1. Push your code to GitHub
-2. Set up a PostgreSQL database (Vercel Postgres, Supabase, or any PostgreSQL provider)
-3. Import your repository in Vercel
-4. Add these environment variables in Vercel dashboard (Settings → Environment Variables):
-   - `ANTHROPIC_API_KEY`
-   - `DATABASE_URL` (your PostgreSQL connection string)
-   - `NEXTAUTH_SECRET` (generate with `openssl rand -base64 32`)
-   - `NEXTAUTH_URL` (your Vercel deployment URL)
-5. Deploy!
-
-The app will be live at `https://your-project.vercel.app`
+2. Set up a PostgreSQL database (Supabase or Neon; use the **Session/direct** connection string)
+3. Import your repository in [Vercel](https://vercel.com)
+4. Add environment variables: `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (your Vercel URL), and optionally `ANTHROPIC_API_KEY`
+5. Deploy — app will be at `https://your-project.vercel.app`
 
 ## Features
 

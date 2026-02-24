@@ -3,7 +3,8 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
-import { Search, UserPlus, Check, X, Users } from 'lucide-react'
+import { Search, UserPlus, Check, X, Users, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
 function FriendsContent() {
   const { data: session, status } = useSession()
@@ -121,6 +122,12 @@ function FriendsContent() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4 transition-all"
+          >
+            <ArrowLeft size={20} /> Back to Dashboard
+          </Link>
           <h1 className="text-4xl font-black text-white mb-2">Friends</h1>
           <div className="flex gap-4">
             <button

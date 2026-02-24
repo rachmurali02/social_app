@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap } from 'lucide-react'
+import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 interface UserPreferences {
@@ -450,12 +450,26 @@ END:VCALENDAR`
                       )}
                     </div>
                   </div>
+                  {loading && (
+                    <div className="flex flex-col items-center gap-3 py-4 text-white">
+                      <Loader2 className="animate-spin" size={40} />
+                      <p className="font-semibold">Loading recommendations...</p>
+                      <p className="text-white/70 text-sm">Finding perfect spots for you</p>
+                    </div>
+                  )}
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-blue-500/50 transition-all disabled:opacity-50"
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-blue-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                   >
-                    {loading ? '🔍 Finding perfect spots...' : '✨ Get AI Recommendations'}
+                    {loading ? (
+                      <>
+                        <Loader2 className="animate-spin" size={22} />
+                        Finding perfect spots...
+                      </>
+                    ) : (
+                      '✨ Get AI Recommendations'
+                    )}
                   </button>
                 </form>
               </div>
