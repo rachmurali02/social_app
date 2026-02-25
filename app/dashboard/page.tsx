@@ -3,7 +3,7 @@
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Users, User, LogOut, Calendar, Search, UserPlus, Bell } from 'lucide-react'
+import { Users, User, LogOut, Calendar, Search, UserPlus, Bell, Heart } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DashboardPage() {
@@ -121,6 +121,15 @@ export default function DashboardPage() {
               <Search className="text-white mb-4" size={48} />
               <h2 className="text-2xl font-bold text-white mb-2">Find Friends</h2>
               <p className="text-white/80">Search and add new friends</p>
+            </Link>
+
+            <Link
+              href="/community"
+              className="bg-gradient-to-br from-emerald-500/20 to-teal-700/20 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:scale-105 transition-transform"
+            >
+              <Heart className="text-white mb-4" size={48} />
+              <h2 className="text-2xl font-bold text-white mb-2">Community</h2>
+              <p className="text-white/80">Discover and connect with others</p>
             </Link>
           </div>
 

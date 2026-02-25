@@ -94,6 +94,59 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ requests })
     }
 
+    if (action === 'discover') {
+      const friendships = await prisma.friendship.findMany({
+        where: {
+          OR: [{ senderId: session.user.id }, { receiverId: session.user.id }],
+        },
+      })
+      const friendIds = new Set(
+        friendships.flatMap((f) => [f.senderId, f.receiverId])
+      )
+      friendIds.add(session.user.id)
+
+      const where: { id?: { notIn: string[] }; OR?: object[] } = {
+        id: { notIn: [...friendIds] },
+      }
+      if (query) {
+        where.OR = [
+          { email: { contains: query, mode: 'insensitive' } },
+          { name: { contains: query, mode: 'insensitive' } },
+        ]
+      }
+
+      const users = await prisma.user.findMany({
+        where,
+        include: { profile: true },
+        take: 30,
+      })
+
+      const pending = await prisma.friendship.findMany({
+        where: {
+          OR: [
+            { senderId: session.user.id, status: 'pending' },
+            { receiverId: session.user.id, status: 'pending' },
+          ],
+        },
+      })
+
+      const usersWithStatus = users.map((user) => {
+        const fr = pending.find(
+          (f) => f.senderId === user.id || f.receiverId === user.id
+        )
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          profile: user.profile,
+          friendshipStatus: fr?.status || null,
+          isSender: fr?.senderId === session.user.id || false,
+        }
+      })
+
+      return NextResponse.json({ users: usersWithStatus })
+    }
+
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (error) {
     console.error('Friends API error:', error)
