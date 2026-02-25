@@ -57,12 +57,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black via-neutral-950 to-black px-4 py-6 sm:px-6">
+    <div className="min-h-screen relative overflow-hidden bg-neutral-950 px-4 py-6 sm:px-6">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[url('/images/party-login-hero.jpg')] bg-cover bg-center opacity-60" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/85 to-black/96" />
-        <div className="absolute -top-32 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-amber-500/30 to-rose-400/15 blur-3xl" />
-        <div className="absolute -bottom-40 right-0 h-80 w-80 rounded-full bg-gradient-to-br from-emerald-500/25 to-cyan-400/10 blur-3xl" />
+        <div className="absolute inset-0 bg-[url('/images/party-login-hero.jpg')] bg-cover bg-center scale-105 img-premium" />
+        <div className="absolute inset-0 hero-overlay" />
+        <div className="absolute inset-0 hero-vignette" />
+        <div className="absolute -top-32 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-amber-500/20 to-rose-400/10 blur-3xl" />
+        <div className="absolute -bottom-40 right-0 h-80 w-80 rounded-full bg-gradient-to-br from-emerald-500/15 to-cyan-400/8 blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-md mx-auto flex flex-col gap-6">
@@ -81,7 +82,7 @@ export default function LoginPage() {
           </span>
         </header>
 
-        <main className="bg-white/8 backdrop-blur-2xl rounded-3xl px-5 py-6 sm:px-7 sm:py-7 border border-white/15 shadow-[0_18px_60px_rgba(0,0,0,0.8)] transition-transform duration-300 hover:-translate-y-0.5">
+        <main className="glass-panel rounded-3xl px-5 py-6 sm:px-7 sm:py-7 shadow-card transition-transform duration-300 hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-5">
             <div className="flex flex-col gap-1">
               <p className="text-[11px] font-semibold tracking-[0.3em] text-white/60 uppercase">

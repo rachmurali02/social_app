@@ -84,20 +84,20 @@ function CommunityContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-950 to-black p-4 sm:p-6 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-white/90 hover:text-white mb-6 py-2 -mx-1 min-h-[44px] rounded-lg transition-all"
+          className="inline-flex items-center gap-2 text-white/90 hover:text-white mb-6 py-2 -mx-1 min-h-[44px] rounded-lg transition-colors"
         >
           <ArrowLeft size={22} /> Back to Dashboard
         </Link>
 
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 flex items-center gap-3">
-            <Users size={36} /> Community
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-2 flex items-center gap-3">
+            <Users size={28} /> Community
           </h1>
-          <p className="text-white/80 text-base">
+          <p className="text-white/70 text-base">
             Find people to connect with and plan meetups.
           </p>
         </div>
@@ -112,7 +112,7 @@ function CommunityContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name or email"
-            className="w-full min-h-[48px] pl-12 pr-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
+            className="w-full min-h-[48px] pl-12 pr-4 rounded-2xl bg-white/[0.06] border border-white/[0.1] text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400/60 focus:border-transparent text-base"
           />
         </div>
 
@@ -133,7 +133,7 @@ function CommunityContent() {
             {users.map((user) => (
               <li
                 key={user.id}
-                className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 flex items-center justify-between gap-4"
+                className="glass-panel rounded-2xl p-4 flex items-center justify-between gap-4 hover:bg-white/[0.08] transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg shrink-0">

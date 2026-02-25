@@ -111,7 +111,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-950 to-black p-4 sm:p-6 pb-safe">
+    <div className="min-h-screen bg-neutral-950 p-4 sm:p-6 pb-safe">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/dashboard"
@@ -120,7 +120,7 @@ export default function ProfilePage() {
           <ArrowLeft size={22} /> Back to Dashboard
         </Link>
 
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/20">
+        <div className="glass-panel rounded-3xl p-6 sm:p-8">
           <h1 className="text-2xl sm:text-3xl font-black text-white mb-6 flex items-center gap-3">
             <User size={36} /> Profile
           </h1>

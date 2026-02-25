@@ -5,9 +5,39 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   body {
     @apply text-base;
+  }
+}
+
+@layer utilities {
+  .img-sharpen {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  .img-premium {
+    image-rendering: auto;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  .glass-panel {
+    @apply backdrop-blur-2xl bg-white/[0.06] border border-white/[0.08];
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .hero-overlay {
+    background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.85) 100%);
+  }
+  .hero-vignette {
+    position: relative;
+  }
+  .hero-vignette::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
   }
 }
 

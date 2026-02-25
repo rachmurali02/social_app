@@ -120,7 +120,7 @@ function FriendsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-950 to-black p-6 pb-24">
+    <div className="min-h-screen bg-neutral-950 p-6 pb-24">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Link
@@ -155,7 +155,7 @@ function FriendsContent() {
         </div>
 
         {friendRequests.length > 0 && (
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20 mb-6">
+          <div className="glass-panel rounded-3xl p-6 mb-6">
             <h2 className="text-xl font-bold text-white mb-4">Friend Requests ({friendRequests.length})</h2>
             <div className="space-y-3">
               {friendRequests.map((request) => (
@@ -193,7 +193,7 @@ function FriendsContent() {
         )}
 
         {isSearch ? (
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
+          <div className="glass-panel rounded-3xl p-8">
             <div className="relative mb-6">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" size={20} />
               <input
@@ -256,7 +256,7 @@ function FriendsContent() {
             </div>
           </div>
         ) : (
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
+          <div className="glass-panel rounded-3xl p-8">
             <h2 className="text-2xl font-bold text-white mb-6">My Friends ({friends.length})</h2>
             {friends.length === 0 ? (
               <div className="text-center py-12">
@@ -274,7 +274,7 @@ function FriendsContent() {
                 {friends.map((friend) => (
                   <div
                     key={friend.id}
-                    className="bg-white/5 rounded-xl p-4 border border-white/10 flex items-center justify-between hover:bg-white/10 transition-all cursor-pointer"
+                    className="bg-white/[0.04] rounded-2xl p-4 border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.08] transition-all cursor-pointer"
                     onClick={() => router.push(`/profile/${friend.id}`)}
                   >
                     <div className="flex items-center gap-3">

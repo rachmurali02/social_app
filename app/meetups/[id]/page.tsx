@@ -75,24 +75,25 @@ export default function MeetupDetailPage() {
   const isCreator = meetup.creator.id === session?.user?.id
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-950 to-black pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-950 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/meetups"
-          className="inline-flex items-center gap-2 text-white/90 hover:text-white p-4 -mx-4"
+          className="inline-flex items-center gap-2 text-white/90 hover:text-white p-4 -mx-4 transition-colors"
         >
           <ArrowLeft size={22} /> Back
         </Link>
 
-        <div className="relative h-48 sm:h-56 bg-gradient-to-br from-blue-600/40 to-purple-600/40 rounded-2xl overflow-hidden mx-4 mb-6">
+        <div className="relative h-48 sm:h-56 rounded-2xl overflow-hidden mx-4 mb-6">
           <Image
             src={getPlacePhoto(placeName, meetup.id)}
             alt=""
             fill
-            className="object-cover mix-blend-overlay"
+            className="object-cover img-premium"
             unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent" />
+          <div className="absolute inset-0 hero-overlay" />
+          <div className="absolute inset-0 hero-vignette" />
           <div className="absolute bottom-4 left-4 right-4">
             <h1 className="text-2xl font-bold text-white">{placeName}</h1>
             <p className="text-white/90">{activity || 'Meetup'}</p>
@@ -107,6 +108,7 @@ export default function MeetupDetailPage() {
         </div>
 
         <div className="px-4 space-y-4">
+          <div className="glass-panel rounded-2xl p-5 space-y-4 mx-4 -mt-2">
           {address && (
             <div className="flex items-start gap-3 text-white/90">
               <MapPin size={20} className="shrink-0 mt-0.5" />
@@ -151,11 +153,12 @@ export default function MeetupDetailPage() {
           {!isCreator && meetup.participants.some((p) => p.user.id === session?.user?.id && p.status === 'pending') && (
             <Link
               href="/invitations"
-              className="block w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-medium text-center"
+              className="block w-full py-3.5 rounded-2xl bg-blue-500 hover:bg-blue-500/90 text-white font-medium text-center transition-colors shadow-lg shadow-blue-500/25"
             >
               Respond to invitation
             </Link>
           )}
+          </div>
         </div>
       </div>
       <BottomNav />

@@ -51,12 +51,12 @@ export default function MeetupsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-950 to-black p-4 sm:p-6 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 flex items-center gap-3">
-          <Calendar size={36} /> Meetups
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-2 flex items-center gap-3">
+          <Calendar size={28} /> Meetups
         </h1>
-        <p className="text-white/80 text-base mb-6">
+        <p className="text-white/70 text-base mb-6">
           Your meetups and invitations
         </p>
 
@@ -66,7 +66,7 @@ export default function MeetupsPage() {
             <p>Loading meetups...</p>
           </div>
         ) : meetups.length === 0 ? (
-          <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
+          <div className="text-center py-12 glass-panel rounded-2xl">
             <Calendar className="mx-auto mb-4 text-white/40" size={56} />
             <p className="text-white/80 text-base mb-4">No meetups yet</p>
             <Link
@@ -90,17 +90,18 @@ export default function MeetupsPage() {
                 <li key={m.id}>
                   <Link
                     href={`/meetup/${m.id}`}
-                    className="block bg-white/10 backdrop-blur border border-white/20 rounded-2xl overflow-hidden hover:bg-white/15 transition-colors"
+                    className="group block glass-panel rounded-2xl overflow-hidden hover:bg-white/[0.08] hover:shadow-card-hover transition-all duration-300"
                   >
-                    <div className="relative h-36 sm:h-44 bg-gradient-to-br from-blue-600/40 to-purple-600/40">
+                    <div className="relative h-36 sm:h-44 overflow-hidden">
                       <Image
                         src={getPlacePhoto(placeName, m.id)}
                         alt=""
                         fill
-                        className="object-cover mix-blend-overlay"
+                        className="object-cover img-premium group-hover:scale-105 transition-transform duration-500"
                         unoptimized
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                      <div className="absolute inset-0 hero-overlay" />
+                      <div className="absolute inset-0 hero-vignette" />
                       <div className="absolute bottom-3 left-4 right-4">
                         <h2 className="text-lg font-bold text-white truncate">{placeName}</h2>
                         <p className="text-white/90 text-sm truncate">{activity || 'Meetup'}</p>
