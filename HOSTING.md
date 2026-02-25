@@ -55,6 +55,10 @@ You can host this app so anyone can use it at a URL (e.g. `https://yourapp.com`)
 
 ---
 
+## Place search (optional)
+
+- For more accurate place results, add `FOURSQUARE_API_KEY` from [foursquare.com/developers](https://foursquare.com/developers/signup). Without it, the app uses OpenStreetMap data.
+
 ## Database when hosted
 
 - Keep using **Supabase** or **Neon** (both have free tiers). Use the **direct/Session** connection string (e.g. Supabase: `db.xxx.supabase.co:5432`) in `DATABASE_URL`; avoid the pooler if you had “Tenant or user not found” before.

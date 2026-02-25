@@ -139,6 +139,70 @@ function classifyIntent(activity: string): PlaceIntent {
   return 'default'
 }
 
+function toPlaceQuery(intent: PlaceIntent, activity: string): string {
+  if (intent === 'coffee') return 'coffee cafe'
+  if (intent === 'drinks') return 'bar pub'
+  if (intent === 'dessert') return 'dessert ice cream bakery'
+  return activity || 'restaurant cafe bar'
+}
+
+async function fetchNearbyPlacesFoursquare(
+  lat: number,
+  lon: number,
+  radiusM: number,
+  activity: string,
+  intent: PlaceIntent,
+  excludeNames: string[]
+): Promise<PlaceResult[] | null> {
+  const key = process.env.FOURSQUARE_API_KEY?.trim()
+  if (!key) return null
+  try {
+    const query = toPlaceQuery(intent, activity)
+    const params = new URLSearchParams({
+      ll: `${lat},${lon}`,
+      radius: String(Math.min(radiusM, 100000)),
+      query,
+      limit: '10',
+      fields: 'name,location,geocodes,rating,popularity,link',
+    })
+    const res = await fetch(`https://api.foursquare.com/v3/places/search?${params}`, {
+      headers: { Authorization: key },
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const items = data.results || []
+    const excludeSet = new Set(excludeNames.map((n) => n.toLowerCase()))
+    const results: PlaceResult[] = []
+    const seen = new Set<string>()
+    for (const p of items) {
+      const name = p.name || 'Unnamed place'
+      if (seen.has(name.toLowerCase()) || excludeSet.has(name.toLowerCase())) continue
+      seen.add(name.toLowerCase())
+      const geo = p.geocodes?.main
+      const lat2 = geo?.latitude ?? lat
+      const lon2 = geo?.longitude ?? lon
+      const addr = p.location?.formatted_address || p.location?.address || `${lat2.toFixed(4)}, ${lon2.toFixed(4)}`
+      const fsqRating = typeof p.rating === 'number' ? p.rating : null
+      const rating5 = fsqRating != null ? Math.round((fsqRating / 2) * 10) / 10 : Math.round((4.2 + Math.random() * 0.6) * 10) / 10
+      const mapUrl = p.link || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`
+      results.push({
+        name,
+        address: addr,
+        rating: rating5,
+        popularity: typeof p.popularity === 'number' && p.popularity > 0.5 ? 'Popular spot' : 'Recommended nearby',
+        reason: `Good for ${activity}. ${fsqRating != null ? 'Rated by Foursquare.' : ''}`.trim(),
+        mapUrl,
+        isRecommended: results.length === 0,
+      })
+      if (results.length >= 5) break
+    }
+    return results.length > 0 ? results : null
+  } catch (e) {
+    console.error('Foursquare places error:', e)
+    return null
+  }
+}
+
 export async function fetchNearbyPlaces(
   lat: number,
   lon: number,
@@ -148,6 +212,9 @@ export async function fetchNearbyPlaces(
 ): Promise<PlaceResult[]> {
   const radiusM = Math.min(radiusKm * 1000, 5000)
   const intent = classifyIntent(activity)
+
+  const foursquare = await fetchNearbyPlacesFoursquare(lat, lon, radiusM, activity, intent, excludeNames)
+  if (foursquare?.length) return foursquare
 
   let query: string
   if (intent === 'coffee') {
@@ -218,7 +285,7 @@ out center tags;
       results.push({
         name,
         address: address || `${lat2.toFixed(4)}, ${lon2.toFixed(4)}`,
-        rating: 4.2 + Math.random() * 0.6,
+        rating: Math.round((4.2 + Math.random() * 0.6) * 10) / 10,
         popularity: 'Popular with locals',
         reason: `Good for ${activity}. Nearby.`,
         mapUrl,

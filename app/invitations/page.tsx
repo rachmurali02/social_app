@@ -239,7 +239,7 @@ export default function InvitationsPage() {
                       <div className="flex flex-wrap gap-3 sm:gap-4 text-white/90 text-sm">
                         <span className="flex items-center gap-1.5">
                           <Star size={16} fill="gold" stroke="gold" />
-                          {invitation.meetup.selectedOption.rating}/5
+                          {Number(invitation.meetup.selectedOption.rating).toFixed(1)}/5
                         </span>
                         <span className="flex items-center gap-1.5">
                           <Clock size={16} />

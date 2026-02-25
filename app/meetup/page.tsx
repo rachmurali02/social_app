@@ -546,7 +546,7 @@ END:VCALENDAR`
                           </p>
                           <p className="text-white/90 flex items-center gap-2">
                             <Star className="flex-shrink-0" size={20} fill="gold" stroke="gold" />
-                            <span className="font-bold">{option.rating}/5.0</span>
+                            <span className="font-bold">{Number(option.rating).toFixed(1)}/5.0</span>
                           </p>
                           <div className="bg-blue-500/20 border border-blue-400/30 rounded-xl p-4">
                             <p className="text-blue-200 font-semibold">💡 {option.popularity}</p>
