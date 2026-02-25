@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../lib/auth'
 import { prisma } from '../../../lib/db'
+import { sendMeetupInviteEmail } from '../../../lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,10 +25,12 @@ export async function POST(request: NextRequest) {
           selectedOption: selectedOption,
           status: 'pending',
           participants: {
-            create: friendIds.map((friendId: string) => ({
-              userId: friendId,
-              status: 'pending',
-            })),
+            create: Array.isArray(friendIds)
+              ? friendIds.map((friendId: string) => ({
+                  userId: friendId,
+                  status: 'pending',
+                }))
+              : [],
           },
         },
         include: {
@@ -51,6 +54,47 @@ export async function POST(request: NextRequest) {
           },
         },
       })
+
+      if (Array.isArray(meetup.participants) && meetup.participants.length > 0) {
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+        const creatorName = meetup.creator.name || meetup.creator.email
+        const placeName =
+          (selectedOption && selectedOption.name) ||
+          (meetup.selectedOption as any)?.name ||
+          undefined
+        const address =
+          (selectedOption && selectedOption.address) ||
+          (meetup.selectedOption as any)?.address ||
+          undefined
+        const time =
+          (preferences && preferences.time) ||
+          (meetup.preferences as any)?.time ||
+          undefined
+        const activity =
+          (preferences && preferences.activity) ||
+          (meetup.preferences as any)?.activity ||
+          undefined
+
+        await Promise.all(
+          meetup.participants.map((participant) => {
+            const email = participant.user?.email
+            if (!email) return Promise.resolve(false)
+            return sendMeetupInviteEmail({
+              to: email,
+              inviteeName: participant.user?.name || email,
+              inviterName: creatorName,
+              placeName,
+              address,
+              time,
+              activity,
+              appUrl: baseUrl,
+            }).catch((e) => {
+              console.error('Meetup invite email error:', e)
+              return false
+            })
+          })
+        )
+      }
 
       return NextResponse.json({ meetup })
     }

@@ -93,14 +93,14 @@ export default function ProfilePage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
         <div className="text-white text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4 sm:p-6 pb-safe">
+    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-950 to-black p-4 sm:p-6 pb-safe">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/dashboard"

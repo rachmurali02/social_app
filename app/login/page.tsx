@@ -114,7 +114,7 @@ export default function LoginPage() {
               onClick={() => setIsLogin(true)}
               className={`flex-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 isLogin
-                  ? 'bg-white text-purple-900 shadow-[0_10px_30px_rgba(15,23,42,0.6)]'
+                  ? 'bg-white text-slate-900 shadow-[0_10px_30px_rgba(15,23,42,0.6)]'
                   : 'text-white/80 hover:text-white'
               }`}
             >
@@ -125,7 +125,7 @@ export default function LoginPage() {
               onClick={() => setIsLogin(false)}
               className={`flex-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 !isLogin
-                  ? 'bg-white text-purple-900 shadow-[0_10px_30px_rgba(15,23,42,0.6)]'
+                  ? 'bg-white text-slate-900 shadow-[0_10px_30px_rgba(15,23,42,0.6)]'
                   : 'text-white/80 hover:text-white'
               }`}
             >

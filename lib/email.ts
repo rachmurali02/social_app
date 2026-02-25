@@ -72,3 +72,73 @@ export async function sendPasswordResetEmail(
     return false
   }
 }
+
+export async function sendMeetupInviteEmail(params: {
+  to: string
+  inviteeName?: string
+  inviterName?: string
+  placeName?: string
+  address?: string
+  time?: string
+  activity?: string
+  appUrl?: string
+}): Promise<boolean> {
+  const transporter = getTransporter()
+  if (!transporter) return false
+  const {
+    to,
+    inviteeName,
+    inviterName,
+    placeName,
+    address,
+    time,
+    activity,
+    appUrl,
+  } = params
+  try {
+    const displayInvitee = inviteeName || to.split('@')[0]
+    const displayInviter = inviterName || 'a friend'
+    const safePlace = placeName || 'a meetup spot'
+    const safeAddress = address || ''
+    const safeActivity = activity || 'a meetup'
+    const safeTime = time || ''
+    const baseUrl = (appUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+    const invitationsUrl = `${baseUrl}/invitations`
+
+    const timeLine =
+      safeTime.trim().length > 0
+        ? `<p><strong>Time:</strong> ${safeTime}</p>`
+        : ''
+
+    await transporter.sendMail({
+      from: EMAIL_FROM,
+      to,
+      subject: `You’re invited to a meetup at ${safePlace}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto;">
+          <h1 style="color: #4f46e5; margin-bottom: 16px;">You’re invited 🎉</h1>
+          <p>Hi ${displayInvitee},</p>
+          <p>${displayInviter} invited you to ${safeActivity} at <strong>${safePlace}</strong>.</p>
+          <p><strong>Where:</strong> ${safeAddress}</p>
+          ${timeLine}
+          <p style="margin-top: 24px;">
+            You can see the invite and respond in the app:
+          </p>
+          <p>
+            <a href="${invitationsUrl}" style="background:#4f46e5;color:#ffffff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block;">
+              View invitation
+            </a>
+          </p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">
+            If you weren’t expecting this, you can ignore this email.
+          </p>
+          <p style="color:#6b7280;font-size:13px;margin-top:8px;">— MeetUp AI</p>
+        </div>
+      `,
+    })
+    return true
+  } catch (e) {
+    console.error('Send meetup invite email:', e)
+    return false
+  }
+}

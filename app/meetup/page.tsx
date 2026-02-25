@@ -644,7 +644,7 @@ END:VCALENDAR`
                 </div>
                 <Link
                   href="/dashboard"
-                  className="inline-block bg-white text-purple-900 px-8 py-3 rounded-xl font-bold hover:bg-white/90 transition-all"
+                  className="inline-block bg-white text-slate-900 px-8 py-3 rounded-xl font-bold hover:bg-white/90 transition-all"
                 >
                   Back to Dashboard
                 </Link>
