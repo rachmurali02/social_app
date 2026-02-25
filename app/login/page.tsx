@@ -24,10 +24,13 @@ export default function LoginPage() {
 
     try {
       if (!isLogin) {
+        if (!name?.trim()) {
+          throw new Error('Name is required')
+        }
         const registerResponse = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, name }),
+          body: JSON.stringify({ email, password, name: name?.trim() }),
         })
 
         if (!registerResponse.ok) {
@@ -139,11 +142,12 @@ export default function LoginPage() {
               <div>
                 <label className="flex items-center gap-2 text-white font-semibold mb-2 text-sm">
                   <Users size={18} />
-                  Name (optional)
+                  Name
                 </label>
                 <input
                   name="name"
                   type="text"
+                  required
                   className="w-full h-12 rounded-2xl bg-black/40 border border-white/25 px-4 text-sm text-white caret-white placeholder-white/60 outline-none focus:ring-2 focus:ring-amber-400/80 focus:border-transparent transition-colors"
                   placeholder="What should friends call you?"
                 />

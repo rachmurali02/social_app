@@ -7,7 +7,7 @@ import { sendWelcomeEmail } from '../../../../lib/email'
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  name: z.string().optional(),
+  name: z.string().min(1, 'Name is required'),
 })
 
 export async function POST(request: NextRequest) {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       data: {
         email,
         password: hashedPassword,
-        name: name || email.split('@')[0],
+        name,
         profile: {
           create: {},
         },

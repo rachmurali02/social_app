@@ -2,14 +2,15 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { User, ArrowLeft, Save, Lock, Eye, EyeOff, MapPin, Loader2 } from 'lucide-react'
+import { useEffect, useState, useRef } from 'react'
+import { User, ArrowLeft, Save, Lock, Eye, EyeOff, MapPin, Loader2, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
 
 export default function ProfilePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [name, setName] = useState('')
+  const [avatar, setAvatar] = useState('')
   const [loading, setLoading] = useState(false)
   const [passwordOpen, setPasswordOpen] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
@@ -21,6 +22,7 @@ export default function ProfilePage() {
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [location, setLocation] = useState('')
   const [locationLoading, setLocationLoading] = useState(false)
+  const locationFetchedOnMount = useRef(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -38,9 +40,32 @@ export default function ProfilePage() {
     if (session?.user?.id) {
       fetch('/api/profile')
         .then((r) => r.json())
-        .then((d) => setLocation(d.profile?.location || ''))
+        .then((d) => {
+          setLocation(d.profile?.location || '')
+          setAvatar(d.profile?.avatar || '')
+        })
         .catch(() => {})
     }
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|Android|Mobile/i.test(navigator.userAgent)
+    if (!isMobile || !session?.user?.id || locationFetchedOnMount.current) return
+    locationFetchedOnMount.current = true
+    if (!navigator.geolocation) return
+    setLocationLoading(true)
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const r = await fetch(`/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`)
+          const d = await r.json()
+          if (d.displayName) setLocation(d.displayName)
+        } finally {
+          setLocationLoading(false)
+        }
+      },
+      () => setLocationLoading(false)
+    )
   }, [session?.user?.id])
 
   const handleSave = async (e: React.FormEvent) => {
@@ -50,7 +75,7 @@ export default function ProfilePage() {
       const response = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, location }),
+        body: JSON.stringify({ name, location, avatar }),
       })
       if (response.ok) {
         router.push('/dashboard')
@@ -126,6 +151,28 @@ export default function ProfilePage() {
           </h1>
 
           <form onSubmit={handleSave} className="space-y-5">
+            <div className="flex items-start gap-4">
+              <div className="shrink-0 w-20 h-20 rounded-2xl bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center">
+                {avatar ? (
+                  <img src={avatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <User size={36} className="text-white/50" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <label className="block text-white font-semibold mb-2 flex items-center gap-2">
+                  <ImageIcon size={18} /> Profile picture URL
+                </label>
+                <input
+                  type="url"
+                  value={avatar}
+                  onChange={(e) => setAvatar(e.target.value)}
+                  className="w-full min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-white font-semibold mb-2">Email</label>
               <input
@@ -142,6 +189,7 @@ export default function ProfilePage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
                 className="w-full min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
                 placeholder="Your name"
               />
@@ -151,17 +199,10 @@ export default function ProfilePage() {
               <label className="block text-white font-semibold mb-2 flex items-center gap-2">
                 <MapPin size={18} /> Location (used for meetup suggestions)
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="flex-1 min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
-                  placeholder="e.g. Dubai Marina, San Francisco"
-                />
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   type="button"
-                  onClick={async () => {
+                  onClick={() => {
                     if (!navigator.geolocation) return
                     setLocationLoading(true)
                     navigator.geolocation.getCurrentPosition(
@@ -180,11 +221,18 @@ export default function ProfilePage() {
                     )
                   }}
                   disabled={locationLoading}
-                  className="shrink-0 min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 flex items-center gap-2"
+                  className="shrink-0 min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 flex items-center justify-center gap-2 order-first sm:order-none"
                 >
                   {locationLoading ? <Loader2 size={20} className="animate-spin" /> : <MapPin size={20} />}
                   Use my location
                 </button>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="flex-1 min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
+                  placeholder="e.g. Dubai Marina, San Francisco"
+                />
               </div>
             </div>
 
