@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Users, Mail, Lock, UserPlus } from 'lucide-react'
 
 export default function LoginPage() {
@@ -56,14 +57,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4 sm:p-6">
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-black text-white mb-2 drop-shadow-lg">MeetUp AI</h1>
-          <p className="text-white/80 text-lg">Smart social coordination</p>
+        <div className="text-center mb-6">
+          <h1 className="text-4xl sm:text-5xl font-black text-white mb-2 drop-shadow-lg">MeetUp AI</h1>
+          <p className="text-white/90 text-base sm:text-lg">Plan meetups that actually happen.</p>
+          <ul className="text-white/70 text-sm mt-3 space-y-1">
+            <li>• Find spots nearby (no AI tokens)</li>
+            <li>• Invite friends &amp; sync plans</li>
+            <li>• One place, one time</li>
+          </ul>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
+        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl">
           <div className="flex gap-4 mb-6">
             <button
               onClick={() => setIsLogin(true)}
@@ -133,8 +139,18 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="bg-red-500/20 border border-red-400/50 rounded-xl p-4 text-red-200">
-                {error}
+              <div className="space-y-2">
+                <div className="bg-red-500/20 border border-red-400/50 rounded-xl p-4 text-red-200">
+                  {error}
+                </div>
+                {isLogin && (
+                  <Link
+                    href="/forgot-password"
+                    className="block text-center text-blue-200 hover:text-blue-100 text-sm font-medium min-h-[44px] flex items-center justify-center"
+                  >
+                    Forgot password?
+                  </Link>
+                )}
               </div>
             )}
 

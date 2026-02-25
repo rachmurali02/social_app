@@ -31,3 +31,39 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<boolea
     return false
   }
 }
+
+export async function sendPasswordResetEmail(
+  to: string,
+  resetUrl: string,
+  name?: string
+): Promise<boolean> {
+  if (!RESEND_API_KEY) return false
+  try {
+    const { Resend } = await import('resend')
+    const resend = new Resend(RESEND_API_KEY)
+    const displayName = name || to.split('@')[0]
+    const { error } = await resend.emails.send({
+      from: EMAIL_FROM,
+      to,
+      subject: 'Reset your MeetUp AI password',
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <h1 style="color: #4f46e5;">Reset your password</h1>
+          <p>Hi ${displayName},</p>
+          <p>We received a request to reset your password. Click the link below (valid for 1 hour):</p>
+          <p><a href="${resetUrl}" style="color: #6366f1; font-weight: 600;">${resetUrl}</a></p>
+          <p>If you didn't request this, you can ignore this email.</p>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">— MeetUp AI</p>
+        </div>
+      `,
+    })
+    if (error) {
+      console.error('Password reset email error:', error)
+      return false
+    }
+    return true
+  } catch (e) {
+    console.error('Send password reset email:', e)
+    return false
+  }
+}

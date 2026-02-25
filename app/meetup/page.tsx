@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import BottomNav from '../components/BottomNav'
 
 interface UserPreferences {
   location: string
@@ -144,35 +145,23 @@ export default function MeetupPage() {
     }
 
     try {
-      const prompt = `Find 2 places for this activity:
-Location: ${preferences.location}
-Radius: ${preferences.radius}km
-Time: ${preferences.time}
-Activity: ${preferences.activity}
-Exclude: ${state.seenPlaces.join(', ') || 'none'}
-Return ONLY valid JSON (no markdown):
-[{
-  "name": "Place Name",
-  "address": "Full Address",
-  "rating": 4.5,
-  "popularity": "80% of users pick this",
-  "reason": "Why this place",
-  "mapUrl": "https://maps.google.com/?q=Place+Name+Address",
-  "isRecommended": true
-}]`
-
-      const response = await fetch('/api/recommendations', {
+      const response = await fetch('/api/places', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({
+          location: preferences.location,
+          radiusKm: preferences.radius,
+          activity: preferences.activity,
+          excludeNames: state.seenPlaces,
+        }),
       })
 
-      if (!response.ok) {
-        throw new Error('Recommendations API error')
-      }
-
       const data = await response.json()
-      const places = data.places
+      let places = data.places || []
+
+      if (!response.ok || places.length === 0) {
+        throw new Error(data.error || data.message || 'No places found')
+      }
 
       await fetch('/api/session', {
         method: 'POST',
@@ -187,7 +176,7 @@ Return ONLY valid JSON (no markdown):
         activeTile: 0,
       }))
     } catch (error) {
-      console.error('Error getting AI recommendations, using fallbacks:', error)
+      console.error('Error fetching places, using fallbacks:', error)
       const fallbackPlaces = [
         {
           name: 'The Coffee Collective',
@@ -339,7 +328,7 @@ END:VCALENDAR`
         </svg>
       </div>
 
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 p-6 pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -453,8 +442,8 @@ END:VCALENDAR`
                   {loading && (
                     <div className="flex flex-col items-center gap-3 py-4 text-white">
                       <Loader2 className="animate-spin" size={40} />
-                      <p className="font-semibold">Loading recommendations...</p>
-                      <p className="text-white/70 text-sm">Finding perfect spots for you</p>
+                      <p className="font-semibold">Finding spots...</p>
+                      <p className="text-white/70 text-sm">Searching nearby for {state.preferences?.activity || 'places'}</p>
                     </div>
                   )}
                   <button
@@ -465,10 +454,10 @@ END:VCALENDAR`
                     {loading ? (
                       <>
                         <Loader2 className="animate-spin" size={22} />
-                        Finding perfect spots...
+                        Finding spots...
                       </>
                     ) : (
-                      '✨ Get AI Recommendations'
+                      '✨ Find spots nearby'
                     )}
                   </button>
                 </form>
@@ -663,6 +652,7 @@ END:VCALENDAR`
           )}
         </div>
       </div>
+      <BottomNav />
     </div>
   )
 }

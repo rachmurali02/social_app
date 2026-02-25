@@ -16,10 +16,23 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   profile       Profile?
+  passwordResets PasswordResetToken[]
   sentFriendRequests     Friendship[] @relation("FriendRequestSender")
   receivedFriendRequests Friendship[] @relation("FriendRequestReceiver")
   createdMeetups         MeetupSession[] @relation("MeetupCreator")
   participatingMeetups   MeetupParticipant[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
 }
 
 model Profile {

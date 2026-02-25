@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import { Search, UserPlus, Check, X, Users, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import BottomNav from '../components/BottomNav'
 
 function FriendsContent() {
   const { data: session, status } = useSession()
@@ -119,7 +120,7 @@ function FriendsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6 pb-24">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Link
@@ -292,6 +293,7 @@ function FriendsContent() {
           </div>
         )}
       </div>
+      <BottomNav />
     </div>
   )
 }

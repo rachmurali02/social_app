@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, useCallback, Suspense } from 'react'
 import { Users, ArrowLeft, Search, UserPlus, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import BottomNav from '../components/BottomNav'
 
 function CommunityContent() {
   const { data: session, status } = useSession()
@@ -83,7 +84,7 @@ function CommunityContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4 sm:p-6 pb-safe">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4 sm:p-6 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/dashboard"
@@ -179,6 +180,7 @@ function CommunityContent() {
           </ul>
         )}
       </div>
+      <BottomNav />
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Users, User, LogOut, Calendar, Search, UserPlus, Bell, Heart } from 'lucide-react'
 import Link from 'next/link'
+import BottomNav from '../components/BottomNav'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -58,7 +59,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 p-6 pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -174,6 +175,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      <BottomNav />
     </div>
   )
 }
