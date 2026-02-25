@@ -308,15 +308,16 @@ END:VCALENDAR`
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
         <div className="text-white text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
-      <div className="absolute inset-0 opacity-20">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black via-neutral-950 to-black">
+      <div className="absolute inset-0 opacity-40">
+        <div className="absolute inset-0 bg-[url('/images/party-meetup-hero.jpg')] bg-cover bg-center mix-blend-soft-light" />
         <svg width="100%" height="100%">
           <defs>
             <pattern id="tiles" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">

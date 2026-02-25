@@ -51,14 +51,17 @@ export default function DashboardPage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
         <div className="text-white text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black via-neutral-950 to-black">
+      <div className="pointer-events-none absolute inset-0 opacity-50">
+        <div className="absolute inset-0 bg-[url('/images/party-dashboard-hero.jpg')] bg-cover bg-center mix-blend-soft-light" />
+      </div>
       <div className="relative z-10 p-6 pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">

@@ -113,14 +113,14 @@ function FriendsContent() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
         <div className="text-white text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-950 to-black p-6 pb-24">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Link
@@ -302,7 +302,7 @@ export default function FriendsPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
           <div className="text-white text-xl">Loading...</div>
         </div>
       }

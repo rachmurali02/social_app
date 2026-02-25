@@ -57,10 +57,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 px-4 py-6 sm:px-6">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black via-neutral-950 to-black px-4 py-6 sm:px-6">
       <div className="pointer-events-none absolute inset-0 opacity-60">
-        <div className="absolute -top-32 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-pink-500/40 to-yellow-400/20 blur-3xl" />
-        <div className="absolute -bottom-40 right-0 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/40 to-emerald-400/20 blur-3xl" />
+        <div className="absolute inset-0 bg-[url('/images/party-login-hero.jpg')] bg-cover bg-center mix-blend-soft-light" />
+        <div className="absolute -top-32 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-amber-500/40 to-rose-400/20 blur-3xl" />
+        <div className="absolute -bottom-40 right-0 h-80 w-80 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-400/10 blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-md mx-auto flex flex-col gap-6">
