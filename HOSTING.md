@@ -14,9 +14,13 @@ You can host this app so anyone can use it at a URL (e.g. `https://yourapp.com`)
 2. Go to [vercel.com](https://vercel.com) → **Add New** → **Project** → import your repo.
 3. Set **Environment Variables** in the project:
    - `DATABASE_URL` (Supabase/Neon connection string; use **Session/direct** for Supabase)
-   - `NEXTAUTH_SECRET` (`openssl rand -base64 32`)
-   - `NEXTAUTH_URL` = `https://your-project.vercel.app` (or your custom domain after you add it)
+   - `NEXTAUTH_SECRET` (run `openssl rand -base64 32` to generate)
+   - `NEXTAUTH_URL` = your **exact** deployment URL, e.g. `https://social-xxx.vercel.app` (no trailing slash). Must match the URL you use to open the app. For preview deployments, use that preview URL or your production URL.
    - `ANTHROPIC_API_KEY` (optional, for AI recommendations)
+
+   **Important:** If you get 404 on `/api/auth/error` or "Unexpected token '<'" when signing up:
+   - Set `NEXTAUTH_URL` in Vercel to the **exact** URL shown in your browser (e.g. `https://social-9o04a8w2d-rachanas-projects-fffe6d5f.vercel.app`)
+   - Redeploy after changing env vars.
 4. Deploy. The app will be at `https://your-project.vercel.app`.
 5. **Custom domain:** Project → **Settings** → **Domains** → add your domain and follow DNS instructions.
 
