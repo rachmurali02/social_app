@@ -73,6 +73,34 @@ export async function sendPasswordResetEmail(
   }
 }
 
+function buildCalendarLinks(params: {
+  placeName: string
+  address: string
+  time: string
+  activity: string
+  inviterName: string
+}) {
+  const { placeName, address, time, activity, inviterName } = params
+  const title = `Meetup at ${placeName}`
+  const description = `${activity} meetup\n\nInvited by: ${inviterName}`
+  const startTime = new Date(`${new Date().toISOString().split('T')[0]}T${time}`)
+  const endTime = new Date(startTime)
+  endTime.setHours(endTime.getHours() + 2)
+  const formatDt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+  const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatDt(startTime)}/${formatDt(endTime)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(address)}`
+  const icalData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:${formatDt(startTime)}
+DTEND:${formatDt(endTime)}
+SUMMARY:${title.replace(/\n/g, '\\n')}
+DESCRIPTION:${description.replace(/\n/g, '\\n')}
+LOCATION:${address}
+END:VEVENT
+END:VCALENDAR`
+  return { googleUrl, icalData }
+}
+
 export async function sendMeetupInviteEmail(params: {
   to: string
   inviteeName?: string
@@ -110,6 +138,14 @@ export async function sendMeetupInviteEmail(params: {
         ? `<p><strong>Time:</strong> ${safeTime}</p>`
         : ''
 
+    const { googleUrl } = buildCalendarLinks({
+      placeName: safePlace,
+      address: safeAddress,
+      time: safeTime,
+      activity: safeActivity,
+      inviterName: displayInviter,
+    })
+
     await transporter.sendMail({
       from: EMAIL_FROM,
       to,
@@ -122,7 +158,15 @@ export async function sendMeetupInviteEmail(params: {
           <p><strong>Where:</strong> ${safeAddress}</p>
           ${timeLine}
           <p style="margin-top: 24px;">
-            You can see the invite and respond in the app:
+            Add to your calendar:
+          </p>
+          <p>
+            <a href="${googleUrl}" style="background:#34a853;color:#ffffff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block;margin-right:8px;">
+              Add to Google Calendar
+            </a>
+          </p>
+          <p style="margin-top: 16px;">
+            Or respond in the app:
           </p>
           <p>
             <a href="${invitationsUrl}" style="background:#4f46e5;color:#ffffff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block;">
@@ -139,6 +183,131 @@ export async function sendMeetupInviteEmail(params: {
     return true
   } catch (e) {
     console.error('Send meetup invite email:', e)
+    return false
+  }
+}
+
+export async function sendMeetupConfirmedToInvitee(params: {
+  to: string
+  inviteeName?: string
+  placeName?: string
+  address?: string
+  time?: string
+  activity?: string
+  inviterName?: string
+  mapUrl?: string
+  appUrl?: string
+}): Promise<boolean> {
+  const transporter = getTransporter()
+  if (!transporter) return false
+  const { to, inviteeName, placeName, address, time, activity, inviterName, mapUrl, appUrl } = params
+  try {
+    const displayName = inviteeName || to.split('@')[0]
+    const safePlace = placeName || 'your meetup'
+    const safeAddress = address || ''
+    const safeTime = time || ''
+    const safeActivity = activity || 'meetup'
+    const safeInviter = inviterName || 'a friend'
+    const baseUrl = (appUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+    const { googleUrl } = buildCalendarLinks({
+      placeName: safePlace,
+      address: safeAddress,
+      time: safeTime,
+      activity: safeActivity,
+      inviterName: safeInviter,
+    })
+    const timeLine = safeTime ? `<p><strong>Time:</strong> ${safeTime}</p>` : ''
+    const mapLine = mapUrl
+      ? `<p><a href="${mapUrl}" style="color:#6366f1;font-weight:600;">View on map</a></p>`
+      : ''
+
+    await transporter.sendMail({
+      from: EMAIL_FROM,
+      to,
+      subject: `You confirmed – add ${safePlace} to your calendar`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto;">
+          <h1 style="color: #059669; margin-bottom: 16px;">You’re confirmed ✓</h1>
+          <p>Hi ${displayName},</p>
+          <p>You accepted the invite to ${safeActivity} at <strong>${safePlace}</strong>.</p>
+          <p><strong>Where:</strong> ${safeAddress}</p>
+          ${timeLine}
+          ${mapLine}
+          <p style="margin-top: 24px;">Add it to your calendar:</p>
+          <p>
+            <a href="${googleUrl}" style="background:#34a853;color:#ffffff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block;">
+              Add to Google Calendar
+            </a>
+          </p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+        </div>
+      `,
+    })
+    return true
+  } catch (e) {
+    console.error('Send meetup confirmed to invitee:', e)
+    return false
+  }
+}
+
+export async function sendMeetupAcceptedToCreator(params: {
+  to: string
+  creatorName?: string
+  accepterName?: string
+  placeName?: string
+  address?: string
+  time?: string
+  activity?: string
+  appUrl?: string
+}): Promise<boolean> {
+  const transporter = getTransporter()
+  if (!transporter) return false
+  const { to, creatorName, accepterName, placeName, address, time, activity, appUrl } = params
+  try {
+    const displayCreator = creatorName || to.split('@')[0]
+    const safeAccepter = accepterName || 'Someone'
+    const safePlace = placeName || 'your meetup'
+    const safeAddress = address || ''
+    const safeTime = time || ''
+    const safeActivity = activity || 'meetup'
+    const baseUrl = (appUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+    const meetupsUrl = `${baseUrl}/meetups`
+    const { googleUrl } = buildCalendarLinks({
+      placeName: safePlace,
+      address: safeAddress,
+      time: safeTime,
+      activity: safeActivity,
+      inviterName: displayCreator,
+    })
+    const timeLine = safeTime ? `<p><strong>Time:</strong> ${safeTime}</p>` : ''
+
+    await transporter.sendMail({
+      from: EMAIL_FROM,
+      to,
+      subject: `${safeAccepter} accepted your invite to ${safePlace}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto;">
+          <h1 style="color: #4f46e5; margin-bottom: 16px;">${safeAccepter} is in! 🎉</h1>
+          <p>Hi ${displayCreator},</p>
+          <p><strong>${safeAccepter}</strong> accepted your invite to ${safeActivity} at <strong>${safePlace}</strong>.</p>
+          <p><strong>Where:</strong> ${safeAddress}</p>
+          ${timeLine}
+          <p style="margin-top: 24px;">Add to your calendar:</p>
+          <p>
+            <a href="${googleUrl}" style="background:#34a853;color:#ffffff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block;">
+              Add to Google Calendar
+            </a>
+          </p>
+          <p style="margin-top: 16px;">
+            <a href="${meetupsUrl}" style="color:#6366f1;font-weight:600;">View meetups</a>
+          </p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+        </div>
+      `,
+    })
+    return true
+  } catch (e) {
+    console.error('Send meetup accepted to creator:', e)
     return false
   }
 }

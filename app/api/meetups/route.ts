@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../lib/auth'
 import { prisma } from '../../../lib/db'
-import { sendMeetupInviteEmail } from '../../../lib/email'
+import {
+  sendMeetupInviteEmail,
+  sendMeetupConfirmedToInvitee,
+  sendMeetupAcceptedToCreator,
+} from '../../../lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -106,7 +110,14 @@ export async function POST(request: NextRequest) {
 
       const participant = await prisma.meetupParticipant.findUnique({
         where: { id: participantId },
-        include: { meetup: true },
+        include: {
+          user: { select: { id: true, email: true, name: true } },
+          meetup: {
+            include: {
+              creator: { select: { id: true, email: true, name: true } },
+            },
+          },
+        },
       })
 
       if (!participant) {
@@ -138,6 +149,41 @@ export async function POST(request: NextRequest) {
           },
         },
       })
+
+      if (action === 'confirm' && participant.user?.email && participant.meetup?.creator?.email) {
+        const prefs = (participant.meetup as any).preferences
+        const opts = (participant.meetup as any).selectedOption
+        const placeName = opts?.name || 'your meetup'
+        const address = opts?.address || ''
+        const time = prefs?.time || ''
+        const activity = prefs?.activity || 'meetup'
+        const inviterName = participant.meetup.creator.name || participant.meetup.creator.email
+        const accepterName = participant.user.name || participant.user.email
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+
+        sendMeetupConfirmedToInvitee({
+          to: participant.user.email,
+          inviteeName: participant.user.name || undefined,
+          placeName,
+          address,
+          time,
+          activity,
+          inviterName,
+          mapUrl: opts?.mapUrl,
+          appUrl: baseUrl,
+        }).catch((e) => console.error('Meetup confirmed to invitee:', e))
+
+        sendMeetupAcceptedToCreator({
+          to: participant.meetup.creator.email,
+          creatorName: inviterName,
+          accepterName,
+          placeName,
+          address,
+          time,
+          activity,
+          appUrl: baseUrl,
+        }).catch((e) => console.error('Meetup accepted to creator:', e))
+      }
 
       const allParticipants = await prisma.meetupParticipant.findMany({
         where: { meetupId: participant.meetupId },
@@ -172,6 +218,29 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'all'
+    const id = searchParams.get('id')
+
+    if (id) {
+      const meetup = await prisma.meetupSession.findFirst({
+        where: {
+          id,
+          OR: [
+            { creatorId: session.user.id },
+            { participants: { some: { userId: session.user.id } } },
+          ],
+        },
+        include: {
+          creator: { select: { id: true, email: true, name: true } },
+          participants: {
+            include: {
+              user: { select: { id: true, email: true, name: true } },
+            },
+          },
+        },
+      })
+      if (!meetup) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      return NextResponse.json({ meetup })
+    }
 
     if (type === 'invitations') {
       const invitations = await prisma.meetupParticipant.findMany({

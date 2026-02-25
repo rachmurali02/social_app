@@ -1,0 +1,164 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
+import { useRouter, useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { Calendar, MapPin, Clock, Users, ArrowLeft, Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
+import BottomNav from '../../components/BottomNav'
+
+type Meetup = {
+  id: string
+  status: string
+  preferences: { location?: string; time?: string; activity?: string }
+  selectedOption?: { name?: string; address?: string; mapUrl?: string }
+  creator: { id: string; name: string | null; email: string }
+  participants: { user: { id: string; name: string | null; email: string }; status: string }[]
+}
+
+function getPlacePhoto(placeName?: string, meetupId?: string) {
+  const seed = (placeName || meetupId || 'meetup').replace(/[^a-zA-Z0-9]/g, '-')
+  return `https://picsum.photos/seed/${seed}/800/300`
+}
+
+export default function MeetupDetailPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const params = useParams()
+  const id = params?.id as string
+  const [meetup, setMeetup] = useState<Meetup | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (status === 'unauthenticated') router.push('/login')
+  }, [status, router])
+
+  useEffect(() => {
+    if (session?.user?.id && id) {
+      fetch(`/api/meetups?id=${id}`)
+        .then((r) => r.json())
+        .then((d) => setMeetup(d.meetup || null))
+        .catch(() => setMeetup(null))
+        .finally(() => setLoading(false))
+    }
+  }, [session?.user?.id, id])
+
+  if (status === 'loading' || !session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    )
+  }
+
+  if (loading || !meetup) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gradient-to-b from-black via-neutral-950 to-black">
+        {loading ? (
+          <Loader2 className="animate-spin text-white" size={40} />
+        ) : (
+          <p className="text-white/80">Meetup not found</p>
+        )}
+        <Link href="/meetups" className="text-blue-400 hover:text-blue-300">
+          Back to Meetups
+        </Link>
+      </div>
+    )
+  }
+
+  const placeName = (meetup.selectedOption as { name?: string })?.name || meetup.preferences?.activity || 'Meetup'
+  const address = (meetup.selectedOption as { address?: string })?.address
+  const mapUrl = (meetup.selectedOption as { mapUrl?: string })?.mapUrl
+  const time = meetup.preferences?.time
+  const activity = meetup.preferences?.activity
+  const isCreator = meetup.creator.id === session?.user?.id
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-black via-neutral-950 to-black pb-24 pb-safe">
+      <div className="max-w-2xl mx-auto">
+        <Link
+          href="/meetups"
+          className="inline-flex items-center gap-2 text-white/90 hover:text-white p-4 -mx-4"
+        >
+          <ArrowLeft size={22} /> Back
+        </Link>
+
+        <div className="relative h-48 sm:h-56 bg-gradient-to-br from-blue-600/40 to-purple-600/40 rounded-2xl overflow-hidden mx-4 mb-6">
+          <Image
+            src={getPlacePhoto(placeName, meetup.id)}
+            alt=""
+            fill
+            className="object-cover mix-blend-overlay"
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent" />
+          <div className="absolute bottom-4 left-4 right-4">
+            <h1 className="text-2xl font-bold text-white">{placeName}</h1>
+            <p className="text-white/90">{activity || 'Meetup'}</p>
+            <span
+              className={`inline-block mt-2 px-2 py-1 rounded text-sm font-medium ${
+                meetup.status === 'confirmed' ? 'bg-emerald-500/30 text-emerald-200' : 'bg-amber-500/30 text-amber-200'
+              }`}
+            >
+              {meetup.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+            </span>
+          </div>
+        </div>
+
+        <div className="px-4 space-y-4">
+          {address && (
+            <div className="flex items-start gap-3 text-white/90">
+              <MapPin size={20} className="shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium">Location</p>
+                {mapUrl ? (
+                  <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+                    {address}
+                  </a>
+                ) : (
+                  <p>{address}</p>
+                )}
+              </div>
+            </div>
+          )}
+          {time && (
+            <div className="flex items-center gap-3 text-white/90">
+              <Clock size={20} className="shrink-0" />
+              <div>
+                <p className="font-medium">Time</p>
+                <p>{time}</p>
+              </div>
+            </div>
+          )}
+          <div className="flex items-start gap-3 text-white/90">
+            <Users size={20} className="shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium">Participants</p>
+              <p>
+                {isCreator ? 'Created by you' : `By ${meetup.creator.name || meetup.creator.email}`}
+              </p>
+              <ul className="mt-1 text-white/70 text-sm space-y-1">
+                {meetup.participants.map((p) => (
+                  <li key={p.user.id}>
+                    {p.user.name || p.user.email} — {p.status}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {!isCreator && meetup.participants.some((p) => p.user.id === session?.user?.id && p.status === 'pending') && (
+            <Link
+              href="/invitations"
+              className="block w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-medium text-center"
+            >
+              Respond to invitation
+            </Link>
+          )}
+        </div>
+      </div>
+      <BottomNav />
+    </div>
+  )
+}
