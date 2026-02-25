@@ -136,8 +136,14 @@ function CommunityContent() {
                 className="glass-panel rounded-2xl p-4 flex items-center justify-between gap-4 hover:bg-white/[0.08] transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
-                    {(user.name || user.email)[0].toUpperCase()}
+                  <div className="w-12 h-12 rounded-full bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center shrink-0">
+                    {(user.profile as { avatar?: string })?.avatar ? (
+                      <img src={(user.profile as { avatar: string }).avatar} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-white font-bold text-lg">
+                        {(user.name || user.email)[0].toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <div className="min-w-0">
                     <p className="text-white font-semibold truncate">

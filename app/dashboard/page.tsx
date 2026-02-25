@@ -175,8 +175,14 @@ export default function DashboardPage() {
                     className="bg-white/[0.04] hover:bg-white/[0.08] rounded-2xl p-4 border border-white/[0.06] transition-all duration-300"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
-                        {(friend.name || friend.email)[0].toUpperCase()}
+                      <div className="w-12 h-12 rounded-full bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center shrink-0">
+                        {friend.profile?.avatar ? (
+                          <img src={friend.profile.avatar} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-white font-bold text-lg">
+                            {(friend.name || friend.email)[0].toUpperCase()}
+                          </span>
+                        )}
                       </div>
                       <div>
                         <p className="text-white font-semibold">{friend.name || friend.email}</p>

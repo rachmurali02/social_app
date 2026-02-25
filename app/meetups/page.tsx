@@ -89,7 +89,7 @@ export default function MeetupsPage() {
               return (
                 <li key={m.id}>
                   <Link
-                    href={`/meetup/${m.id}`}
+                    href={`/meetups/${m.id}`}
                     className="group block glass-panel rounded-2xl overflow-hidden hover:bg-white/[0.08] hover:shadow-card-hover transition-all duration-300"
                   >
                     <div className="relative h-36 sm:h-44 overflow-hidden">
