@@ -1,13 +1,27 @@
-const RESEND_API_KEY = process.env.RESEND_API_KEY
-const EMAIL_FROM = process.env.EMAIL_FROM || 'MeetUp AI <onboarding@resend.dev>'
+import nodemailer from 'nodemailer'
+
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com'
+const SMTP_PORT = Number(process.env.SMTP_PORT) || 587
+const SMTP_USER = process.env.SMTP_USER
+const SMTP_PASS = process.env.SMTP_PASS
+const EMAIL_FROM = process.env.EMAIL_FROM || 'MeetUp AI <noreply@example.com>'
+
+function getTransporter() {
+  if (!SMTP_USER || !SMTP_PASS) return null
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+  })
+}
 
 export async function sendWelcomeEmail(to: string, name: string): Promise<boolean> {
-  if (!RESEND_API_KEY) return false
+  const transporter = getTransporter()
+  if (!transporter) return false
   try {
-    const { Resend } = await import('resend')
-    const resend = new Resend(RESEND_API_KEY)
     const displayName = name || to.split('@')[0]
-    const { error } = await resend.emails.send({
+    await transporter.sendMail({
       from: EMAIL_FROM,
       to,
       subject: 'Welcome to MeetUp AI',
@@ -21,10 +35,6 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<boolea
         </div>
       `,
     })
-    if (error) {
-      console.error('Welcome email error:', error)
-      return false
-    }
     return true
   } catch (e) {
     console.error('Send welcome email:', e)
@@ -37,12 +47,11 @@ export async function sendPasswordResetEmail(
   resetUrl: string,
   name?: string
 ): Promise<boolean> {
-  if (!RESEND_API_KEY) return false
+  const transporter = getTransporter()
+  if (!transporter) return false
   try {
-    const { Resend } = await import('resend')
-    const resend = new Resend(RESEND_API_KEY)
     const displayName = name || to.split('@')[0]
-    const { error } = await resend.emails.send({
+    await transporter.sendMail({
       from: EMAIL_FROM,
       to,
       subject: 'Reset your MeetUp AI password',
@@ -57,10 +66,6 @@ export async function sendPasswordResetEmail(
         </div>
       `,
     })
-    if (error) {
-      console.error('Password reset email error:', error)
-      return false
-    }
     return true
   } catch (e) {
     console.error('Send password reset email:', e)
