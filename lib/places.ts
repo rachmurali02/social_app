@@ -35,16 +35,47 @@ export async function geocode(query: string): Promise<{ lat: number; lon: number
   }
 }
 
-function tagValue(el: { tags?: Record<string, string> }, key: string): string {
+type OverpassElement = {
+  tags?: Record<string, string>
+  lat?: number
+  lon?: number
+  center?: {
+    lat: number
+    lon: number
+  }
+}
+
+function tagValue(el: OverpassElement, key: string): string {
   return el.tags?.[key] || ''
 }
 
-function buildAddress(el: { tags?: Record<string, string>; lat?: number; lon?: number }): string {
+function getCoordinates(el: OverpassElement): { lat: number; lon: number } | null {
+  if (typeof el.lat === 'number' && typeof el.lon === 'number') {
+    return { lat: el.lat, lon: el.lon }
+  }
+  if (el.center && typeof el.center.lat === 'number' && typeof el.center.lon === 'number') {
+    return { lat: el.center.lat, lon: el.center.lon }
+  }
+  return null
+}
+
+function buildAddress(el: OverpassElement): string {
   const t = el.tags || {}
   const parts = [t['addr:street'], t['addr:housenumber'], t['addr:city'], t['addr:country']].filter(Boolean)
   if (parts.length) return parts.join(', ')
-  if (el.lat != null && el.lon != null) return `${el.lat.toFixed(4)}, ${el.lon.toFixed(4)}`
+  const coords = getCoordinates(el)
+  if (coords) return `${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`
   return ''
+}
+
+type PlaceIntent = 'coffee' | 'drinks' | 'dessert' | 'default'
+
+function classifyIntent(activity: string): PlaceIntent {
+  const lower = activity.toLowerCase()
+  if (/[cç]afe|coffee|matcha|latte|espresso/.test(lower)) return 'coffee'
+  if (/bar|cocktail|wine|brewery|drinks?/.test(lower)) return 'drinks'
+  if (/dessert|ice cream|gelato|sweet/.test(lower)) return 'dessert'
+  return 'default'
 }
 
 export async function fetchNearbyPlaces(
@@ -55,19 +86,49 @@ export async function fetchNearbyPlaces(
   excludeNames: string[] = []
 ): Promise<PlaceResult[]> {
   const radiusM = Math.min(radiusKm * 1000, 5000)
-  const activityLower = activity.toLowerCase()
-  let amenityFilter = 'restaurant|cafe|bar|food_court|fast_food'
-  if (activityLower.includes('coffee') || activityLower.includes('cafe')) {
-    amenityFilter = 'cafe|restaurant'
-  } else if (activityLower.includes('drink') || activityLower.includes('bar')) {
-    amenityFilter = 'bar|pub|restaurant'
-  }
+  const intent = classifyIntent(activity)
 
-  const query = `
+  let query: string
+  if (intent === 'coffee') {
+    // Cafes, coffee shops, and roasters
+    query = `
 [out:json][timeout:15];
-node(around:${radiusM},${lat},${lon})["amenity"~"${amenityFilter}"];
-out body;
-  `.trim()
+(
+  nwr["amenity"="cafe"](around:${radiusM},${lat},${lon});
+  nwr["shop"="coffee"](around:${radiusM},${lat},${lon});
+  nwr["craft"="coffee_roaster"](around:${radiusM},${lat},${lon});
+);
+out center tags;
+    `.trim()
+  } else if (intent === 'drinks') {
+    // Bars and pubs (optionally some restaurants)
+    query = `
+[out:json][timeout:15];
+(
+  nwr["amenity"~"^(bar|pub)$"](around:${radiusM},${lat},${lon});
+);
+out center tags;
+    `.trim()
+  } else if (intent === 'dessert') {
+    // Ice cream and sweet shops
+    query = `
+[out:json][timeout:15];
+(
+  nwr["amenity"="ice_cream"](around:${radiusM},${lat},${lon});
+  nwr["shop"~"^(confectionery|bakery)$"](around:${radiusM},${lat},${lon});
+);
+out center tags;
+    `.trim()
+  } else {
+    // General food/drink meetup
+    query = `
+[out:json][timeout:15];
+(
+  nwr["amenity"~"^(restaurant|cafe|bar|pub|fast_food|food_court)$"](around:${radiusM},${lat},${lon});
+);
+out center tags;
+    `.trim()
+  }
 
   try {
     const res = await fetch(OVERPASS_URL, {
@@ -76,7 +137,7 @@ out body;
       body: `data=${encodeURIComponent(query)}`,
     })
     const data = await res.json()
-    const elements = data.elements || []
+    const elements: OverpassElement[] = data.elements || []
     const excludeSet = new Set(excludeNames.map((n) => n.toLowerCase()))
     const results: PlaceResult[] = []
     const seen = new Set<string>()
@@ -86,8 +147,10 @@ out body;
       if (seen.has(name.toLowerCase()) || excludeSet.has(name.toLowerCase())) continue
       seen.add(name.toLowerCase())
 
-      const lat2 = el.lat!
-      const lon2 = el.lon!
+      const coords = getCoordinates(el)
+      if (!coords) continue
+      const lat2 = coords.lat
+      const lon2 = coords.lon
       const address = buildAddress(el) || `${lat2.toFixed(4)}, ${lon2.toFixed(4)}`
       const mapUrl = `https://www.openstreetmap.org/?mlat=${lat2}&mlon=${lon2}#map=17/${lat2}/${lon2}`
 
