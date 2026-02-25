@@ -209,9 +209,8 @@ export default function MeetupPage() {
       }))
     } catch (error) {
       console.error('Error fetching places:', error)
-      const msg =
-        (error && typeof error === 'object' && 'message' in error && (error as Error).message) ||
-        'No places found. Try a different location or larger radius.'
+      const msg: string =
+        error instanceof Error ? error.message : 'No places found. Try a different location or larger radius.'
       setPlaceError(msg)
     }
     setLoading(false)
