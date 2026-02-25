@@ -10,7 +10,7 @@ function FriendsContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const isSearch = searchParams.get('search') === 'true'
+  const isSearch = searchParams?.get('search') === 'true'
 
   const [friends, setFriends] = useState<any[]>([])
   const [searchResults, setSearchResults] = useState<any[]>([])
