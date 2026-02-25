@@ -1,4 +1,6 @@
 #!/bin/bash
+# Skip on Vercel/CI – host controls Node version
+[ -n "$VERCEL" ] || [ -n "$CI" ] && exit 0
 
 # Function to install nvm and Node.js
 install_nvm() {
