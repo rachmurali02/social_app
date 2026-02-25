@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Navigation } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
+import LocationAutocomplete from '../components/LocationAutocomplete'
 
 interface UserPreferences {
   location: string
@@ -55,6 +56,7 @@ export default function MeetupPage() {
   })
 
   const [loading, setLoading] = useState(false)
+  const [placeError, setPlaceError] = useState('')
   const [defaultLocation, setDefaultLocation] = useState('')
   const [locationLoading, setLocationLoading] = useState(false)
   const [touchStart, setTouchStart] = useState(0)
@@ -146,6 +148,7 @@ export default function MeetupPage() {
 
   const handleSubmitPreferences = async (prefs: Partial<UserPreferences>) => {
     setLoading(true)
+    setPlaceError('')
     const preferences: UserPreferences = {
       location: prefs.location || '',
       radius: prefs.radius || 5,
@@ -205,39 +208,11 @@ export default function MeetupPage() {
         activeTile: 0,
       }))
     } catch (error) {
-      console.error('Error fetching places, using fallbacks:', error)
-      const fallbackPlaces = [
-        {
-          name: 'The Coffee Collective',
-          address: '123 Main St, Dubai',
-          rating: 4.8,
-          popularity: '80% of users pick this nearby coffee shop',
-          reason: 'Perfect for casual meetups with great ambiance',
-          mapUrl: 'https://maps.google.com/?q=Coffee+Collective+Dubai',
-          isRecommended: true,
-        },
-        {
-          name: 'Garden Terrace Café',
-          address: '456 Park Ave, Dubai',
-          rating: 4.6,
-          popularity: '65% prefer outdoor seating here',
-          reason: 'Beautiful outdoor space, ideal for afternoon chats',
-          mapUrl: 'https://maps.google.com/?q=Garden+Terrace+Dubai',
-        },
-      ]
-
-      await fetch('/api/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update', sessionId, options: fallbackPlaces }),
-      })
-
-      setState((prev) => ({
-        ...prev,
-        options: fallbackPlaces,
-        step: 'options',
-        activeTile: 0,
-      }))
+      console.error('Error fetching places:', error)
+      const msg =
+        (error && typeof error === 'object' && 'message' in error && (error as Error).message) ||
+        'No places found. Try a different location or larger radius.'
+      setPlaceError(msg)
     }
     setLoading(false)
   }
@@ -395,12 +370,15 @@ END:VCALENDAR`
                       <MapPin className="inline mr-2" size={20} />
                       Location
                     </label>
+                    {placeError && (
+                      <p className="text-amber-300 text-sm mb-2">{placeError}</p>
+                    )}
                     <div className="flex gap-2">
-                      <input
+                      <LocationAutocomplete
                         name="location"
                         key={defaultLocation}
                         defaultValue={defaultLocation || ''}
-                        placeholder="e.g. Dubai Marina, San Francisco"
+                        placeholder="e.g. Virginia, USA or Dubai Marina"
                         className="flex-1 p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                       />

@@ -40,10 +40,43 @@ export async function reverseGeocode(lat: number, lon: number): Promise<string |
   }
 }
 
+export interface GeocodeSuggestion {
+  display_name: string
+  lat: number
+  lon: number
+  place_id: number
+}
+
+export async function geocodeSuggestions(query: string, limit = 5): Promise<GeocodeSuggestion[]> {
+  if (!query || query.trim().length < 2) return []
+  try {
+    const params = new URLSearchParams({
+      q: query.trim(),
+      format: 'json',
+      limit: String(limit),
+      addressdetails: '1',
+    })
+    const res = await fetch(`${NOMINATIM_URL}?${params}`, {
+      headers: { 'User-Agent': USER_AGENT },
+    })
+    const data = await res.json()
+    if (!Array.isArray(data)) return []
+    return data.map((item: { display_name: string; lat: string; lon: string; place_id: number }) => ({
+      display_name: item.display_name,
+      lat: parseFloat(item.lat),
+      lon: parseFloat(item.lon),
+      place_id: item.place_id,
+    }))
+  } catch (e) {
+    console.error('Geocode suggestions error:', e)
+    return []
+  }
+}
+
 export async function geocode(query: string): Promise<{ lat: number; lon: number } | null> {
   try {
     const params = new URLSearchParams({
-      q: query,
+      q: query.trim(),
       format: 'json',
       limit: '1',
     })
