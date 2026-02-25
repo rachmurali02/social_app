@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Users, Mail, Lock, UserPlus } from 'lucide-react'
+import { Users, Mail, Lock, UserPlus, Mic, Sparkles } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -57,36 +57,74 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4 sm:p-6">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-6">
-          <h1 className="text-4xl sm:text-5xl font-black text-white mb-2 drop-shadow-lg">MeetUp AI</h1>
-          <p className="text-white/90 text-base sm:text-lg">Plan meetups that actually happen.</p>
-          <ul className="text-white/70 text-sm mt-3 space-y-1">
-            <li>• Find spots nearby (no AI tokens)</li>
-            <li>• Invite friends &amp; sync plans</li>
-            <li>• One place, one time</li>
-          </ul>
-        </div>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 px-4 py-6 sm:px-6">
+      <div className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="absolute -top-32 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-pink-500/40 to-yellow-400/20 blur-3xl" />
+        <div className="absolute -bottom-40 right-0 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/40 to-emerald-400/20 blur-3xl" />
+      </div>
 
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl">
-          <div className="flex gap-4 mb-6">
+      <div className="relative z-10 max-w-md mx-auto flex flex-col gap-6">
+        <header className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-2xl bg-white/15 border border-white/30 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-black/30">
+              M
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-white/60">MeetUp AI</p>
+              <p className="text-sm text-white/80">Smart social coordination</p>
+            </div>
+          </div>
+          <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-[11px] font-medium tracking-wide text-white/80">
+            <Sparkles size={14} /> Plan your next meetup
+          </span>
+        </header>
+
+        <main className="bg-white/10 backdrop-blur-2xl rounded-3xl px-5 py-6 sm:px-7 sm:py-7 border border-white/25 shadow-[0_24px_80px_rgba(15,23,42,0.8)]">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex flex-col gap-1">
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-white/60 uppercase">
+                Step 1 of 3
+              </p>
+              <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                Tell me who&apos;s coming
+              </h1>
+              <p className="text-sm text-white/80">
+                Sign in so we can save your crew and favorite spots.
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center justify-center">
+              <div className="relative h-16 w-16 rounded-3xl bg-gradient-to-br from-yellow-400 to-pink-500 flex items-center justify-center shadow-[0_0_40px_rgba(251,191,36,0.6)]">
+                <div className="h-10 w-10 rounded-2xl bg-black/20 flex items-center justify-center text-white">
+                  <Mic size={22} />
+                </div>
+                <div className="absolute inset-0 rounded-3xl border border-white/40 border-dashed animate-pulse" />
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4 h-1.5 rounded-full bg-white/10 overflow-hidden">
+            <div className="h-full w-1/3 rounded-full bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500" />
+          </div>
+
+          <div className="inline-flex mb-6 rounded-full bg-white/10 p-1 border border-white/15">
             <button
+              type="button"
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-3 rounded-xl font-bold transition-all ${
+              className={`flex-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 isLogin
-                  ? 'bg-white text-purple-900'
-                  : 'bg-white/10 text-white hover:bg-white/20'
+                  ? 'bg-white text-purple-900 shadow-[0_10px_30px_rgba(15,23,42,0.6)]'
+                  : 'text-white/80 hover:text-white'
               }`}
             >
               Login
             </button>
             <button
+              type="button"
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-3 rounded-xl font-bold transition-all ${
+              className={`flex-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 !isLogin
-                  ? 'bg-white text-purple-900'
-                  : 'bg-white/10 text-white hover:bg-white/20'
+                  ? 'bg-white text-purple-900 shadow-[0_10px_30px_rgba(15,23,42,0.6)]'
+                  : 'text-white/80 hover:text-white'
               }`}
             >
               Sign Up
@@ -96,36 +134,36 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div>
-                <label className="block text-white font-semibold mb-2">
-                  <Users className="inline mr-2" size={20} />
+                <label className="flex items-center gap-2 text-white font-semibold mb-2 text-sm">
+                  <Users size={18} />
                   Name (optional)
                 </label>
                 <input
                   name="name"
                   type="text"
-                  className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="Your name"
+                  className="w-full h-12 rounded-2xl bg-white/8 border border-white/25 px-4 text-sm text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-yellow-400/70 focus:border-transparent"
+                  placeholder="What should friends call you?"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-white font-semibold mb-2">
-                <Mail className="inline mr-2" size={20} />
+              <label className="flex items-center gap-2 text-white font-semibold mb-2 text-sm">
+                <Mail size={18} />
                 Email
               </label>
               <input
                 name="email"
                 type="email"
                 required
-                className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full h-12 rounded-2xl bg-white/8 border border-white/25 px-4 text-sm text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-yellow-400/70 focus:border-transparent"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label className="block text-white font-semibold mb-2">
-                <Lock className="inline mr-2" size={20} />
+              <label className="flex items-center gap-2 text-white font-semibold mb-2 text-sm">
+                <Lock size={18} />
                 Password
               </label>
               <input
@@ -133,20 +171,20 @@ export default function LoginPage() {
                 type="password"
                 required
                 minLength={6}
-                className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full h-12 rounded-2xl bg-white/8 border border-white/25 px-4 text-sm text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-yellow-400/70 focus:border-transparent"
                 placeholder={isLogin ? 'Your password' : 'At least 6 characters'}
               />
             </div>
 
             {error && (
               <div className="space-y-2">
-                <div className="bg-red-500/20 border border-red-400/50 rounded-xl p-4 text-red-200">
+                <div className="bg-red-500/20 border border-red-400/50 rounded-2xl px-4 py-3 text-red-100 text-sm">
                   {error}
                 </div>
                 {isLogin && (
                   <Link
                     href="/forgot-password"
-                    className="block text-center text-blue-200 hover:text-blue-100 text-sm font-medium min-h-[44px] flex items-center justify-center"
+                    className="block text-center text-blue-200 hover:text-blue-100 text-xs font-medium min-h-[40px] flex items-center justify-center"
                   >
                     Forgot password?
                   </Link>
@@ -157,22 +195,28 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-blue-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="mt-1 w-full h-13 sm:h-14 rounded-full bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 text-white font-semibold text-sm sm:text-base tracking-wide flex items-center justify-center gap-2 shadow-[0_18px_45px_rgba(126,34,206,0.7)] hover:shadow-[0_22px_60px_rgba(126,34,206,0.9)] hover:translate-y-[-1px] active:translate-y-[1px] transition-all disabled:opacity-60 disabled:hover:shadow-none"
             >
               {loading ? (
-                'Processing...'
+                'Setting things up...'
               ) : isLogin ? (
                 <>
-                  <Lock size={20} /> Login
+                  <Lock size={18} />
+                  Enter the party
                 </>
               ) : (
                 <>
-                  <UserPlus size={20} /> Sign Up
+                  <UserPlus size={18} />
+                  Create my account
                 </>
               )}
             </button>
           </form>
-        </div>
+
+          <p className="mt-4 text-[11px] text-center text-white/60">
+            By continuing you agree to hang out respectfully. No spam, just good meetups.
+          </p>
+        </main>
       </div>
     </div>
   )
