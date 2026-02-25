@@ -133,11 +133,6 @@ export async function sendMeetupInviteEmail(params: {
     const baseUrl = (appUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
     const invitationsUrl = `${baseUrl}/invitations`
 
-    const timeLine =
-      safeTime.trim().length > 0
-        ? `<p><strong>Time:</strong> ${safeTime}</p>`
-        : ''
-
     const { googleUrl } = buildCalendarLinks({
       placeName: safePlace,
       address: safeAddress,
@@ -146,18 +141,27 @@ export async function sendMeetupInviteEmail(params: {
       inviterName: displayInviter,
     })
 
+    const subject =
+      safePlace !== 'a meetup spot'
+        ? `1 pending invite from ${displayInviter} – ${safeActivity} at ${safePlace}`
+        : `1 pending invite from ${displayInviter}`
+
     await transporter.sendMail({
       from: EMAIL_FROM,
       to,
-      subject: `You’re invited to a meetup at ${safePlace}`,
+      subject,
       html: `
         <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto;">
-          <h1 style="color: #4f46e5; margin-bottom: 16px;">You’re invited 🎉</h1>
+          <h1 style="color: #4f46e5; margin-bottom: 16px;">You have 1 pending invite from ${displayInviter}</h1>
           <p>Hi ${displayInvitee},</p>
-          <p>${displayInviter} invited you to ${safeActivity} at <strong>${safePlace}</strong>.</p>
-          <p><strong>Where:</strong> ${safeAddress}</p>
-          ${timeLine}
-          <p style="margin-top: 24px;">
+          <p><strong>${displayInviter}</strong> invited you to a meetup. Summary:</p>
+          <div style="background:#f3f4f6;border-radius:12px;padding:16px;margin:16px 0;">
+            <p style="margin:0 0 8px 0;"><strong>Activity:</strong> ${safeActivity}</p>
+            <p style="margin:0 0 8px 0;"><strong>Place:</strong> ${safePlace}</p>
+            ${safeAddress ? `<p style="margin:0 0 8px 0;"><strong>Address:</strong> ${safeAddress}</p>` : ''}
+            ${safeTime ? `<p style="margin:0;"><strong>Time:</strong> ${safeTime}</p>` : ''}
+          </div>
+          <p style="margin-top: 20px;">
             Add to your calendar:
           </p>
           <p>
