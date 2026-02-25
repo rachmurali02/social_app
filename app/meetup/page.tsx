@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2 } from 'lucide-react'
+import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Navigation } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
 
@@ -55,6 +55,8 @@ export default function MeetupPage() {
   })
 
   const [loading, setLoading] = useState(false)
+  const [defaultLocation, setDefaultLocation] = useState('')
+  const [locationLoading, setLocationLoading] = useState(false)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
 
@@ -69,6 +71,33 @@ export default function MeetupPage() {
       fetchFriends()
     }
   }, [session])
+
+  useEffect(() => {
+    if (!session?.user?.id) return
+    const init = async () => {
+      const r = await fetch('/api/profile')
+      const d = await r.json().catch(() => ({}))
+      const profileLoc = d.profile?.location?.trim()
+      if (profileLoc) {
+        setDefaultLocation(profileLoc)
+        return
+      }
+      if (!navigator.geolocation) return
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const rev = await fetch(
+              `/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+            )
+            const revd = await rev.json()
+            if (revd.displayName) setDefaultLocation(revd.displayName)
+          } catch {}
+        },
+        () => {}
+      )
+    }
+    init()
+  }, [session?.user?.id])
 
   const fetchFriends = async () => {
     try {
@@ -366,12 +395,46 @@ END:VCALENDAR`
                       <MapPin className="inline mr-2" size={20} />
                       Location
                     </label>
-                    <input
-                      name="location"
-                      defaultValue="Dubai Marina"
-                      className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      required
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        name="location"
+                        key={defaultLocation}
+                        defaultValue={defaultLocation || ''}
+                        placeholder="e.g. Dubai Marina, San Francisco"
+                        className="flex-1 p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!navigator.geolocation) return
+                          setLocationLoading(true)
+                          navigator.geolocation.getCurrentPosition(
+                            async (pos) => {
+                              try {
+                                const r = await fetch(
+                                  `/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+                                )
+                                const d = await r.json()
+                                if (d.displayName) setDefaultLocation(d.displayName)
+                              } finally {
+                                setLocationLoading(false)
+                              }
+                            },
+                            () => setLocationLoading(false)
+                          )
+                        }}
+                        disabled={locationLoading}
+                        className="shrink-0 p-4 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 flex items-center"
+                        title="Use my location"
+                      >
+                        {locationLoading ? (
+                          <Loader2 size={22} className="animate-spin" />
+                        ) : (
+                          <Navigation size={22} />
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-white font-semibold mb-2">

@@ -12,6 +12,34 @@ export interface PlaceResult {
   isRecommended?: boolean
 }
 
+const NOMINATIM_REVERSE = 'https://nominatim.openstreetmap.org/reverse'
+
+export async function reverseGeocode(lat: number, lon: number): Promise<string | null> {
+  try {
+    const params = new URLSearchParams({
+      lat: String(lat),
+      lon: String(lon),
+      format: 'json',
+      zoom: '10',
+    })
+    const res = await fetch(`${NOMINATIM_REVERSE}?${params}`, {
+      headers: { 'User-Agent': USER_AGENT },
+    })
+    const data = await res.json()
+    const addr = data.address || {}
+    const parts = [
+      addr.city || addr.town || addr.village || addr.municipality,
+      addr.state || addr.county,
+      addr.country,
+    ].filter(Boolean)
+    if (parts.length) return parts.join(', ')
+    return data.display_name || null
+  } catch (e) {
+    console.error('Reverse geocode error:', e)
+    return null
+  }
+}
+
 export async function geocode(query: string): Promise<{ lat: number; lon: number } | null> {
   try {
     const params = new URLSearchParams({

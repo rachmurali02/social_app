@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { User, ArrowLeft, Save, Lock, Eye, EyeOff } from 'lucide-react'
+import { User, ArrowLeft, Save, Lock, Eye, EyeOff, MapPin, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function ProfilePage() {
@@ -19,6 +19,8 @@ export default function ProfilePage() {
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [passwordError, setPasswordError] = useState('')
   const [passwordSuccess, setPasswordSuccess] = useState(false)
+  const [location, setLocation] = useState('')
+  const [locationLoading, setLocationLoading] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -32,6 +34,15 @@ export default function ProfilePage() {
     }
   }, [session])
 
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch('/api/profile')
+        .then((r) => r.json())
+        .then((d) => setLocation(d.profile?.location || ''))
+        .catch(() => {})
+    }
+  }, [session?.user?.id])
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -39,7 +50,7 @@ export default function ProfilePage() {
       const response = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, location }),
       })
       if (response.ok) {
         router.push('/dashboard')
@@ -134,6 +145,47 @@ export default function ProfilePage() {
                 className="w-full min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
                 placeholder="Your name"
               />
+            </div>
+
+            <div>
+              <label className="block text-white font-semibold mb-2 flex items-center gap-2">
+                <MapPin size={18} /> Location (used for meetup suggestions)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="flex-1 min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
+                  placeholder="e.g. Dubai Marina, San Francisco"
+                />
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!navigator.geolocation) return
+                    setLocationLoading(true)
+                    navigator.geolocation.getCurrentPosition(
+                      async (pos) => {
+                        try {
+                          const r = await fetch(
+                            `/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+                          )
+                          const d = await r.json()
+                          if (d.displayName) setLocation(d.displayName)
+                        } finally {
+                          setLocationLoading(false)
+                        }
+                      },
+                      () => setLocationLoading(false)
+                    )
+                  }}
+                  disabled={locationLoading}
+                  className="shrink-0 min-h-[48px] px-4 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {locationLoading ? <Loader2 size={20} className="animate-spin" /> : <MapPin size={20} />}
+                  Use my location
+                </button>
+              </div>
             </div>
 
             <button

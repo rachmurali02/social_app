@@ -155,9 +155,6 @@ touch .env.local
 Open `.env.local` and add:
 
 ```bash
-# Anthropic API Key (for AI recommendations)
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-
 # Database Connection String
 # IMPORTANT: URL-encode special characters in password!
 # Example: password "abc!123" becomes "abc%21123"
@@ -170,7 +167,6 @@ NEXTAUTH_URL="http://localhost:3000"
 ```
 
 **Important:**
-- Replace `your_anthropic_api_key_here` with your actual Anthropic API key (get from https://console.anthropic.com/)
 - **For Supabase:** Get your connection string from Supabase Dashboard → Settings → Database → Connection string (URI)
 - **URL-encode your password:** If your password contains special characters like `!`, `@`, `#`, etc., you must URL-encode them:
   - `!` becomes `%21`

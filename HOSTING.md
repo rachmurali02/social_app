@@ -16,7 +16,6 @@ You can host this app so anyone can use it at a URL (e.g. `https://yourapp.com`)
    - `DATABASE_URL` (Supabase/Neon connection string; use **Session/direct** for Supabase)
    - `NEXTAUTH_SECRET` (run `openssl rand -base64 32` to generate)
    - `NEXTAUTH_URL` = your **exact** deployment URL, e.g. `https://social-xxx.vercel.app` (no trailing slash). Must match the URL you use to open the app. For preview deployments, use that preview URL or your production URL.
-   - `ANTHROPIC_API_KEY` (optional, for AI recommendations)
 
    **Important:** If you get 404 on `/api/auth/error` or "Unexpected token '<'" when signing up:
    - Set `NEXTAUTH_URL` in Vercel to the **exact** URL shown in your browser (e.g. `https://social-9o04a8w2d-rachanas-projects-fffe6d5f.vercel.app`)
@@ -36,7 +35,7 @@ You can host this app so anyone can use it at a URL (e.g. `https://yourapp.com`)
 1. Push code to **GitHub**.
 2. Go to [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub** → select repo.
 3. Add **PostgreSQL** in the same project (or keep using Supabase/Neon and only set `DATABASE_URL`).
-4. In **Variables**, set `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (e.g. `https://your-app.up.railway.app`), and optionally `ANTHROPIC_API_KEY`.
+4. In **Variables**, set `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (e.g. `https://your-app.up.railway.app`).
 5. Under **Settings** → **Networking** → **Public Networking**, generate a domain. Optionally add your own domain.
 
 ---
@@ -51,7 +50,7 @@ You can host this app so anyone can use it at a URL (e.g. `https://yourapp.com`)
 1. Push code to **GitHub**.
 2. Go to [render.com](https://render.com) → **New** → **Web Service** → connect repo.
 3. **Build:** `npm install && npm run build`. **Start:** `npm start`.
-4. Add **Environment Variables:** `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (your Render URL), and optionally `ANTHROPIC_API_KEY`.
+4. Add **Environment Variables:** `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (your Render URL).
 5. Deploy. Add a custom domain under **Settings** → **Custom Domain** if you have one.
 
 ---

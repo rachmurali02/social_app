@@ -45,7 +45,7 @@ See **[HOSTING.md](./HOSTING.md)** for step-by-step options so anyone can use th
 1. Push your code to GitHub
 2. Set up a PostgreSQL database (Supabase or Neon; use the **Session/direct** connection string)
 3. Import your repository in [Vercel](https://vercel.com)
-4. Add environment variables: `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (your Vercel URL), and optionally `ANTHROPIC_API_KEY`
+4. Add environment variables: `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (your Vercel URL)
 5. Deploy — app will be at `https://your-project.vercel.app`
 
 ## Features
