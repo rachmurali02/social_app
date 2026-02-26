@@ -41,18 +41,6 @@ export default function DashboardPage() {
     }
   }
 
-  const fetchFriends = async () => {
-    try {
-      const response = await fetch('/api/friends?action=list')
-      const data = await response.json()
-      setFriends(data.friends || [])
-    } catch (error) {
-      console.error('Error fetching friends:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const fetchPendingInvitations = async () => {
     try {
       const response = await fetch('/api/meetups?type=invitations')
