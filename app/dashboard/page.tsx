@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { Users, User, LogOut, Calendar, Search, UserPlus, Bell } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -69,31 +70,32 @@ export default function DashboardPage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-100">
-        <div className="text-neutral-600 text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-950">
+        <div className="text-neutral-600 dark:text-neutral-400 text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-neutral-100">
+    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950">
       <div className="relative z-10 p-4 sm:p-6 pt-[max(1rem,env(safe-area-inset-top))] pb-24 min-h-screen">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
             <div className="min-w-0">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-neutral-900 mb-1 sm:mb-2 truncate">MeetUp AI</h1>
-              <p className="text-neutral-600 text-sm sm:text-base truncate">Hello, {session.user?.name || session.user?.email}!</p>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-neutral-900 dark:text-white mb-1 sm:mb-2 truncate">MeetUp AI</h1>
+              <p className="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base truncate">Hello, {session.user?.name || session.user?.email}!</p>
             </div>
             <div className="flex gap-2 sm:gap-4 shrink-0">
+              <ThemeToggle />
               <Link
                 href="/profile"
-                className="flex-1 sm:flex-none min-h-[44px] glass-panel px-4 sm:px-6 py-3 rounded-2xl text-neutral-900 hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base font-medium"
+                className="flex-1 sm:flex-none min-h-[44px] glass-panel px-4 sm:px-6 py-3 rounded-2xl text-neutral-900 dark:text-white hover:bg-white dark:hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base font-medium"
               >
                 <User size={20} /> Profile
               </Link>
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}
-                className="flex-1 sm:flex-none min-h-[44px] glass-panel px-4 sm:px-6 py-3 rounded-2xl text-neutral-900 hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base font-medium"
+                className="flex-1 sm:flex-none min-h-[44px] glass-panel px-4 sm:px-6 py-3 rounded-2xl text-neutral-900 dark:text-white hover:bg-white dark:hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base font-medium"
               >
                 <LogOut size={20} /> Logout
               </button>

@@ -23,9 +23,12 @@
     image-rendering: -webkit-optimize-contrast;
   }
   .glass-panel {
-    @apply backdrop-blur-xl bg-white/80;
+    @apply backdrop-blur-xl bg-white/80 dark:bg-white/5;
     border: 1px solid rgba(0,0,0,0.06);
     box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .dark .glass-panel {
+    border-color: rgba(255,255,255,0.08);
   }
   .btn-primary {
     @apply bg-gradient-to-r from-orange-500 to-purple-600 text-white font-semibold rounded-xl px-6 py-3 hover:opacity-95 transition-opacity shadow-lg shadow-orange-500/25;

@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Users, Mail, Lock, UserPlus, Mic, Sparkles } from 'lucide-react'
+import ThemeToggle from './components/ThemeToggle'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -60,7 +61,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-neutral-100 px-4 py-6 sm:px-6">
+    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 px-4 py-6 sm:px-6">
       <div className="relative z-10 max-w-md mx-auto flex flex-col gap-6">
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -68,25 +69,28 @@ export default function LoginPage() {
               M
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">MeetUp AI</p>
-              <p className="text-sm text-neutral-600">Smart social coordination</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">MeetUp AI</p>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">Smart social coordination</p>
             </div>
           </div>
-          <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-3 py-1 text-[11px] font-medium tracking-wide text-neutral-600">
-            <Sparkles size={14} /> Plan your next meetup
-          </span>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-1 text-[11px] font-medium tracking-wide text-neutral-600 dark:text-neutral-400">
+              <Sparkles size={14} /> Plan your next meetup
+            </span>
+          </div>
         </header>
 
         <main className="glass-panel rounded-3xl px-5 py-6 sm:px-7 sm:py-7 shadow-lg">
           <div className="flex items-center justify-between mb-5">
             <div className="flex flex-col gap-1">
-              <p className="text-[11px] font-semibold tracking-[0.3em] text-neutral-500 uppercase">
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-neutral-500 dark:text-neutral-400 uppercase">
                 Step 1 of 3
               </p>
-              <h1 className="text-2xl sm:text-3xl font-black text-neutral-900 leading-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white leading-tight">
                 Tell me who&apos;s coming
               </h1>
-              <p className="text-sm text-neutral-600">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
                 Sign in so we can save your crew and favorite spots.
               </p>
             </div>
@@ -127,7 +131,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div>
-                <label className="flex items-center gap-2 text-neutral-900 font-semibold mb-2 text-sm">
+                <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold mb-2 text-sm">
                   <Users size={18} />
                   Name
                 </label>
@@ -135,14 +139,14 @@ export default function LoginPage() {
                   name="name"
                   type="text"
                   required
-                  className="w-full h-12 rounded-2xl bg-white border border-neutral-200 px-4 text-sm text-neutral-900 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-colors"
+                  className="w-full h-12 rounded-2xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 px-4 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-colors"
                   placeholder="What should friends call you?"
                 />
               </div>
             )}
 
             <div>
-              <label className="flex items-center gap-2 text-neutral-900 font-semibold mb-2 text-sm">
+              <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold mb-2 text-sm">
                 <Mail size={18} />
                 Email
               </label>
@@ -150,13 +154,13 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 required
-                className="w-full h-12 rounded-2xl bg-white border border-neutral-200 px-4 text-sm text-neutral-900 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-colors"
+                className="w-full h-12 rounded-2xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 px-4 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-colors"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-neutral-900 font-semibold mb-2 text-sm">
+              <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold mb-2 text-sm">
                 <Lock size={18} />
                 Password
               </label>
@@ -165,14 +169,14 @@ export default function LoginPage() {
                 type="password"
                 required
                 minLength={6}
-                className="w-full h-12 rounded-2xl bg-white border border-neutral-200 px-4 text-sm text-neutral-900 placeholder-neutral-400 outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-colors"
+                className="w-full h-12 rounded-2xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 px-4 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-colors"
                 placeholder={isLogin ? 'Your password' : 'At least 6 characters'}
               />
             </div>
 
             {error && (
               <div className="space-y-2">
-                <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 text-red-700 text-sm">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl px-4 py-3 text-red-700 dark:text-red-300 text-sm">
                   {error}
                 </div>
                 {isLogin && (
@@ -207,7 +211,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-4 text-[11px] text-center text-neutral-500">
+          <p className="mt-4 text-[11px] text-center text-neutral-500 dark:text-neutral-400">
             By continuing you agree to hang out respectfully. No spam, just good meetups.
           </p>
         </main>
