@@ -7,6 +7,7 @@ export const config = {
     '/friends/:path*',
     '/invitations/:path*',
     '/meetup/:path*',
+    '/discover/:path*',
     '/community/:path*',
   ],
 }

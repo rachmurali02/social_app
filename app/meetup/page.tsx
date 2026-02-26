@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Navigation } from 'lucide-react'
+import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
 import LocationAutocomplete from '../components/LocationAutocomplete'
@@ -354,7 +354,7 @@ END:VCALENDAR`
 
           {state.step === 'setup' && (
             <div className="max-w-2xl mx-auto">
-              <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
+              <div className="glass-panel rounded-3xl p-8">
                 <h2 className="text-3xl font-bold text-white mb-6">Plan Your Meetup</h2>
                 <form
                   onSubmit={(e) => {
@@ -413,36 +413,40 @@ END:VCALENDAR`
                         {locationLoading ? (
                           <Loader2 size={22} className="animate-spin" />
                         ) : (
-                          <Navigation size={22} />
+                          <Crosshair size={22} />
                         )}
                       </button>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-white font-semibold mb-2">
-                      <TrendingUp className="inline mr-2" size={20} />
-                      Radius (km)
-                    </label>
-                    <input
-                      name="radius"
-                      type="number"
-                      defaultValue="5"
-                      className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-white font-semibold mb-2">
-                      <Clock className="inline mr-2" size={20} />
-                      Time
-                    </label>
-                    <input
-                      name="time"
-                      type="time"
-                      defaultValue="18:00"
-                      className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white font-semibold mb-2">
+                        <TrendingUp className="inline mr-2" size={20} />
+                        Radius (km)
+                      </label>
+                      <input
+                        name="radius"
+                        type="number"
+                        min="1"
+                        max="50"
+                        defaultValue="5"
+                        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white font-semibold mb-2">
+                        <Clock className="inline mr-2" size={20} />
+                        Time
+                      </label>
+                      <input
+                        name="time"
+                        type="time"
+                        defaultValue="18:00"
+                        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        required
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-white font-semibold mb-2">
@@ -463,7 +467,7 @@ END:VCALENDAR`
                     </label>
                     <div className="bg-white/5 rounded-xl p-4 border border-white/10 max-h-48 overflow-y-auto space-y-2">
                       {friends.length === 0 ? (
-                        <p className="text-white/60 text-sm">No friends yet. <Link href="/friends?search=true" className="text-blue-400 underline">Find friends</Link></p>
+                        <p className="text-white/60 text-sm">No friends yet. <Link href="/discover" className="text-blue-400 underline">Discover people</Link></p>
                       ) : (
                         friends.map((friend) => (
                           <label
