@@ -106,21 +106,21 @@ export default function DashboardPage() {
             href="/meetup"
             className="block mb-6 sm:mb-8"
           >
-            <div className="group glass-panel rounded-2xl sm:rounded-3xl p-6 sm:p-8 hover:shadow-lg transition-all duration-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:-translate-y-0.5 bg-gradient-to-r from-orange-500/10 to-purple-500/10 border-orange-200/50">
+            <div className="group glass-panel rounded-2xl sm:rounded-3xl p-6 sm:p-8 hover:shadow-lg transition-all duration-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:-translate-y-0.5 bg-gradient-to-r from-orange-500/15 to-purple-500/15 dark:from-orange-500/25 dark:to-purple-500/25 border border-orange-200/60 dark:border-orange-500/30">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center text-white shrink-0">
                   <Calendar size={28} />
                 </div>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-neutral-900 mb-0.5">Plan Meetup</h2>
-                  <p className="text-neutral-600 text-sm">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-neutral-900 dark:text-white mb-0.5">Plan Meetup</h2>
+                  <p className="text-neutral-600 dark:text-neutral-400 text-sm">
                     {nextMeetup
                       ? `${(nextMeetup.selectedOption as { name?: string })?.name || nextMeetup.preferences?.activity || 'Meetup'} ${nextMeetup.preferences?.time ? `at ${nextMeetup.preferences.time}` : ''}`
                       : 'Create a new meetup with friends'}
                   </p>
                 </div>
               </div>
-              <span className="text-orange-600 text-sm font-semibold group-hover:underline">Get started →</span>
+              <span className="text-orange-600 dark:text-orange-400 text-sm font-semibold group-hover:underline">Get started →</span>
             </div>
           </Link>
 
@@ -129,11 +129,11 @@ export default function DashboardPage() {
               href="/invitations"
               className="group glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 hover:shadow-lg transition-all duration-300 relative min-h-[120px] sm:min-h-0 flex flex-col justify-center hover:-translate-y-0.5"
             >
-              <div className="w-11 h-11 rounded-2xl bg-amber-100 flex items-center justify-center mb-3 group-hover:bg-amber-200 transition-colors">
-                <Bell className="text-amber-600" size={22} />
+              <div className="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center mb-3 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/70 transition-colors">
+                <Bell className="text-amber-600 dark:text-amber-400" size={22} />
               </div>
-              <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-1">Invitations</h2>
-              <p className="text-neutral-600 text-sm">View pending invitations</p>
+              <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-white mb-1">Invitations</h2>
+              <p className="text-neutral-600 dark:text-neutral-400 text-sm">View pending invitations</p>
               {pendingInvitations > 0 && (
                 <div className="absolute top-4 right-4 bg-rose-500 text-white rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-semibold text-xs shadow-lg shadow-rose-500/30">
                   {pendingInvitations}
@@ -145,35 +145,35 @@ export default function DashboardPage() {
               href="/friends"
               className="group glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 hover:shadow-lg transition-all duration-300 min-h-[120px] sm:min-h-0 flex flex-col justify-center hover:-translate-y-0.5"
             >
-              <div className="w-11 h-11 rounded-2xl bg-violet-100 flex items-center justify-center mb-3 group-hover:bg-violet-200 transition-colors">
-                <Users className="text-violet-600" size={22} />
+              <div className="w-11 h-11 rounded-2xl bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center mb-3 group-hover:bg-violet-200 dark:group-hover:bg-violet-900/70 transition-colors">
+                <Users className="text-violet-600 dark:text-violet-400" size={22} />
               </div>
-              <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-1">Friends</h2>
-              <p className="text-neutral-600 text-sm">Manage your friends list</p>
+              <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-white mb-1">Friends</h2>
+              <p className="text-neutral-600 dark:text-neutral-400 text-sm">Manage your friends list</p>
             </Link>
 
             <Link
               href="/discover"
               className="group glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 hover:shadow-lg transition-all duration-300 min-h-[120px] sm:min-h-0 flex flex-col justify-center hover:-translate-y-0.5"
             >
-              <div className="w-11 h-11 rounded-2xl bg-emerald-100 flex items-center justify-center mb-3 group-hover:bg-emerald-200 transition-colors">
-                <Search className="text-emerald-600" size={22} />
+              <div className="w-11 h-11 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center mb-3 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/70 transition-colors">
+                <Search className="text-emerald-600 dark:text-emerald-400" size={22} />
               </div>
-              <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 mb-1">Discover</h2>
-              <p className="text-neutral-600 text-sm">Find and add new friends</p>
+              <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-white mb-1">Discover</h2>
+              <p className="text-neutral-600 dark:text-neutral-400 text-sm">Find and add new friends</p>
             </Link>
           </div>
 
           <div className="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-4 sm:mb-6 flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white mb-4 sm:mb-6 flex items-center gap-2">
               <Users size={28} /> Your Friends ({friends.length})
             </h2>
             {loading ? (
-              <div className="text-neutral-600">Loading friends...</div>
+              <div className="text-neutral-600 dark:text-neutral-400">Loading friends...</div>
             ) : friends.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="mx-auto mb-4 text-neutral-300" size={64} />
-                <p className="text-neutral-600 mb-4">You don&apos;t have any friends yet</p>
+                <p className="text-neutral-600 dark:text-neutral-400 mb-4">You don&apos;t have any friends yet</p>
                 <Link
                   href="/discover"
                   className="inline-flex items-center gap-2 btn-primary"
@@ -187,10 +187,10 @@ export default function DashboardPage() {
                   <Link
                     key={friend.id}
                     href={`/profile/${friend.id}`}
-                    className="bg-neutral-50 hover:bg-neutral-100 rounded-2xl p-4 border border-neutral-200 transition-all duration-300"
+                    className="bg-neutral-50 dark:bg-neutral-800/60 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-2xl p-4 border border-neutral-200 dark:border-neutral-700 transition-all duration-300"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full border border-neutral-200 overflow-hidden flex items-center justify-center shrink-0" style={avatarGradient(friend.id || '')}>
+                      <div className="w-12 h-12 rounded-full border border-neutral-200 dark:border-neutral-600 overflow-hidden flex items-center justify-center shrink-0" style={avatarGradient(friend.id || '')}>
                         {friend.profile?.avatar ? (
                           <img src={friend.profile.avatar} alt="" className="w-full h-full object-cover" />
                         ) : (
@@ -200,8 +200,8 @@ export default function DashboardPage() {
                         )}
                       </div>
                       <div>
-                        <p className="text-neutral-900 font-semibold">{friend.name || friend.email}</p>
-                        <p className="text-neutral-500 text-sm">{friend.email}</p>
+                        <p className="text-neutral-900 dark:text-white font-semibold">{friend.name || friend.email}</p>
+                        <p className="text-neutral-500 dark:text-neutral-400 text-sm">{friend.email}</p>
                       </div>
                     </div>
                   </Link>

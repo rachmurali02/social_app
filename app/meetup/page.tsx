@@ -539,20 +539,20 @@ END:VCALENDAR`
                             <span className="font-bold">Top Pick</span>
                           </div>
                         )}
-                        <h3 className="text-3xl font-black text-neutral-900 mb-4">{option.name}</h3>
+                        <h3 className="text-3xl font-black text-neutral-900 dark:text-white mb-4">{option.name}</h3>
                         <div className="space-y-3 mb-6 flex-grow">
-                          <p className="text-neutral-700 flex items-start gap-2">
+                          <p className="text-neutral-700 dark:text-neutral-300 flex items-start gap-2">
                             <MapPin className="flex-shrink-0 mt-1" size={20} />
                             <span>{option.address}</span>
                           </p>
-                          <p className="text-neutral-700 flex items-center gap-2">
+                          <p className="text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
                             <Star className="flex-shrink-0" size={20} fill="gold" stroke="gold" />
                             <span className="font-bold">{Number(option.rating).toFixed(1)}/5.0</span>
                           </p>
-                          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p className="text-amber-800 font-semibold">💡 {option.popularity}</p>
+                          <div className="bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700/50 rounded-xl p-4">
+                            <p className="text-amber-800 dark:text-amber-200 font-semibold">💡 {option.popularity}</p>
                           </div>
-                          <p className="text-neutral-600 italic">&quot;{option.reason}&quot;</p>
+                          <p className="text-neutral-600 dark:text-neutral-400 italic">&quot;{option.reason}&quot;</p>
                         </div>
                         <div className="flex gap-3">
                           <button
@@ -565,7 +565,7 @@ END:VCALENDAR`
                             href={option.mapUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-neutral-100 text-neutral-900 px-6 py-4 rounded-xl font-bold hover:bg-neutral-200 transition-all flex items-center gap-2"
+                            className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-white px-6 py-4 rounded-xl font-bold hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-all flex items-center gap-2"
                           >
                             <MapPin size={20} /> Map
                           </a>
@@ -583,7 +583,7 @@ END:VCALENDAR`
                     className={`h-3 rounded-full transition-all ${
                       index === state.activeTile
                         ? 'w-12 bg-orange-500'
-                        : 'w-3 bg-neutral-300 hover:bg-neutral-400'
+                        : 'w-3 bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500'
                     }`}
                   />
                 ))}
@@ -594,17 +594,17 @@ END:VCALENDAR`
           {state.step === 'invite-friends' && state.selectedOption && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="glass-panel rounded-3xl p-8">
-                <h2 className="text-3xl font-bold text-neutral-900 mb-4">🎉 Activity Selected!</h2>
-                <div className="bg-gradient-to-r from-orange-50 to-purple-50 rounded-2xl p-6 mb-6 border border-neutral-200">
-                  <p className="text-neutral-900 text-lg mb-2">📍 {state.selectedOption.name}</p>
-                  <p className="text-neutral-600 mb-3">{state.selectedOption.address}</p>
+                <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">🎉 Activity Selected!</h2>
+                <div className="bg-gradient-to-r from-orange-50 to-purple-50 dark:from-orange-900/30 dark:to-purple-900/30 rounded-2xl p-6 mb-6 border border-neutral-200 dark:border-neutral-600">
+                  <p className="text-neutral-900 dark:text-white text-lg mb-2">📍 {state.selectedOption.name}</p>
+                  <p className="text-neutral-600 dark:text-neutral-400 mb-3">{state.selectedOption.address}</p>
                   <div className="flex gap-3 mt-4">
                     <button
                       onClick={() => {
                         const cal = addToCalendar()
                         if (cal) window.open(cal.googleCalendarUrl, '_blank')
                       }}
-                      className="flex-1 bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50 py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+                      className="flex-1 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600 text-neutral-900 dark:text-white hover:bg-neutral-50 dark:hover:bg-neutral-700 py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
                     >
                       <Calendar size={20} /> Google Calendar
                     </button>
@@ -620,7 +620,7 @@ END:VCALENDAR`
                           a.click()
                         }
                       }}
-                      className="flex-1 bg-neutral-200 hover:bg-neutral-300 text-neutral-900 py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+                      className="flex-1 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
                     >
                       <Calendar size={20} /> Apple/Outlook
                     </button>
@@ -642,20 +642,20 @@ END:VCALENDAR`
 
           {state.step === 'confirmed' && state.selectedOption && (
             <div className="max-w-2xl mx-auto">
-              <div className="glass-panel rounded-3xl p-12 text-center border-2 border-green-200">
+              <div className="glass-panel rounded-3xl p-12 text-center border-2 border-green-200 dark:border-green-700/50">
                 <div className="text-7xl mb-6 animate-bounce">🎉</div>
-                <h2 className="text-4xl font-black text-neutral-900 mb-4">All Set!</h2>
-                <p className="text-neutral-700 text-xl mb-6">
+                <h2 className="text-4xl font-black text-neutral-900 dark:text-white mb-4">All Set!</h2>
+                <p className="text-neutral-700 dark:text-neutral-300 text-xl mb-6">
                   Meetup at <span className="font-bold">{state.selectedOption.name}</span>
                 </p>
                 {state.selectedFriends.length > 0 && (
-                  <p className="text-neutral-600 mb-4">
+                  <p className="text-neutral-600 dark:text-neutral-400 mb-4">
                     + {state.selectedFriends.length} friend{state.selectedFriends.length > 1 ? 's' : ''}{' '}
                     invited!
                   </p>
                 )}
                 <div className="space-y-3 mb-6">
-                  <div className="bg-neutral-50 rounded-xl p-4 text-neutral-900 flex items-center justify-between border border-neutral-200">
+                  <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4 text-neutral-900 dark:text-white flex items-center justify-between border border-neutral-200 dark:border-neutral-600">
                     <div className="flex items-center gap-2">
                       <Calendar className="inline" />
                       <span>Calendar Event</span>
@@ -670,7 +670,7 @@ END:VCALENDAR`
                       Open Calendar
                     </button>
                   </div>
-                  <div className="bg-neutral-50 rounded-xl p-4 text-neutral-900 flex items-center justify-between border border-neutral-200">
+                  <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4 text-neutral-900 dark:text-white flex items-center justify-between border border-neutral-200 dark:border-neutral-600">
                     <div className="flex items-center gap-2">
                       <MapPin className="inline" />
                       <span>Get Directions</span>
