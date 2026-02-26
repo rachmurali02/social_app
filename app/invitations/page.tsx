@@ -110,10 +110,13 @@ export default function InvitationsPage() {
 
   const addToCalendar = (invitation: Invitation) => {
     if (!invitation.meetup.selectedOption || !invitation.meetup.preferences) return null
+    const creatorName = invitation.meetup.creator.name || invitation.meetup.creator.email
+    const youName = session?.user?.name || session?.user?.email || 'You'
+    const withLine = `With: ${creatorName}, ${youName}`
 
     const event = {
       title: `Meetup at ${invitation.meetup.selectedOption.name}`,
-      description: `${invitation.meetup.preferences.activity} meetup\n${invitation.meetup.selectedOption.reason}\n\nInvited by: ${invitation.meetup.creator.name || invitation.meetup.creator.email}`,
+      description: `${invitation.meetup.preferences.activity} meetup\n${invitation.meetup.selectedOption.reason}\n\n${withLine}`,
       location: invitation.meetup.selectedOption.address,
       startTime: new Date(`${new Date().toISOString().split('T')[0]}T${invitation.meetup.preferences.time}`),
       endTime: new Date(`${new Date().toISOString().split('T')[0]}T${invitation.meetup.preferences.time}`),

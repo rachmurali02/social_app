@@ -74,6 +74,23 @@ export default function MeetupDetailPage() {
   const activity = meetup.preferences?.activity
   const isCreator = meetup.creator.id === session?.user?.id
 
+  const addToCalendar = () => {
+    if (!time) return null
+    const creatorName = meetup.creator.name || meetup.creator.email
+    const participantNames = meetup.participants
+      .map((p) => p.user.name || p.user.email)
+      .filter(Boolean)
+    const attendeeList = [creatorName, ...participantNames].join(', ')
+    const title = `Meetup at ${placeName}`
+    const description = `${activity || 'Meetup'} meetup\n\nWith: ${attendeeList}`
+    const startTime = new Date(`${new Date().toISOString().split('T')[0]}T${time}`)
+    const endTime = new Date(startTime)
+    endTime.setHours(endTime.getHours() + 2)
+    const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${fmt(startTime)}/${fmt(endTime)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(address || '')}`
+    return url
+  }
+
   return (
     <div className="min-h-screen bg-neutral-950 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
@@ -157,6 +174,16 @@ export default function MeetupDetailPage() {
             >
               Respond to invitation
             </Link>
+          )}
+          {time && (
+            <a
+              href={addToCalendar() || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-medium transition-colors border border-white/20"
+            >
+              <Calendar size={20} /> Add to Calendar
+            </a>
           )}
           </div>
         </div>

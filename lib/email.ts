@@ -79,10 +79,15 @@ function buildCalendarLinks(params: {
   time: string
   activity: string
   inviterName: string
+  attendeeNames?: string[]
 }) {
-  const { placeName, address, time, activity, inviterName } = params
+  const { placeName, address, time, activity, inviterName, attendeeNames } = params
   const title = `Meetup at ${placeName}`
-  const description = `${activity} meetup\n\nInvited by: ${inviterName}`
+  const withLine =
+    attendeeNames && attendeeNames.length > 0
+      ? `With: ${attendeeNames.join(', ')}`
+      : `Invited by: ${inviterName}`
+  const description = `${activity} meetup\n\n${withLine}`
   const startTime = new Date(`${new Date().toISOString().split('T')[0]}T${time}`)
   const endTime = new Date(startTime)
   endTime.setHours(endTime.getHours() + 2)
@@ -139,6 +144,7 @@ export async function sendMeetupInviteEmail(params: {
       time: safeTime,
       activity: safeActivity,
       inviterName: displayInviter,
+      attendeeNames: [displayInviter, displayInvitee],
     })
 
     const subject =
@@ -219,6 +225,7 @@ export async function sendMeetupConfirmedToInvitee(params: {
       time: safeTime,
       activity: safeActivity,
       inviterName: safeInviter,
+      attendeeNames: [safeInviter, displayName],
     })
     const timeLine = safeTime ? `<p><strong>Time:</strong> ${safeTime}</p>` : ''
     const mapLine = mapUrl
@@ -282,6 +289,7 @@ export async function sendMeetupAcceptedToCreator(params: {
       time: safeTime,
       activity: safeActivity,
       inviterName: displayCreator,
+      attendeeNames: [displayCreator, safeAccepter],
     })
     const timeLine = safeTime ? `<p><strong>Time:</strong> ${safeTime}</p>` : ''
 

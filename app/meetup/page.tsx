@@ -244,11 +244,16 @@ export default function MeetupPage() {
 
   const addToCalendar = () => {
     if (!state.selectedOption || !state.preferences) return null
+    const youName = session?.user?.name || session?.user?.email || 'You'
+    const friendNames = state.selectedFriends
+      .map((id) => friends.find((f) => f.id === id)?.name || friends.find((f) => f.id === id)?.email)
+      .filter(Boolean)
+    const attendeeList = [youName, ...friendNames].join(', ')
+    const withLine = `With: ${attendeeList}`
+
     const event = {
       title: `Meetup at ${state.selectedOption.name}`,
-      description: `${state.preferences.activity} meetup\n${state.selectedOption.reason}\n\nAttendees: You${
-        state.selectedFriends.length > 0 ? ` + ${state.selectedFriends.length} friends` : ''
-      }`,
+      description: `${state.preferences.activity} meetup\n${state.selectedOption.reason}\n\n${withLine}`,
       location: state.selectedOption.address,
       startTime: new Date(`${new Date().toISOString().split('T')[0]}T${state.preferences.time}`),
       endTime: new Date(`${new Date().toISOString().split('T')[0]}T${state.preferences.time}`),
