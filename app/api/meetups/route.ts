@@ -6,6 +6,8 @@ import {
   sendMeetupInviteEmail,
   sendMeetupConfirmedToInvitee,
   sendMeetupAcceptedToCreator,
+  sendMeetupCancelledEmail,
+  sendMeetupRescheduledEmail,
 } from '../../../lib/email'
 
 export async function POST(request: NextRequest) {
@@ -200,6 +202,97 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json({ participant: updatedParticipant })
+    }
+
+    if (action === 'cancel') {
+      const mid = body.meetupId
+      if (!mid) return NextResponse.json({ error: 'meetupId required' }, { status: 400 })
+      const m = await prisma.meetupSession.findFirst({
+        where: { id: mid, creatorId: session.user.id },
+        include: {
+          creator: { select: { id: true, email: true, name: true } },
+          participants: { include: { user: { select: { id: true, email: true, name: true } } } },
+        },
+      })
+      if (!m) return NextResponse.json({ error: 'Meetup not found or not creator' }, { status: 404 })
+      if (m.status === 'cancelled') return NextResponse.json({ meetup: m }, { status: 200 })
+      const updated = await prisma.meetupSession.update({
+        where: { id: mid },
+        data: { status: 'cancelled' },
+        include: {
+          creator: { select: { id: true, email: true, name: true } },
+          participants: { include: { user: { select: { id: true, email: true, name: true } } } },
+        },
+      })
+      const opts = m.selectedOption as { name?: string } | null
+      const prefs = m.preferences as { activity?: string } | null
+      const placeName = opts?.name || 'your meetup'
+      const activity = prefs?.activity || 'meetup'
+      const creatorName = m.creator.name || m.creator.email
+      for (const p of m.participants) {
+        if (p.user?.email && p.userId !== session.user.id) {
+          sendMeetupCancelledEmail({
+            to: p.user.email,
+            recipientName: p.user.name || undefined,
+            creatorName,
+            placeName,
+            activity,
+          }).catch((e) => console.error('Send cancelled email:', e))
+        }
+      }
+      return NextResponse.json({ meetup: updated })
+    }
+
+    if (action === 'reschedule') {
+      const mid = body.meetupId
+      const newPrefs = body.preferences
+      if (!mid) return NextResponse.json({ error: 'meetupId required' }, { status: 400 })
+      if (!newPrefs || typeof newPrefs !== 'object') {
+        return NextResponse.json({ error: 'preferences (time, date, etc.) required' }, { status: 400 })
+      }
+      const m = await prisma.meetupSession.findFirst({
+        where: { id: mid, creatorId: session.user.id },
+        include: {
+          creator: { select: { id: true, email: true, name: true } },
+          participants: { include: { user: { select: { id: true, email: true, name: true } } } },
+        },
+      })
+      if (!m) return NextResponse.json({ error: 'Meetup not found or not creator' }, { status: 404 })
+      if (m.status === 'cancelled') return NextResponse.json({ error: 'Cannot reschedule cancelled meetup' }, { status: 400 })
+      const currentPrefs = (m.preferences || {}) as Record<string, unknown>
+      const merged = { ...currentPrefs, ...newPrefs }
+      const updated = await prisma.meetupSession.update({
+        where: { id: mid },
+        data: { preferences: merged },
+        include: {
+          creator: { select: { id: true, email: true, name: true } },
+          participants: { include: { user: { select: { id: true, email: true, name: true } } } },
+        },
+      })
+      const opts = m.selectedOption as { name?: string; address?: string } | null
+      const placeName = opts?.name || 'your meetup'
+      const address = opts?.address || ''
+      const time = (merged.time as string) || ''
+      const date = (merged.date as string) || ''
+      const activity = (merged.activity as string) || 'meetup'
+      const creatorName = m.creator.name || m.creator.email
+      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+      for (const p of m.participants) {
+        if (p.user?.email && p.userId !== session.user.id) {
+          sendMeetupRescheduledEmail({
+            to: p.user.email,
+            recipientName: p.user.name || undefined,
+            creatorName,
+            placeName,
+            address,
+            time,
+            date: date || undefined,
+            activity,
+            appUrl: baseUrl,
+          }).catch((e) => console.error('Send rescheduled email:', e))
+        }
+      }
+      return NextResponse.json({ meetup: updated })
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })

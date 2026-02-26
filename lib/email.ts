@@ -80,15 +80,17 @@ function buildCalendarLinks(params: {
   activity: string
   inviterName: string
   attendeeNames?: string[]
+  dateStr?: string
 }) {
-  const { placeName, address, time, activity, inviterName, attendeeNames } = params
+  const { placeName, address, time, activity, inviterName, attendeeNames, dateStr } = params
   const title = `Meetup at ${placeName}`
   const withLine =
     attendeeNames && attendeeNames.length > 0
       ? `With: ${attendeeNames.join(', ')}`
       : `Invited by: ${inviterName}`
   const description = `${activity} meetup\n\n${withLine}`
-  const startTime = new Date(`${new Date().toISOString().split('T')[0]}T${time}`)
+  const datePart = dateStr || new Date().toISOString().split('T')[0]
+  const startTime = new Date(`${datePart}T${time}`)
   const endTime = new Date(startTime)
   endTime.setHours(endTime.getHours() + 2)
   const formatDt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
@@ -257,6 +259,107 @@ export async function sendMeetupConfirmedToInvitee(params: {
     return true
   } catch (e) {
     console.error('Send meetup confirmed to invitee:', e)
+    return false
+  }
+}
+
+export async function sendMeetupCancelledEmail(params: {
+  to: string
+  recipientName?: string
+  creatorName?: string
+  placeName?: string
+  activity?: string
+  appUrl?: string
+}): Promise<boolean> {
+  const transporter = getTransporter()
+  if (!transporter) return false
+  const { to, recipientName, creatorName, placeName, activity, appUrl } = params
+  try {
+    const displayName = recipientName || to.split('@')[0]
+    const safeCreator = creatorName || 'The creator'
+    const safePlace = placeName || 'a meetup'
+    const safeActivity = activity || 'meetup'
+    const baseUrl = (appUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+
+    await transporter.sendMail({
+      from: EMAIL_FROM,
+      to,
+      subject: `${safePlace} meetup was cancelled`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto;">
+          <h1 style="color: #dc2626; margin-bottom: 16px;">Meetup cancelled</h1>
+          <p>Hi ${displayName},</p>
+          <p><strong>${safeCreator}</strong> cancelled the ${safeActivity} meetup at ${safePlace}.</p>
+          <p><a href="${baseUrl}/meetups" style="color:#6366f1;font-weight:600;">View meetups</a></p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+        </div>
+      `,
+    })
+    return true
+  } catch (e) {
+    console.error('Send meetup cancelled email:', e)
+    return false
+  }
+}
+
+export async function sendMeetupRescheduledEmail(params: {
+  to: string
+  recipientName?: string
+  creatorName?: string
+  placeName?: string
+  address?: string
+  time?: string
+  date?: string
+  activity?: string
+  appUrl?: string
+}): Promise<boolean> {
+  const transporter = getTransporter()
+  if (!transporter) return false
+  const { to, recipientName, creatorName, placeName, address, time, date, activity, appUrl } = params
+  try {
+    const displayName = recipientName || to.split('@')[0]
+    const safeCreator = creatorName || 'The creator'
+    const safePlace = placeName || 'your meetup'
+    const safeAddress = address || ''
+    const safeTime = time || ''
+    const safeDate = date || ''
+    const safeActivity = activity || 'meetup'
+    const baseUrl = (appUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+    const meetupUrl = `${baseUrl}/meetups`
+
+    const { googleUrl } = buildCalendarLinks({
+      placeName: safePlace,
+      address: safeAddress,
+      time: safeTime,
+      activity: safeActivity,
+      inviterName: safeCreator,
+      attendeeNames: [safeCreator, displayName],
+      dateStr: safeDate,
+    })
+
+    await transporter.sendMail({
+      from: EMAIL_FROM,
+      to,
+      subject: `${safePlace} meetup was rescheduled`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto;">
+          <h1 style="color: #4f46e5; margin-bottom: 16px;">Meetup rescheduled</h1>
+          <p>Hi ${displayName},</p>
+          <p><strong>${safeCreator}</strong> rescheduled the ${safeActivity} meetup at ${safePlace}.</p>
+          <div style="background:#f3f4f6;border-radius:12px;padding:16px;margin:16px 0;">
+            ${safeDate ? `<p style="margin:0 0 8px 0;"><strong>Date:</strong> ${safeDate}</p>` : ''}
+            ${safeTime ? `<p style="margin:0 0 8px 0;"><strong>Time:</strong> ${safeTime}</p>` : ''}
+            ${safeAddress ? `<p style="margin:0;"><strong>Where:</strong> ${safeAddress}</p>` : ''}
+          </div>
+          <p><a href="${googleUrl}" style="background:#34a853;color:#ffffff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block;">Add to Google Calendar</a></p>
+          <p style="margin-top: 16px;"><a href="${meetupUrl}" style="color:#6366f1;font-weight:600;">View meetups</a></p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+        </div>
+      `,
+    })
+    return true
+  } catch (e) {
+    console.error('Send meetup rescheduled email:', e)
     return false
   }
 }
