@@ -117,26 +117,26 @@ function FriendsContent() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100">
+        <div className="text-neutral-600 text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 p-6 pb-24">
+    <div className="min-h-screen bg-neutral-100 p-6 pb-24">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4 transition-all"
+            className="inline-flex items-center gap-2 text-neutral-600 hover:text-neutral-900 mb-4 transition-all"
           >
             <ArrowLeft size={20} /> Back to Dashboard
           </Link>
-          <h1 className="text-4xl font-black text-white mb-2">Friends</h1>
+          <h1 className="text-4xl font-black text-neutral-900 mb-2">My Crew</h1>
           <Link
             href="/discover"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white hover:bg-white/20 font-semibold transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl btn-primary"
           >
             <Search size={20} /> Discover
           </Link>
@@ -144,20 +144,20 @@ function FriendsContent() {
 
         {friendRequests.length > 0 && (
           <div className="glass-panel rounded-3xl p-6 mb-6">
-            <h2 className="text-xl font-bold text-white mb-4">Friend Requests ({friendRequests.length})</h2>
+            <h2 className="text-xl font-bold text-neutral-900 mb-4">Friend Requests ({friendRequests.length})</h2>
             <div className="space-y-3">
               {friendRequests.map((request) => (
                 <div
                   key={request.id}
-                  className="bg-white/5 rounded-xl p-4 border border-white/10 flex items-center justify-between"
+                  className="bg-neutral-50 rounded-xl p-4 border border-neutral-200 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white font-bold shrink-0" style={avatarGradient(request.senderId)}>
+                    <div className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center text-white font-bold shrink-0" style={avatarGradient(request.senderId)}>
                       {(request.sender.name || request.sender.email)[0].toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-white font-semibold">{request.sender.name || request.sender.email}</p>
-                      <p className="text-white/60 text-sm">{request.sender.email}</p>
+                      <p className="text-neutral-900 font-semibold">{request.sender.name || request.sender.email}</p>
+                      <p className="text-neutral-500 text-sm">{request.sender.email}</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -182,19 +182,19 @@ function FriendsContent() {
 
         {isSearch ? (
           <div className="glass-panel rounded-3xl p-8 text-center py-16">
-            <p className="text-white/80 mb-4">Redirecting to Discover...</p>
-            <Link href="/discover" className="text-blue-400 hover:underline">Go now</Link>
+            <p className="text-neutral-600 mb-4">Redirecting to Discover...</p>
+            <Link href="/discover" className="text-orange-600 hover:underline">Go now</Link>
           </div>
         ) : (
           <div className="glass-panel rounded-3xl p-8">
-            <h2 className="text-2xl font-bold text-white mb-6">My Friends ({friends.length})</h2>
+            <h2 className="text-2xl font-bold text-neutral-900 mb-6">Inner Circle ({friends.length})</h2>
             {friends.length === 0 ? (
               <div className="text-center py-12">
-                <Users className="mx-auto mb-4 text-white/40" size={64} />
-                <p className="text-white/80 mb-4">You don&apos;t have any friends yet</p>
+                <Users className="mx-auto mb-4 text-neutral-300" size={64} />
+                <p className="text-neutral-600 mb-4">You don&apos;t have any friends yet</p>
                 <button
                   onClick={() => router.push('/discover')}
-                  className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all"
+                  className="inline-flex items-center gap-2 btn-primary"
                 >
                   <Search size={20} /> Discover
                 </button>
@@ -204,14 +204,14 @@ function FriendsContent() {
                 {friends.map((friend) => (
                   <div
                     key={friend.id}
-                    className="bg-white/[0.04] rounded-2xl p-4 border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.08] transition-all"
+                    className="bg-white rounded-2xl p-4 border border-neutral-200 flex items-center justify-between hover:shadow-md transition-all"
                   >
                     <div
                       className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
                       onClick={() => router.push(`/profile/${friend.id}`)}
                     >
                       <div
-                        className="w-12 h-12 rounded-full border border-white/20 overflow-hidden flex items-center justify-center shrink-0"
+                        className="w-12 h-12 rounded-full border border-neutral-200 overflow-hidden flex items-center justify-center shrink-0"
                         style={avatarGradient(friend.id || '')}
                       >
                         {friend.profile?.avatar ? (
@@ -223,13 +223,13 @@ function FriendsContent() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-white font-semibold truncate">{friend.name || friend.email}</p>
-                        <p className="text-white/60 text-sm truncate">{friend.email}</p>
+                        <p className="text-neutral-900 font-semibold truncate">{friend.name || friend.email}</p>
+                        <p className="text-neutral-500 text-sm truncate">{friend.email}</p>
                       </div>
                     </div>
                     <Link
                       href="/meetup"
-                      className="shrink-0 p-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 transition-colors"
+                      className="shrink-0 p-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-orange-600 transition-colors"
                       title="Invite to meetup"
                     >
                       <Calendar size={20} />
@@ -250,8 +250,8 @@ export default function FriendsPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
-          <div className="text-white text-xl">Loading...</div>
+        <div className="min-h-screen flex items-center justify-center bg-neutral-100">
+          <div className="text-neutral-600 text-xl">Loading...</div>
         </div>
       }
     >

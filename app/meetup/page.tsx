@@ -59,6 +59,7 @@ export default function MeetupPage() {
   const [placeError, setPlaceError] = useState('')
   const [defaultLocation, setDefaultLocation] = useState('')
   const [locationLoading, setLocationLoading] = useState(false)
+  const [visitedPlaces, setVisitedPlaces] = useState<string[]>([])
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
 
@@ -71,6 +72,10 @@ export default function MeetupPage() {
   useEffect(() => {
     if (session) {
       fetchFriends()
+      fetch('/api/me/visited-places')
+        .then((r) => r.json())
+        .then((d) => setVisitedPlaces(d.placeNames || []))
+        .catch(() => {})
     }
   }, [session])
 
@@ -184,7 +189,7 @@ export default function MeetupPage() {
           location: preferences.location,
           radiusKm: preferences.radius,
           activity: preferences.activity,
-          excludeNames: state.seenPlaces,
+          excludeNames: [...new Set([...state.seenPlaces, ...visitedPlaces])],
         }),
       })
 
@@ -316,37 +321,24 @@ END:VCALENDAR`
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100">
+        <div className="text-neutral-600 text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black via-neutral-950 to-black">
-      <div className="absolute inset-0 opacity-40">
-        <div className="absolute inset-0 bg-[url('/images/party-meetup-hero.jpg')] bg-cover bg-center mix-blend-soft-light" />
-        <svg width="100%" height="100%">
-          <defs>
-            <pattern id="tiles" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-              <rect x="0" y="0" width="48" height="48" fill="rgba(255,255,255,0.1)" rx="8" />
-              <rect x="52" y="52" width="48" height="48" fill="rgba(255,255,255,0.05)" rx="8" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#tiles)" className="animate-pulse" />
-        </svg>
-      </div>
-
+    <div className="min-h-screen relative overflow-hidden bg-neutral-100">
       <div className="relative z-10 p-6 pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-5xl font-black text-white mb-2 drop-shadow-lg">MeetUp AI</h1>
-              <p className="text-white/80 text-lg">Plan your meetup</p>
+              <h1 className="text-5xl font-black text-neutral-900 mb-2">MeetUp AI</h1>
+              <p className="text-neutral-600 text-lg">Plan your meetup</p>
             </div>
             <Link
               href="/dashboard"
-              className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-xl border border-white/20 text-white hover:bg-white/20 transition-all"
+              className="glass-panel px-6 py-3 rounded-xl text-neutral-900 hover:shadow-md transition-all"
             >
               ← Dashboard
             </Link>
@@ -355,7 +347,7 @@ END:VCALENDAR`
           {state.step === 'setup' && (
             <div className="max-w-2xl mx-auto">
               <div className="glass-panel rounded-3xl p-8">
-                <h2 className="text-3xl font-bold text-white mb-6">Plan Your Meetup</h2>
+                <h2 className="text-3xl font-bold text-neutral-900 mb-6">Plan Your Meetup</h2>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -370,12 +362,12 @@ END:VCALENDAR`
                   className="space-y-5"
                 >
                   <div>
-                    <label className="block text-white font-semibold mb-2">
+                    <label className="block text-neutral-900 font-semibold mb-2">
                       <MapPin className="inline mr-2" size={20} />
                       Location
                     </label>
                     {placeError && (
-                      <p className="text-amber-300 text-sm mb-2">{placeError}</p>
+                      <p className="text-amber-600 text-sm mb-2">{placeError}</p>
                     )}
                     <div className="flex gap-2">
                       <LocationAutocomplete
@@ -383,7 +375,7 @@ END:VCALENDAR`
                         key={defaultLocation}
                         defaultValue={defaultLocation || ''}
                         placeholder="e.g. Virginia, USA or Dubai Marina"
-                        className="flex-1 p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="flex-1 p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
                       <button
@@ -407,7 +399,7 @@ END:VCALENDAR`
                           )
                         }}
                         disabled={locationLoading}
-                        className="shrink-0 p-4 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50 flex items-center"
+                        className="shrink-0 p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50 disabled:opacity-50 flex items-center"
                         title="Use my location"
                       >
                         {locationLoading ? (
@@ -420,7 +412,7 @@ END:VCALENDAR`
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white font-semibold mb-2">
+                      <label className="block text-neutral-900 font-semibold mb-2">
                         <TrendingUp className="inline mr-2" size={20} />
                         Radius (km)
                       </label>
@@ -430,12 +422,12 @@ END:VCALENDAR`
                         min="1"
                         max="50"
                         defaultValue="5"
-                        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="w-full p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-white font-semibold mb-2">
+                      <label className="block text-neutral-900 font-semibold mb-2">
                         <Clock className="inline mr-2" size={20} />
                         Time
                       </label>
@@ -443,63 +435,63 @@ END:VCALENDAR`
                         name="time"
                         type="time"
                         defaultValue="18:00"
-                        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="w-full p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-white font-semibold mb-2">
+                    <label className="block text-neutral-900 font-semibold mb-2">
                       <Zap className="inline mr-2" size={20} />
                       Activity
                     </label>
                     <input
                       name="activity"
                       defaultValue="coffee"
-                      className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="w-full p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-white font-semibold mb-2">
+                    <label className="block text-neutral-900 font-semibold mb-2">
                       <Users className="inline mr-2" size={20} />
                       Invite Friends
                     </label>
-                    <div className="bg-white/5 rounded-xl p-4 border border-white/10 max-h-48 overflow-y-auto space-y-2">
+                    <div className="bg-neutral-50 rounded-xl p-4 border border-neutral-200 max-h-48 overflow-y-auto space-y-2">
                       {friends.length === 0 ? (
-                        <p className="text-white/60 text-sm">No friends yet. <Link href="/discover" className="text-blue-400 underline">Discover people</Link></p>
+                        <p className="text-neutral-600 text-sm">No friends yet. <Link href="/discover" className="text-orange-600 underline">Discover people</Link></p>
                       ) : (
                         friends.map((friend) => (
                           <label
                             key={friend.id}
-                            className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-lg"
+                            className="flex items-center gap-3 cursor-pointer hover:bg-neutral-100 p-2 rounded-lg"
                           >
                             <input
                               type="checkbox"
                               checked={state.selectedFriends.includes(friend.id)}
                               onChange={() => toggleFriendSelection(friend.id)}
-                              className="w-5 h-5 rounded border-white/20 bg-white/10 text-blue-500 focus:ring-2 focus:ring-blue-400"
+                              className="w-5 h-5 rounded border-neutral-300 text-orange-500 focus:ring-2 focus:ring-orange-400"
                             />
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
                               {(friend.name || friend.email)[0].toUpperCase()}
                             </div>
-                            <span className="text-white">{friend.name || friend.email}</span>
+                            <span className="text-neutral-900">{friend.name || friend.email}</span>
                           </label>
                         ))
                       )}
                     </div>
                   </div>
                   {loading && (
-                    <div className="flex flex-col items-center gap-3 py-4 text-white">
+                    <div className="flex flex-col items-center gap-3 py-4 text-neutral-600">
                       <Loader2 className="animate-spin" size={40} />
                       <p className="font-semibold">Finding spots...</p>
-                      <p className="text-white/70 text-sm">Searching nearby for {state.preferences?.activity || 'places'}</p>
+                      <p className="text-neutral-500 text-sm">Searching nearby for {state.preferences?.activity || 'places'}</p>
                     </div>
                   )}
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-blue-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full btn-primary py-4 text-lg disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>
@@ -517,7 +509,7 @@ END:VCALENDAR`
 
           {state.step === 'options' && state.options.length > 0 && (
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold text-white text-center mb-8">Choose Your Favorite</h2>
+              <h2 className="text-3xl font-bold text-neutral-900 text-center mb-8">Where should we go?</h2>
               <div
                 className="relative h-[500px] perspective-1000"
                 onTouchStart={handleTouchStart}
@@ -540,40 +532,40 @@ END:VCALENDAR`
                         pointerEvents: isActive ? 'auto' : 'none',
                       }}
                     >
-                      <div className="bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-2xl rounded-3xl p-8 border-2 border-white/30 shadow-2xl h-full flex flex-col">
+                      <div className="glass-panel rounded-3xl p-8 shadow-xl h-full flex flex-col">
                         {option.isRecommended && (
-                          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full inline-flex items-center gap-2 mb-4 w-fit">
+                          <div className="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-2 rounded-full inline-flex items-center gap-2 mb-4 w-fit">
                             <Star size={20} fill="white" />
                             <span className="font-bold">Top Pick</span>
                           </div>
                         )}
-                        <h3 className="text-3xl font-black text-white mb-4">{option.name}</h3>
+                        <h3 className="text-3xl font-black text-neutral-900 mb-4">{option.name}</h3>
                         <div className="space-y-3 mb-6 flex-grow">
-                          <p className="text-white/90 flex items-start gap-2">
+                          <p className="text-neutral-700 flex items-start gap-2">
                             <MapPin className="flex-shrink-0 mt-1" size={20} />
                             <span>{option.address}</span>
                           </p>
-                          <p className="text-white/90 flex items-center gap-2">
+                          <p className="text-neutral-700 flex items-center gap-2">
                             <Star className="flex-shrink-0" size={20} fill="gold" stroke="gold" />
                             <span className="font-bold">{Number(option.rating).toFixed(1)}/5.0</span>
                           </p>
-                          <div className="bg-blue-500/20 border border-blue-400/30 rounded-xl p-4">
-                            <p className="text-blue-200 font-semibold">💡 {option.popularity}</p>
+                          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                            <p className="text-amber-800 font-semibold">💡 {option.popularity}</p>
                           </div>
-                          <p className="text-white/80 italic">&quot;{option.reason}&quot;</p>
+                          <p className="text-neutral-600 italic">&quot;{option.reason}&quot;</p>
                         </div>
                         <div className="flex gap-3">
                           <button
                             onClick={() => handleSelectOption(option)}
-                            className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold hover:shadow-2xl hover:shadow-green-500/50 transition-all transform hover:scale-105"
+                            className="flex-1 btn-primary py-4 transition-all transform hover:scale-105"
                           >
-                            ✓ Select This
+                            Select
                           </button>
                           <a
                             href={option.mapUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-white/20 text-white px-6 py-4 rounded-xl font-bold hover:bg-white/30 transition-all flex items-center gap-2"
+                            className="bg-neutral-100 text-neutral-900 px-6 py-4 rounded-xl font-bold hover:bg-neutral-200 transition-all flex items-center gap-2"
                           >
                             <MapPin size={20} /> Map
                           </a>
@@ -590,8 +582,8 @@ END:VCALENDAR`
                     onClick={() => setState((prev) => ({ ...prev, activeTile: index }))}
                     className={`h-3 rounded-full transition-all ${
                       index === state.activeTile
-                        ? 'w-12 bg-white'
-                        : 'w-3 bg-white/40 hover:bg-white/60'
+                        ? 'w-12 bg-orange-500'
+                        : 'w-3 bg-neutral-300 hover:bg-neutral-400'
                     }`}
                   />
                 ))}
@@ -601,18 +593,18 @@ END:VCALENDAR`
 
           {state.step === 'invite-friends' && state.selectedOption && (
             <div className="max-w-2xl mx-auto space-y-6">
-              <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-                <h2 className="text-3xl font-bold text-white mb-4">🎉 Activity Selected!</h2>
-                <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-2xl p-6 mb-6">
-                  <p className="text-white text-lg mb-2">📍 {state.selectedOption.name}</p>
-                  <p className="text-white/80 mb-3">{state.selectedOption.address}</p>
+              <div className="glass-panel rounded-3xl p-8">
+                <h2 className="text-3xl font-bold text-neutral-900 mb-4">🎉 Activity Selected!</h2>
+                <div className="bg-gradient-to-r from-orange-50 to-purple-50 rounded-2xl p-6 mb-6 border border-neutral-200">
+                  <p className="text-neutral-900 text-lg mb-2">📍 {state.selectedOption.name}</p>
+                  <p className="text-neutral-600 mb-3">{state.selectedOption.address}</p>
                   <div className="flex gap-3 mt-4">
                     <button
                       onClick={() => {
                         const cal = addToCalendar()
                         if (cal) window.open(cal.googleCalendarUrl, '_blank')
                       }}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                      className="flex-1 bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50 py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
                     >
                       <Calendar size={20} /> Google Calendar
                     </button>
@@ -628,7 +620,7 @@ END:VCALENDAR`
                           a.click()
                         }
                       }}
-                      className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                      className="flex-1 bg-neutral-200 hover:bg-neutral-300 text-neutral-900 py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
                     >
                       <Calendar size={20} /> Apple/Outlook
                     </button>
@@ -636,7 +628,7 @@ END:VCALENDAR`
                 </div>
                 <button
                   onClick={handleFinalize}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-semibold hover:shadow-2xl hover:shadow-green-500/50 transition-all transform hover:scale-105"
+                  className="w-full btn-primary py-4"
                 >
                   {state.selectedFriends.length > 0
                     ? `🎊 Continue with ${state.selectedFriends.length} Friend${
@@ -650,20 +642,20 @@ END:VCALENDAR`
 
           {state.step === 'confirmed' && state.selectedOption && (
             <div className="max-w-2xl mx-auto">
-              <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-xl rounded-3xl p-12 border-2 border-green-400/50 text-center">
+              <div className="glass-panel rounded-3xl p-12 text-center border-2 border-green-200">
                 <div className="text-7xl mb-6 animate-bounce">🎉</div>
-                <h2 className="text-4xl font-black text-white mb-4">All Set!</h2>
-                <p className="text-white text-xl mb-6">
+                <h2 className="text-4xl font-black text-neutral-900 mb-4">All Set!</h2>
+                <p className="text-neutral-700 text-xl mb-6">
                   Meetup at <span className="font-bold">{state.selectedOption.name}</span>
                 </p>
                 {state.selectedFriends.length > 0 && (
-                  <p className="text-white/80 mb-4">
+                  <p className="text-neutral-600 mb-4">
                     + {state.selectedFriends.length} friend{state.selectedFriends.length > 1 ? 's' : ''}{' '}
                     invited!
                   </p>
                 )}
                 <div className="space-y-3 mb-6">
-                  <div className="bg-white/10 rounded-xl p-4 text-white flex items-center justify-between">
+                  <div className="bg-neutral-50 rounded-xl p-4 text-neutral-900 flex items-center justify-between border border-neutral-200">
                     <div className="flex items-center gap-2">
                       <Calendar className="inline" />
                       <span>Calendar Event</span>
@@ -673,19 +665,19 @@ END:VCALENDAR`
                         const cal = addToCalendar()
                         if (cal) window.open(cal.googleCalendarUrl, '_blank')
                       }}
-                      className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition-all text-sm"
+                      className="btn-primary px-4 py-2 text-sm"
                     >
                       Open Calendar
                     </button>
                   </div>
-                  <div className="bg-white/10 rounded-xl p-4 text-white flex items-center justify-between">
+                  <div className="bg-neutral-50 rounded-xl p-4 text-neutral-900 flex items-center justify-between border border-neutral-200">
                     <div className="flex items-center gap-2">
                       <MapPin className="inline" />
                       <span>Get Directions</span>
                     </div>
                     <button
                       onClick={() => window.open(state.selectedOption?.mapUrl, '_blank')}
-                      className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition-all text-sm"
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all text-sm"
                     >
                       Open Maps
                     </button>
@@ -693,7 +685,7 @@ END:VCALENDAR`
                 </div>
                 <Link
                   href="/dashboard"
-                  className="inline-block bg-white text-slate-900 px-8 py-3 rounded-xl font-bold hover:bg-white/90 transition-all"
+                  className="inline-block btn-primary px-8 py-3"
                 >
                   Back to Dashboard
                 </Link>
