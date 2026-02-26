@@ -280,7 +280,7 @@ out center tags;
       const lat2 = coords.lat
       const lon2 = coords.lon
       const address = buildAddress(el) || `${lat2.toFixed(4)}, ${lon2.toFixed(4)}`
-      const mapUrl = `https://www.openstreetmap.org/?mlat=${lat2}&mlon=${lon2}#map=17/${lat2}/${lon2}`
+      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || `${lat2},${lon2}`)}`
 
       results.push({
         name,
