@@ -42,7 +42,7 @@ function MeetupCard({ m }: { m: Meetup }) {
   return (
     <Link
       href={`/meetups/${m.id}`}
-      className="block glass-panel rounded-2xl overflow-hidden hover:bg-white/[0.08] transition-all"
+      className="block glass-panel rounded-2xl overflow-hidden hover:bg-neutral-200/60 dark:hover:bg-white/[0.08] transition-all"
     >
       <div className="relative h-28 overflow-hidden">
         <Image
@@ -67,12 +67,12 @@ function MeetupCard({ m }: { m: Meetup }) {
       </div>
       <div className="p-3 space-y-1">
         {address && (
-          <p className="text-white/70 text-xs flex items-center gap-1 truncate">
+          <p className="text-neutral-600 dark:text-white/70 text-xs flex items-center gap-1 truncate">
             <MapPin size={12} /> {address}
           </p>
         )}
         {time && (
-          <p className="text-white/70 text-xs flex items-center gap-1">
+          <p className="text-neutral-600 dark:text-white/70 text-xs flex items-center gap-1">
             <Clock size={12} /> {time}
           </p>
         )}
@@ -113,26 +113,26 @@ export default function UserProfilePage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-950">
+        <div className="text-neutral-600 dark:text-white text-xl">Loading...</div>
       </div>
     )
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-neutral-950">
-        <Loader2 className="animate-spin text-white" size={40} />
-        <p className="text-white/80">Loading profile...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-neutral-100 dark:bg-neutral-950">
+        <Loader2 className="animate-spin text-neutral-400 dark:text-white" size={40} />
+        <p className="text-neutral-500 dark:text-white/80">Loading profile...</p>
       </div>
     )
   }
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-neutral-950 p-6 flex flex-col items-center justify-center gap-4">
-        <p className="text-white/80">{error || 'User not found'}</p>
-        <Link href="/friends" className="text-blue-400 hover:text-blue-300">
+      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-6 flex flex-col items-center justify-center gap-4">
+        <p className="text-neutral-600 dark:text-white/80">{error || 'User not found'}</p>
+        <Link href="/friends" className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300">
           Back to Friends
         </Link>
       </div>
@@ -144,31 +144,31 @@ export default function UserProfilePage() {
   const location = user.profile?.location
 
   return (
-    <div className="min-h-screen bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/friends"
-          className="inline-flex items-center gap-2 text-white/90 hover:text-white mb-6 py-2 -mx-1 transition-colors"
+          className="inline-flex items-center gap-2 text-neutral-700 dark:text-white/90 hover:text-neutral-900 dark:hover:text-white mb-6 py-2 -mx-1 transition-colors"
         >
           <ArrowLeft size={22} /> Back
         </Link>
 
         <div className="glass-panel rounded-3xl p-6 sm:p-8 mb-6">
           <div className="flex items-start gap-4">
-            <div className="shrink-0 w-20 h-20 rounded-2xl bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center">
+            <div className="shrink-0 w-20 h-20 rounded-2xl bg-neutral-200 dark:bg-white/10 border border-neutral-300 dark:border-white/20 overflow-hidden flex items-center justify-center">
               {avatar ? (
                 <img src={avatar} alt="" className="w-full h-full object-cover" />
               ) : (
-                <User size={40} className="text-white/50" />
+                <User size={40} className="text-neutral-400 dark:text-white/50" />
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl font-semibold text-white truncate">
+              <h1 className="text-xl sm:text-2xl font-semibold text-neutral-900 dark:text-white truncate">
                 {user.name || user.email}
               </h1>
-              <p className="text-white/60 text-sm truncate">{user.email}</p>
+              <p className="text-neutral-500 dark:text-white/60 text-sm truncate">{user.email}</p>
               {location && (
-                <p className="text-white/70 text-sm mt-1 flex items-center gap-1">
+                <p className="text-neutral-600 dark:text-white/70 text-sm mt-1 flex items-center gap-1">
                   <MapPin size={14} /> {location}
                 </p>
               )}
@@ -177,11 +177,11 @@ export default function UserProfilePage() {
         </div>
 
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-3 flex items-center gap-2">
             <Calendar size={20} /> Upcoming
           </h2>
           {upcomingMeetups.length === 0 ? (
-            <div className="glass-panel rounded-2xl p-6 text-center text-white/60 text-sm">
+            <div className="glass-panel rounded-2xl p-6 text-center text-neutral-500 dark:text-white/60 text-sm">
               No upcoming meetups
             </div>
           ) : (
@@ -194,11 +194,11 @@ export default function UserProfilePage() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-3 flex items-center gap-2">
             <Calendar size={20} /> Past
           </h2>
           {pastMeetups.length === 0 ? (
-            <div className="glass-panel rounded-2xl p-6 text-center text-white/60 text-sm">
+            <div className="glass-panel rounded-2xl p-6 text-center text-neutral-500 dark:text-white/60 text-sm">
               No past meetups
             </div>
           ) : (

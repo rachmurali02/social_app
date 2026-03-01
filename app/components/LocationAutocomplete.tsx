@@ -90,7 +90,7 @@ export default function LocationAutocomplete({
         autoComplete="off"
       />
       {open && suggestions.length > 0 && (
-        <ul className="absolute z-50 mt-1 w-full rounded-xl bg-neutral-900/95 backdrop-blur border border-white/20 overflow-hidden shadow-xl max-h-48 overflow-y-auto">
+        <ul className="absolute z-50 mt-1 w-full rounded-xl bg-white dark:bg-neutral-900 backdrop-blur border border-neutral-200 dark:border-white/20 overflow-hidden shadow-xl max-h-48 overflow-y-auto">
           {suggestions.map((s) => (
             <li
               key={s.place_id}
@@ -100,7 +100,7 @@ export default function LocationAutocomplete({
                 e.preventDefault()
                 handleSelect(s)
               }}
-              className="px-4 py-3 text-white/90 hover:bg-white/10 cursor-pointer text-sm border-b border-white/5 last:border-0"
+              className="px-4 py-3 text-neutral-900 dark:text-white/90 hover:bg-neutral-100 dark:hover:bg-white/10 cursor-pointer text-sm border-b border-neutral-100 dark:border-white/5 last:border-0"
             >
               {s.display_name}
             </li>
@@ -109,7 +109,7 @@ export default function LocationAutocomplete({
       )}
       {loading && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+          <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 dark:border-white/30 border-t-orange-500 dark:border-t-white" />
         </div>
       )}
     </div>

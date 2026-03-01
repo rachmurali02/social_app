@@ -138,38 +138,38 @@ export default function InvitationsPage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-950">
+        <div className="text-neutral-600 dark:text-white text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div className="min-w-0">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white mb-1 truncate">Meetup Invitations</h1>
-            <p className="text-white/70 text-sm sm:text-base">Respond to your pending invitations</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-900 dark:text-white mb-1 truncate">Meetup Invitations</h1>
+            <p className="text-neutral-600 dark:text-white/70 text-sm sm:text-base">Respond to your pending invitations</p>
           </div>
           <Link
             href="/dashboard"
-            className="shrink-0 min-h-[44px] glass-panel px-4 sm:px-6 py-3 rounded-2xl text-white hover:bg-white/[0.08] transition-all flex items-center justify-center font-medium"
+            className="shrink-0 min-h-[44px] glass-panel px-4 sm:px-6 py-3 rounded-2xl text-neutral-900 dark:text-white hover:bg-neutral-200 dark:hover:bg-white/[0.08] transition-all flex items-center justify-center font-medium"
           >
             ← Dashboard
           </Link>
         </div>
 
         {loading ? (
-          <div className="text-center text-white/80 py-12">Loading invitations...</div>
+          <div className="text-center text-neutral-600 dark:text-white/80 py-12">Loading invitations...</div>
         ) : invitations.length === 0 ? (
           <div className="glass-panel rounded-2xl sm:rounded-3xl p-6 sm:p-12 text-center">
-            <Calendar className="mx-auto mb-4 text-white/40" size={48} />
-            <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">No Pending Invitations</h2>
-            <p className="text-white/70 text-sm sm:text-base mb-6">You&apos;re all caught up! Check back later.</p>
+            <Calendar className="mx-auto mb-4 text-neutral-300 dark:text-white/40" size={48} />
+            <h2 className="text-xl sm:text-2xl font-semibold text-neutral-900 dark:text-white mb-2">No Pending Invitations</h2>
+            <p className="text-neutral-600 dark:text-white/70 text-sm sm:text-base mb-6">You&apos;re all caught up! Check back later.</p>
             <Link
               href="/meetup"
-              className="inline-block min-h-[44px] bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-lg transition-all"
+              className="inline-block min-h-[44px] bg-gradient-to-r from-orange-500 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-lg transition-all"
             >
               Plan Your Own Meetup
             </Link>
@@ -183,14 +183,14 @@ export default function InvitationsPage() {
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white font-bold text-base shrink-0 overflow-hidden">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-200 dark:bg-white/10 border border-neutral-300 dark:border-white/20 flex items-center justify-center text-neutral-900 dark:text-white font-bold text-base shrink-0 overflow-hidden">
                       {(invitation.meetup.creator.name || invitation.meetup.creator.email)[0].toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-white font-semibold text-base sm:text-lg truncate">
+                      <p className="text-neutral-900 dark:text-white font-semibold text-base sm:text-lg truncate">
                         {invitation.meetup.creator.name || invitation.meetup.creator.email} invited you
                       </p>
-                      <p className="text-white/60 text-xs sm:text-sm">
+                      <p className="text-neutral-500 dark:text-white/60 text-xs sm:text-sm">
                         {new Date(invitation.createdAt).toLocaleDateString('en-US', {
                           weekday: 'short',
                           month: 'short',
@@ -210,22 +210,22 @@ export default function InvitationsPage() {
                       </button>
                       <button
                         onClick={() => handleDecline(invitation.id)}
-                        className="flex-1 sm:flex-none min-h-[44px] bg-red-500/80 hover:bg-red-600 text-white px-4 sm:px-6 py-3 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
+                        className="flex-1 sm:flex-none min-h-[44px] bg-red-500 hover:bg-red-600 text-white px-4 sm:px-6 py-3 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
                       >
                         <X size={18} /> Decline
                       </button>
                     </div>
                   )}
                   {invitation.status === 'confirmed' && (
-                    <div className="bg-green-500/20 border border-green-400/30 px-3 py-2 rounded-xl sm:rounded-full self-start">
-                      <span className="text-green-300 font-semibold flex items-center gap-2 text-sm">
+                    <div className="bg-green-100 dark:bg-green-500/20 border border-green-300 dark:border-green-400/30 px-3 py-2 rounded-xl sm:rounded-full self-start">
+                      <span className="text-green-700 dark:text-green-300 font-semibold flex items-center gap-2 text-sm">
                         <Check size={14} /> Confirmed
                       </span>
                     </div>
                   )}
                   {invitation.status === 'declined' && (
-                    <div className="bg-red-500/20 border border-red-400/30 px-3 py-2 rounded-xl sm:rounded-full self-start">
-                      <span className="text-red-300 font-semibold flex items-center gap-2 text-sm">
+                    <div className="bg-red-100 dark:bg-red-500/20 border border-red-300 dark:border-red-400/30 px-3 py-2 rounded-xl sm:rounded-full self-start">
+                      <span className="text-red-700 dark:text-red-300 font-semibold flex items-center gap-2 text-sm">
                         <X size={14} /> Declined
                       </span>
                     </div>
@@ -233,13 +233,13 @@ export default function InvitationsPage() {
                 </div>
 
                 {invitation.meetup.selectedOption && (
-                  <div className="bg-white/[0.06] rounded-2xl p-4 sm:p-6 border border-white/[0.08]">
+                  <div className="bg-neutral-50 dark:bg-white/[0.06] rounded-2xl p-4 sm:p-6 border border-neutral-200 dark:border-white/[0.08]">
                     <div className="mb-4">
-                      <h3 className="text-lg sm:text-xl font-semibold text-white mb-1 truncate">
+                      <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-white mb-1 truncate">
                         {invitation.meetup.selectedOption.name}
                       </h3>
-                      <p className="text-white/70 text-sm mb-3 line-clamp-2">{invitation.meetup.selectedOption.address}</p>
-                      <div className="flex flex-wrap gap-3 sm:gap-4 text-white/90 text-sm">
+                      <p className="text-neutral-600 dark:text-white/70 text-sm mb-3 line-clamp-2">{invitation.meetup.selectedOption.address}</p>
+                      <div className="flex flex-wrap gap-3 sm:gap-4 text-neutral-700 dark:text-white/90 text-sm">
                         <span className="flex items-center gap-1.5">
                           <Star size={16} fill="gold" stroke="gold" />
                           {Number(invitation.meetup.selectedOption.rating).toFixed(1)}/5
@@ -255,9 +255,9 @@ export default function InvitationsPage() {
                       </div>
                     </div>
 
-                    <div className="bg-blue-500/10 border border-blue-400/20 rounded-xl p-3 sm:p-4 mb-4">
-                      <p className="text-blue-200 font-medium text-sm mb-1">💡 {invitation.meetup.selectedOption.popularity}</p>
-                      <p className="text-white/70 text-sm italic line-clamp-2">&quot;{invitation.meetup.selectedOption.reason}&quot;</p>
+                    <div className="bg-amber-50 dark:bg-blue-500/10 border border-amber-200 dark:border-blue-400/20 rounded-xl p-3 sm:p-4 mb-4">
+                      <p className="text-amber-800 dark:text-blue-200 font-medium text-sm mb-1">💡 {invitation.meetup.selectedOption.popularity}</p>
+                      <p className="text-neutral-600 dark:text-white/70 text-sm italic line-clamp-2">&quot;{invitation.meetup.selectedOption.reason}&quot;</p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -265,7 +265,7 @@ export default function InvitationsPage() {
                         href={invitation.meetup.selectedOption.mapUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="min-h-[44px] bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
+                        className="min-h-[44px] bg-neutral-200 dark:bg-white/10 hover:bg-neutral-300 dark:hover:bg-white/20 text-neutral-900 dark:text-white px-4 py-3 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
                       >
                         <MapPin size={18} /> View on Map
                       </a>

@@ -56,21 +56,21 @@ export default function MeetupDetailPage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-950">
+        <div className="text-neutral-600 dark:text-white text-xl">Loading...</div>
       </div>
     )
   }
 
   if (loading || !meetup) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gradient-to-b from-black via-neutral-950 to-black">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-neutral-100 dark:bg-neutral-950">
         {loading ? (
-          <Loader2 className="animate-spin text-white" size={40} />
+          <Loader2 className="animate-spin text-neutral-400 dark:text-white" size={40} />
         ) : (
-          <p className="text-white/80">Meetup not found</p>
+          <p className="text-neutral-500 dark:text-white/80">Meetup not found</p>
         )}
-        <Link href="/meetups" className="text-blue-400 hover:text-blue-300">
+        <Link href="/meetups" className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300">
           Back to Meetups
         </Link>
       </div>
@@ -145,11 +145,11 @@ export default function MeetupDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/meetups"
-          className="inline-flex items-center gap-2 text-white/90 hover:text-white p-4 -mx-4 transition-colors"
+          className="inline-flex items-center gap-2 text-neutral-700 dark:text-white/90 hover:text-neutral-900 dark:hover:text-white p-4 -mx-4 transition-colors"
         >
           <ArrowLeft size={22} /> Back
         </Link>
@@ -184,12 +184,12 @@ export default function MeetupDetailPage() {
         <div className="px-4 space-y-4">
           <div className="glass-panel rounded-2xl p-5 space-y-4 mx-4 -mt-2">
           {address && (
-            <div className="flex items-start gap-3 text-white/90">
+            <div className="flex items-start gap-3 text-neutral-800 dark:text-white/90">
               <MapPin size={20} className="shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium">Location</p>
                 {mapUrl ? (
-                  <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+                  <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline dark:text-orange-400">
                     {address}
                   </a>
                 ) : (
@@ -199,7 +199,7 @@ export default function MeetupDetailPage() {
             </div>
           )}
           {time && (
-            <div className="flex items-center gap-3 text-white/90">
+            <div className="flex items-center gap-3 text-neutral-800 dark:text-white/90">
               <Clock size={20} className="shrink-0" />
               <div>
                 <p className="font-medium">Time</p>
@@ -207,14 +207,14 @@ export default function MeetupDetailPage() {
               </div>
             </div>
           )}
-          <div className="flex items-start gap-3 text-white/90">
+          <div className="flex items-start gap-3 text-neutral-800 dark:text-white/90">
             <Users size={20} className="shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">Participants</p>
               <p>
                 {isCreator ? 'Created by you' : `By ${meetup.creator.name || meetup.creator.email}`}
               </p>
-              <ul className="mt-1 text-white/70 text-sm space-y-1">
+              <ul className="mt-1 text-neutral-600 dark:text-white/70 text-sm space-y-1">
                 {meetup.participants.map((p) => (
                   <li key={p.user.id}>
                     {p.user.name || p.user.email} — {p.status}
@@ -227,7 +227,7 @@ export default function MeetupDetailPage() {
           {!isCreator && meetup.status !== 'cancelled' && meetup.participants.some((p) => p.user.id === session?.user?.id && p.status === 'pending') && (
             <Link
               href="/invitations"
-              className="block w-full py-3.5 rounded-2xl bg-blue-500 hover:bg-blue-500/90 text-white font-medium text-center transition-colors shadow-lg shadow-blue-500/25"
+              className="block w-full py-3.5 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-medium text-center transition-colors shadow-lg shadow-orange-500/25"
             >
               Respond to invitation
             </Link>
@@ -237,14 +237,14 @@ export default function MeetupDetailPage() {
               <button
                 onClick={() => setRescheduleOpen(true)}
                 disabled={busy}
-                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-medium transition-colors border border-white/20 disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-neutral-200 dark:bg-white/10 hover:bg-neutral-300 dark:hover:bg-white/20 text-neutral-900 dark:text-white font-medium transition-colors border border-neutral-300 dark:border-white/20 disabled:opacity-50"
               >
                 <CalendarClock size={20} /> Reschedule
               </button>
               <button
                 onClick={handleCancel}
                 disabled={busy}
-                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-500/20 hover:bg-red-500/30 text-red-200 font-medium transition-colors border border-red-500/30 disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/30 text-red-700 dark:text-red-200 font-medium transition-colors border border-red-300 dark:border-red-500/30 disabled:opacity-50"
               >
                 <CalendarX2 size={20} /> Cancel
               </button>
@@ -255,7 +255,7 @@ export default function MeetupDetailPage() {
               href={addToCalendar() || '#'}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-medium transition-colors border border-white/20"
+              className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl bg-neutral-200 dark:bg-white/10 hover:bg-neutral-300 dark:hover:bg-white/20 text-neutral-900 dark:text-white font-medium transition-colors border border-neutral-300 dark:border-white/20"
             >
               <Calendar size={20} /> Add to Calendar
             </a>
@@ -266,42 +266,42 @@ export default function MeetupDetailPage() {
 
       {rescheduleOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-neutral-900 border border-white/20 p-6 space-y-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/20 p-6 space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-white">Reschedule</h3>
-              <button onClick={() => setRescheduleOpen(false)} className="text-white/60 hover:text-white">
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">Reschedule</h3>
+              <button onClick={() => setRescheduleOpen(false)} className="text-neutral-500 dark:text-white/60 hover:text-neutral-900 dark:hover:text-white">
                 <X size={24} />
               </button>
             </div>
             <div>
-              <label className="block text-white/80 text-sm mb-1">Date</label>
+              <label className="block text-neutral-700 dark:text-white/80 text-sm mb-1">Date</label>
               <input
                 type="date"
                 value={rescheduleDate}
                 onChange={(e) => setRescheduleDate(e.target.value)}
-                className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white"
+                className="w-full p-3 rounded-xl bg-neutral-100 dark:bg-white/10 border border-neutral-300 dark:border-white/20 text-neutral-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-white/80 text-sm mb-1">Time</label>
+              <label className="block text-neutral-700 dark:text-white/80 text-sm mb-1">Time</label>
               <input
                 type="time"
                 value={rescheduleTime}
                 onChange={(e) => setRescheduleTime(e.target.value)}
-                className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white"
+                className="w-full p-3 rounded-xl bg-neutral-100 dark:bg-white/10 border border-neutral-300 dark:border-white/20 text-neutral-900 dark:text-white"
               />
             </div>
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setRescheduleOpen(false)}
-                className="flex-1 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20"
+                className="flex-1 py-3 rounded-xl bg-neutral-100 dark:bg-white/10 text-neutral-900 dark:text-white font-medium hover:bg-neutral-200 dark:hover:bg-white/20"
               >
                 Close
               </button>
               <button
                 onClick={handleReschedule}
                 disabled={busy}
-                className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-3 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {busy ? <Loader2 size={20} className="animate-spin" /> : null}
                 Save

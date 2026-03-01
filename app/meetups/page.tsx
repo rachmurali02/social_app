@@ -44,34 +44,34 @@ export default function MeetupsPage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-neutral-950 to-black">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-950">
+        <div className="text-neutral-600 dark:text-white text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-2 flex items-center gap-3">
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white mb-2 flex items-center gap-3">
           <Calendar size={28} /> Meetups
         </h1>
-        <p className="text-white/70 text-base mb-6">
+        <p className="text-neutral-600 dark:text-white/70 text-base mb-6">
           Your meetups and invitations
         </p>
 
         {loading ? (
-          <div className="flex flex-col items-center gap-3 py-12 text-white/80">
+          <div className="flex flex-col items-center gap-3 py-12 text-neutral-500 dark:text-white/80">
             <Loader2 className="animate-spin" size={40} />
             <p>Loading meetups...</p>
           </div>
         ) : meetups.length === 0 ? (
           <div className="text-center py-12 glass-panel rounded-2xl">
-            <Calendar className="mx-auto mb-4 text-white/40" size={56} />
-            <p className="text-white/80 text-base mb-4">No meetups yet</p>
+            <Calendar className="mx-auto mb-4 text-neutral-300 dark:text-white/40" size={56} />
+            <p className="text-neutral-600 dark:text-white/80 text-base mb-4">No meetups yet</p>
             <Link
               href="/meetup"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium"
+              className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 font-medium"
             >
               Create one <ChevronRight size={20} />
             </Link>
@@ -90,7 +90,7 @@ export default function MeetupsPage() {
                 <li key={m.id}>
                   <Link
                     href={`/meetups/${m.id}`}
-                    className="group block glass-panel rounded-2xl overflow-hidden hover:bg-white/[0.08] hover:shadow-card-hover transition-all duration-300"
+                    className="group block glass-panel rounded-2xl overflow-hidden hover:bg-neutral-200/60 dark:hover:bg-white/[0.08] hover:shadow-card-hover transition-all duration-300"
                   >
                     <div className="relative h-36 sm:h-44 overflow-hidden">
                       <Image
@@ -121,20 +121,20 @@ export default function MeetupsPage() {
                     <div className="p-4 flex items-center justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         {address && (
-                          <p className="text-white/70 text-sm flex items-center gap-1 truncate">
+                          <p className="text-neutral-600 dark:text-white/70 text-sm flex items-center gap-1 truncate">
                             <MapPin size={14} /> {address}
                           </p>
                         )}
                         {time && (
-                          <p className="text-white/70 text-sm flex items-center gap-1 mt-1">
+                          <p className="text-neutral-600 dark:text-white/70 text-sm flex items-center gap-1 mt-1">
                             <Clock size={14} /> {time}
                           </p>
                         )}
-                        <p className="text-white/60 text-sm flex items-center gap-1 mt-1">
+                        <p className="text-neutral-500 dark:text-white/60 text-sm flex items-center gap-1 mt-1">
                           <Users size={14} /> {m.participants.length} participant{m.participants.length !== 1 ? 's' : ''}
                         </p>
                       </div>
-                      <ChevronRight className="text-white/50 shrink-0" size={24} />
+                      <ChevronRight className="text-neutral-400 dark:text-white/50 shrink-0" size={24} />
                     </div>
                   </Link>
                 </li>
