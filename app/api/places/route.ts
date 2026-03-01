@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { geocode, fetchNearbyPlaces } from '../../../lib/places'
+import { enhancePlacesWithLlama } from '../../../lib/ai'
 
 const schema = z.object({
   location: z.string().min(1),
@@ -44,7 +45,12 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    return NextResponse.json({ places })
+    const enhanced = await enhancePlacesWithLlama(places, {
+      activity,
+      location,
+    })
+
+    return NextResponse.json({ places: enhanced })
   } catch (error) {
     console.error('Places API error:', error)
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
