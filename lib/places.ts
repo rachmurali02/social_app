@@ -145,42 +145,50 @@ function isOpenAtTime(openingHours: string, time: string): boolean | null {
     Mo: 0, Tu: 1, We: 2, Th: 3, Fr: 4, Sa: 5, Su: 6,
   }
 
-  // Split rules by semicolons
-  const rules = openingHours.split(';').map((r) => r.trim()).filter(Boolean)
+  // Split on semicolons first, then split any segment on commas that precede a day-prefix
+  // e.g. "Mo-Fr 06:00-17:00, Sa-Su 07:00-13:00" → two rules
+  const rawSegments = openingHours.split(';').map((r) => r.trim()).filter(Boolean)
+  const rules: string[] = []
+  for (const seg of rawSegments) {
+    // Split on ", " only when followed by a day abbreviation (Mo,Tu,We,Th,Fr,Sa,Su)
+    const parts = seg.split(/,\s*(?=[A-Z][a-z])/)
+    for (const p of parts) rules.push(p.trim())
+
+  let parsedAnyTimeRule = false
 
   for (const rule of rules) {
     if (rule === '24/7') return true
 
-    // Match patterns like "Mo-Fr 08:00-22:00" or "Mo,We 10:00-20:00"
-    const m = rule.match(/^([A-Za-z,\-\s]+?)\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/)
-    if (!m) continue
+    // Match patterns with day prefix: "Mo-Fr 08:00-22:00" or "Mo,We 10:00-20:00"
+    const withDay = rule.match(/^([A-Za-z,\-\s]+?)\s+(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/)
+    // Match bare time range without day prefix: "08:00-20:00"
+    const bareTime = !withDay ? rule.match(/^(\d{1,2}:\d{2})-(\d{1,2}:\d{2})$/) : null
 
-    const dayPart = m[1].trim()
-    const openMin = (() => { const [h, mn] = m[2].split(':').map(Number); return h * 60 + mn })()
-    const closeMin = (() => { const [h, mn] = m[3].split(':').map(Number); return h * 60 + mn })()
+    if (!withDay && !bareTime) continue
 
-    // Expand day ranges
-    const dayTokens = dayPart.split(',').map((t) => t.trim())
-    const activeDays = new Set<number>()
-    for (const token of dayTokens) {
-      const rangeParts = token.split('-').map((d) => d.trim())
-      if (rangeParts.length === 2 && DAY_MAP[rangeParts[0]] !== undefined && DAY_MAP[rangeParts[1]] !== undefined) {
-        for (let d = DAY_MAP[rangeParts[0]]; d <= DAY_MAP[rangeParts[1]]; d++) activeDays.add(d)
-      } else if (DAY_MAP[token] !== undefined) {
-        activeDays.add(DAY_MAP[token])
-      }
+    parsedAnyTimeRule = true
+
+    let openPart: string, closePart: string
+    if (withDay) {
+      openPart = withDay[2]
+      closePart = withDay[3]
+    } else {
+      openPart = bareTime![1]
+      closePart = bareTime![2]
     }
 
-    // Check if the requested time is within this rule (any day)
+    const openMin = (() => { const [h, mn] = openPart.split(':').map(Number); return h * 60 + mn })()
+    const closeMin = (() => { const [h, mn] = closePart.split(':').map(Number); return h * 60 + mn })()
+
     const inTimeRange = closeMin > openMin
       ? reqMinutes >= openMin && reqMinutes < closeMin
-      : reqMinutes >= openMin || reqMinutes < closeMin // overnight
+      : reqMinutes >= openMin || reqMinutes < closeMin // overnight e.g. 20:00-02:00
 
     if (inTimeRange) return true
   }
 
-  // If we parsed at least one rule but none matched, place is closed at that time
-  return rules.some((r) => /\d{1,2}:\d{2}/.test(r)) ? false : null
+  // If we matched at least one time rule but none covered the requested time → closed
+  return parsedAnyTimeRule ? false : null
 }
 
 type PlaceIntent = 'coffee' | 'drinks' | 'dessert' | 'default'
@@ -200,7 +208,15 @@ function toPlaceQuery(intent: PlaceIntent, activity: string): string {
   return activity || 'restaurant cafe bar'
 }
 
-async function fetchNearbyPlacesFoursquare(
+// Map our intent to Geoapify place categories
+function toGeoapifyCategories(intent: PlaceIntent): string {
+  if (intent === 'coffee') return 'catering.cafe,catering.coffee_shop'
+  if (intent === 'drinks') return 'catering.bar,catering.pub'
+  if (intent === 'dessert') return 'catering.ice_cream,catering.dessert,catering.bakery'
+  return 'catering.restaurant,catering.cafe,catering.bar,catering.fast_food'
+}
+
+async function fetchNearbyPlacesGeoapify(
   lat: number,
   lon: number,
   radiusM: number,
@@ -209,23 +225,25 @@ async function fetchNearbyPlacesFoursquare(
   excludeNames: string[],
   time?: string
 ): Promise<PlaceResult[] | null> {
-  const key = process.env.FOURSQUARE_API_KEY?.trim()
+  const key = process.env.GEOAPIFY_API_KEY?.trim()
   if (!key) return null
   try {
-    const query = toPlaceQuery(intent, activity)
+    const categories = toGeoapifyCategories(intent)
     const params = new URLSearchParams({
-      ll: `${lat},${lon}`,
-      radius: String(Math.min(radiusM, 100000)),
-      query,
-      limit: '15',
-      fields: 'name,location,geocodes,rating,popularity,link,hours',
+      categories,
+      filter: `circle:${lon},${lat},${Math.min(radiusM, 50000)}`,
+      bias: `proximity:${lon},${lat}`,
+      limit: '20',
+      apiKey: key,
     })
-    const res = await fetch(`https://api.foursquare.com/v3/places/search?${params}`, {
-      headers: { Authorization: key },
-    })
-    if (!res.ok) return null
+
+    const res = await fetch(`https://api.geoapify.com/v2/places?${params}`)
+    if (!res.ok) {
+      console.error('Geoapify error:', res.status, await res.text())
+      return null
+    }
     const data = await res.json()
-    const items = data.results || []
+    const features = data.features || []
     const excludeSet = new Set(excludeNames.map((n) => n.toLowerCase()))
     const results: PlaceResult[] = []
     const seen = new Set<string>()
@@ -233,39 +251,34 @@ async function fetchNearbyPlacesFoursquare(
     const [reqHour, reqMin] = (time || '').split(':').map(Number)
     const reqMinutes = !isNaN(reqHour) ? reqHour * 60 + (reqMin || 0) : null
 
-    for (const p of items) {
-      const name = p.name || 'Unnamed place'
+    for (const f of features) {
+      const props = f.properties || {}
+      const name = props.name || props.brand || 'Unnamed place'
       if (seen.has(name.toLowerCase()) || excludeSet.has(name.toLowerCase())) continue
       seen.add(name.toLowerCase())
 
-      // Filter by Foursquare hours if we have a time and hours data
-      if (reqMinutes !== null && p.hours?.regular) {
-        // Check all day entries (Foursquare doesn't tell us what day to use so we check any)
-        const openAtAny = (p.hours.regular as Array<{ open: string; close: string }>).some((slot) => {
-          const open = parseInt(slot.open, 10)
-          const close = parseInt(slot.close, 10)
-          const openM = Math.floor(open / 100) * 60 + (open % 100)
-          const closeM = Math.floor(close / 100) * 60 + (close % 100)
-          return closeM > openM
-            ? reqMinutes >= openM && reqMinutes < closeM
-            : reqMinutes >= openM || reqMinutes < closeM
-        })
-        if (!openAtAny) continue
+      // Filter by opening hours if available and time was provided
+      if (reqMinutes !== null && props.opening_hours) {
+        const open = isOpenAtTime(props.opening_hours, time!)
+        if (open === false) continue
       }
 
-      const geo = p.geocodes?.main
-      const lat2 = geo?.latitude ?? lat
-      const lon2 = geo?.longitude ?? lon
-      const addr = p.location?.formatted_address || p.location?.address || `${lat2.toFixed(4)}, ${lon2.toFixed(4)}`
-      const fsqRating = typeof p.rating === 'number' ? p.rating : null
-      const rating5 = fsqRating != null ? Math.round((fsqRating / 2) * 10) / 10 : Math.round((4.2 + Math.random() * 0.6) * 10) / 10
-      const mapUrl = p.link || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`
+      const addr = props.formatted || props.address_line2 || `${lat.toFixed(4)}, ${lon.toFixed(4)}`
+      const lon2 = f.geometry?.coordinates?.[0] ?? lon
+      const lat2 = f.geometry?.coordinates?.[1] ?? lat
+      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' ' + addr)}`
+
+      const rawRating = typeof props.rating === 'number' ? props.rating : null
+      const rating5 = rawRating != null
+        ? Math.round(rawRating * 10) / 10
+        : Math.round((4.0 + Math.random() * 0.8) * 10) / 10
+
       results.push({
         name,
         address: addr,
         rating: rating5,
-        popularity: typeof p.popularity === 'number' && p.popularity > 0.5 ? 'Popular spot' : 'Recommended nearby',
-        reason: `Good for ${activity}. ${fsqRating != null ? 'Rated by Foursquare.' : ''}`.trim(),
+        popularity: props.popularity && props.popularity > 0.5 ? 'Popular spot' : 'Recommended nearby',
+        reason: `Good for ${activity}. Nearby.`,
         mapUrl,
         isRecommended: results.length === 0,
       })
@@ -273,7 +286,7 @@ async function fetchNearbyPlacesFoursquare(
     }
     return results.length > 0 ? results : null
   } catch (e) {
-    console.error('Foursquare places error:', e)
+    console.error('Geoapify places error:', e)
     return null
   }
 }
@@ -289,8 +302,8 @@ export async function fetchNearbyPlaces(
   const radiusM = Math.min(radiusKm * 1000, 5000)
   const intent = classifyIntent(activity)
 
-  const foursquare = await fetchNearbyPlacesFoursquare(lat, lon, radiusM, activity, intent, excludeNames, time)
-  if (foursquare?.length) return foursquare
+  const geoapify = await fetchNearbyPlacesGeoapify(lat, lon, radiusM, activity, intent, excludeNames, time)
+  if (geoapify?.length) return geoapify
 
   let query: string
   if (intent === 'coffee') {
