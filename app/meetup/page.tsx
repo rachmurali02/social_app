@@ -64,6 +64,7 @@ function MeetupPageContent() {
   const [visitedPlaces, setVisitedPlaces] = useState<string[]>([])
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
+  const [isSwiping, setIsSwiping] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -132,25 +133,34 @@ function MeetupPageContent() {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX)
+    setTouchEnd(e.targetTouches[0].clientX)
+    setIsSwiping(false)
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX)
+    const current = e.targetTouches[0].clientX
+    setTouchEnd(current)
+    if (Math.abs(current - touchStart) > 10) setIsSwiping(true)
   }
 
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 75) {
+    const delta = touchStart - touchEnd
+    if (Math.abs(delta) < 50) {
+      setIsSwiping(false)
+      return
+    }
+    if (delta > 50) {
       setState((prev) => ({
         ...prev,
         activeTile: (prev.activeTile + 1) % prev.options.length,
       }))
-    }
-    if (touchStart - touchEnd < -75) {
+    } else if (delta < -50) {
       setState((prev) => ({
         ...prev,
         activeTile: prev.activeTile === 0 ? prev.options.length - 1 : prev.activeTile - 1,
       }))
     }
+    setIsSwiping(false)
   }
 
   const handleSubmitPreferences = async (prefs: Partial<UserPreferences>) => {
@@ -514,7 +524,7 @@ END:VCALENDAR`
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold text-neutral-900 dark:text-white text-center mb-8">Where should we go?</h2>
               <div
-                className="relative h-[500px] perspective-1000"
+                className="relative h-[460px] sm:h-[500px] perspective-1000"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -559,8 +569,11 @@ END:VCALENDAR`
                         </div>
                         <div className="flex gap-3">
                           <button
-                            onClick={() => handleSelectOption(option)}
-                            className="flex-1 btn-primary py-4 transition-all transform hover:scale-105"
+                            onPointerUp={(e) => {
+                              e.stopPropagation()
+                              if (!isSwiping) handleSelectOption(option)
+                            }}
+                            className="flex-1 btn-primary py-5 text-lg transition-all active:scale-95 touch-manipulation"
                           >
                             Select
                           </button>
@@ -568,7 +581,8 @@ END:VCALENDAR`
                             href={option.mapUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-white px-6 py-4 rounded-xl font-bold hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-all flex items-center gap-2"
+                            onPointerUp={(e) => e.stopPropagation()}
+                            className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-white px-6 py-5 rounded-xl font-bold hover:bg-neutral-200 dark:hover:bg-neutral-600 active:scale-95 transition-all flex items-center gap-2 touch-manipulation"
                           >
                             <MapPin size={20} /> Map
                           </a>
@@ -583,12 +597,17 @@ END:VCALENDAR`
                   <button
                     key={index}
                     onClick={() => setState((prev) => ({ ...prev, activeTile: index }))}
-                    className={`h-3 rounded-full transition-all ${
-                      index === state.activeTile
-                        ? 'w-12 bg-orange-500'
-                        : 'w-3 bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500'
-                    }`}
-                  />
+                    className="p-2 touch-manipulation flex items-center justify-center"
+                    aria-label={`Go to option ${index + 1}`}
+                  >
+                    <span
+                      className={`block h-3 rounded-full transition-all ${
+                        index === state.activeTile
+                          ? 'w-12 bg-orange-500'
+                          : 'w-3 bg-neutral-300 dark:bg-neutral-600'
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
             </div>
