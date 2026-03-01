@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair } from 'lucide-react'
+import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair, PenLine } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
 import LocationAutocomplete from '../components/LocationAutocomplete'
@@ -78,6 +78,24 @@ function MeetupPageContent() {
     const dd = String(now.getDate()).padStart(2, '0')
     return { time: `${hh}:${mm}`, date: `${yyyy}-${mo}-${dd}` }
   })()
+
+  const ACTIVITY_CHIPS = [
+    { label: '☕ Coffee', value: 'coffee' },
+    { label: '🍽 Food', value: 'food' },
+    { label: '🍻 Drinks', value: 'drinks' },
+    { label: '🍦 Dessert', value: 'dessert' },
+    { label: '🎳 Bowling', value: 'bowling' },
+    { label: '🎬 Cinema', value: 'cinema' },
+    { label: '🏃 Outdoors', value: 'outdoors' },
+    { label: '🛍 Shopping', value: 'shopping' },
+    { label: '🎮 Gaming', value: 'gaming' },
+    { label: '🎭 Arts', value: 'arts' },
+    { label: '💪 Fitness', value: 'fitness' },
+    { label: '✏️ Custom', value: '_custom' },
+  ]
+
+  const [selectedActivity, setSelectedActivity] = useState('coffee')
+  const [customActivity, setCustomActivity] = useState('')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -364,12 +382,15 @@ function MeetupPageContent() {
                   onSubmit={(e) => {
                     e.preventDefault()
                     const formData = new FormData(e.currentTarget)
+                    const activity = selectedActivity === '_custom'
+                      ? (customActivity.trim() || 'meetup')
+                      : selectedActivity
                     handleSubmitPreferences({
                       location: formData.get('location') as string,
                       radius: Number(formData.get('radius')),
                       time: formData.get('time') as string,
                       date: formData.get('date') as string,
-                      activity: formData.get('activity') as string,
+                      activity,
                     })
                   }}
                   className="space-y-5"
@@ -472,12 +493,34 @@ function MeetupPageContent() {
                       <Zap className="inline mr-2" size={20} />
                       Activity
                     </label>
-                    <input
-                      name="activity"
-                      defaultValue="coffee"
-                      className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
-                      required
-                    />
+                    <div className="flex flex-wrap gap-2">
+                      {ACTIVITY_CHIPS.map((chip) => (
+                        <button
+                          key={chip.value}
+                          type="button"
+                          onClick={() => setSelectedActivity(chip.value)}
+                          className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border touch-manipulation ${
+                            selectedActivity === chip.value
+                              ? 'bg-orange-500 border-orange-500 text-white shadow-md'
+                              : 'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-orange-400 dark:hover:border-orange-500'
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      ))}
+                    </div>
+                    {selectedActivity === '_custom' && (
+                      <div className="mt-3 flex items-center gap-2">
+                        <PenLine size={18} className="text-neutral-400 shrink-0" />
+                        <input
+                          type="text"
+                          value={customActivity}
+                          onChange={(e) => setCustomActivity(e.target.value)}
+                          placeholder="e.g. mini golf, karaoke, escape room…"
+                          className="flex-1 p-3 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                        />
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">

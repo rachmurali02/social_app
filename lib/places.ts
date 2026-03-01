@@ -188,29 +188,52 @@ function isOpenAtTime(openingHours: string, time: string): boolean | null {
   return parsedAnyTimeRule ? false : null
 }
 
-type PlaceIntent = 'coffee' | 'drinks' | 'dessert' | 'default'
+type PlaceIntent =
+  | 'coffee'
+  | 'food'
+  | 'drinks'
+  | 'dessert'
+  | 'bowling'
+  | 'cinema'
+  | 'outdoors'
+  | 'shopping'
+  | 'gaming'
+  | 'arts'
+  | 'fitness'
+  | 'default'
 
 function classifyIntent(activity: string): PlaceIntent {
   const lower = activity.toLowerCase()
   if (/[cç]afe|coffee|matcha|latte|espresso/.test(lower)) return 'coffee'
-  if (/bar|cocktail|wine|brewery|drinks?/.test(lower)) return 'drinks'
-  if (/dessert|ice cream|gelato|sweet/.test(lower)) return 'dessert'
+  if (/\bfood\b|restaurant|pizza|sushi|burger|brunch|lunch|dinner|eat/.test(lower)) return 'food'
+  if (/bar|cocktail|wine|brewery|drinks?|pub/.test(lower)) return 'drinks'
+  if (/dessert|ice.?cream|gelato|sweet|bakery/.test(lower)) return 'dessert'
+  if (/bowl/.test(lower)) return 'bowling'
+  if (/cinem|movie|film/.test(lower)) return 'cinema'
+  if (/outdoor|park|hike|trail|nature|walk/.test(lower)) return 'outdoors'
+  if (/shop|mall|market|retail/.test(lower)) return 'shopping'
+  if (/gam|arcade|esport/.test(lower)) return 'gaming'
+  if (/art|museum|gallery|theatre|theater|exhibit/.test(lower)) return 'arts'
+  if (/gym|fitness|sport|yoga|climb|pool|swim/.test(lower)) return 'fitness'
   return 'default'
-}
-
-function toPlaceQuery(intent: PlaceIntent, activity: string): string {
-  if (intent === 'coffee') return 'coffee cafe'
-  if (intent === 'drinks') return 'bar pub'
-  if (intent === 'dessert') return 'dessert ice cream bakery'
-  return activity || 'restaurant cafe bar'
 }
 
 // Map our intent to Geoapify place categories
 function toGeoapifyCategories(intent: PlaceIntent): string {
-  if (intent === 'coffee') return 'catering.cafe,catering.coffee_shop'
-  if (intent === 'drinks') return 'catering.bar,catering.pub'
-  if (intent === 'dessert') return 'catering.ice_cream,catering.dessert,catering.bakery'
-  return 'catering.restaurant,catering.cafe,catering.bar,catering.fast_food'
+  switch (intent) {
+    case 'coffee':   return 'catering.cafe,catering.coffee_shop'
+    case 'food':     return 'catering.restaurant,catering.fast_food,catering.food_court'
+    case 'drinks':   return 'catering.bar,catering.pub'
+    case 'dessert':  return 'catering.ice_cream,catering.dessert,catering.bakery'
+    case 'bowling':  return 'entertainment.bowling_alley'
+    case 'cinema':   return 'entertainment.cinema'
+    case 'outdoors': return 'leisure.park,natural,sport'
+    case 'shopping': return 'commercial.shopping_mall,commercial.clothing,commercial.marketplace'
+    case 'gaming':   return 'entertainment.amusement_arcade,entertainment.escape_game,entertainment.activity_park'
+    case 'arts':     return 'entertainment.museum,entertainment.gallery,entertainment.theatre'
+    case 'fitness':  return 'sport.fitness,sport.swimming_pool,sport.climbing,sport.yoga'
+    default:         return 'catering.restaurant,catering.cafe,catering.bar,catering.fast_food'
+  }
 }
 
 async function fetchNearbyPlacesGeoapify(
@@ -303,45 +326,32 @@ export async function fetchNearbyPlaces(
   if (geoapify?.length) return geoapify
 
   let query: string
+  const r = radiusM
+  const loc = `(around:${r},${lat},${lon})`
   if (intent === 'coffee') {
-    // Cafes, coffee shops, and roasters
-    query = `
-[out:json][timeout:15];
-(
-  nwr["amenity"="cafe"](around:${radiusM},${lat},${lon});
-  nwr["shop"="coffee"](around:${radiusM},${lat},${lon});
-  nwr["craft"="coffee_roaster"](around:${radiusM},${lat},${lon});
-);
-out center tags;
-    `.trim()
+    query = `[out:json][timeout:15];(nwr["amenity"="cafe"]${loc};nwr["shop"="coffee"]${loc};nwr["craft"="coffee_roaster"]${loc};);out center tags;`
+  } else if (intent === 'food') {
+    query = `[out:json][timeout:15];(nwr["amenity"~"^(restaurant|fast_food|food_court)$"]${loc};);out center tags;`
   } else if (intent === 'drinks') {
-    // Bars and pubs (optionally some restaurants)
-    query = `
-[out:json][timeout:15];
-(
-  nwr["amenity"~"^(bar|pub)$"](around:${radiusM},${lat},${lon});
-);
-out center tags;
-    `.trim()
+    query = `[out:json][timeout:15];(nwr["amenity"~"^(bar|pub)$"]${loc};);out center tags;`
   } else if (intent === 'dessert') {
-    // Ice cream and sweet shops
-    query = `
-[out:json][timeout:15];
-(
-  nwr["amenity"="ice_cream"](around:${radiusM},${lat},${lon});
-  nwr["shop"~"^(confectionery|bakery)$"](around:${radiusM},${lat},${lon});
-);
-out center tags;
-    `.trim()
+    query = `[out:json][timeout:15];(nwr["amenity"="ice_cream"]${loc};nwr["shop"~"^(confectionery|bakery)$"]${loc};);out center tags;`
+  } else if (intent === 'bowling') {
+    query = `[out:json][timeout:15];(nwr["leisure"="bowling_alley"]${loc};nwr["sport"="9pin"]${loc};nwr["sport"="10pin"]${loc};);out center tags;`
+  } else if (intent === 'cinema') {
+    query = `[out:json][timeout:15];(nwr["amenity"="cinema"]${loc};);out center tags;`
+  } else if (intent === 'outdoors') {
+    query = `[out:json][timeout:15];(nwr["leisure"~"^(park|nature_reserve|garden|playground)$"]${loc};nwr["natural"~"^(wood|water|peak)$"]${loc};);out center tags;`
+  } else if (intent === 'shopping') {
+    query = `[out:json][timeout:15];(nwr["shop"~"^(mall|department_store|supermarket|clothes|shoes|books)$"]${loc};nwr["amenity"="marketplace"]${loc};);out center tags;`
+  } else if (intent === 'gaming') {
+    query = `[out:json][timeout:15];(nwr["amenity"~"^(arcade|game)$"]${loc};nwr["leisure"~"^(escape_game|amusement_arcade)$"]${loc};nwr["shop"="games"]${loc};);out center tags;`
+  } else if (intent === 'arts') {
+    query = `[out:json][timeout:15];(nwr["tourism"~"^(museum|gallery|artwork)$"]${loc};nwr["amenity"~"^(theatre|arts_centre|cinema)$"]${loc};);out center tags;`
+  } else if (intent === 'fitness') {
+    query = `[out:json][timeout:15];(nwr["leisure"~"^(fitness_centre|sports_centre|swimming_pool|climbing|yoga)$"]${loc};nwr["sport"~"^(yoga|climbing|swimming)$"]${loc};);out center tags;`
   } else {
-    // General food/drink meetup
-    query = `
-[out:json][timeout:15];
-(
-  nwr["amenity"~"^(restaurant|cafe|bar|pub|fast_food|food_court)$"](around:${radiusM},${lat},${lon});
-);
-out center tags;
-    `.trim()
+    query = `[out:json][timeout:15];(nwr["amenity"~"^(restaurant|cafe|bar|pub|fast_food|food_court)$"]${loc};);out center tags;`
   }
 
   try {
