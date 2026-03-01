@@ -426,3 +426,42 @@ export async function sendMeetupAcceptedToCreator(params: {
     return false
   }
 }
+
+export async function sendAppInviteEmail(params: {
+  to: string
+  inviterName: string
+  appUrl: string
+  personalNote?: string
+}): Promise<boolean> {
+  const transporter = getTransporter()
+  if (!transporter) return false
+  try {
+    const { to, inviterName, appUrl, personalNote } = params
+    const noteLine = personalNote
+      ? `<p style="background:#f3f4f6;border-left:4px solid #f97316;padding:12px 16px;border-radius:4px;font-style:italic;">"${personalNote}"</p>`
+      : ''
+    await transporter.sendMail({
+      from: EMAIL_FROM,
+      to,
+      subject: `${inviterName} invited you to MeetUp AI`,
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;">
+          <h1 style="color:#f97316;">You're invited to MeetUp AI 🎉</h1>
+          <p>Hi there,</p>
+          <p><strong>${inviterName}</strong> wants to plan meetups with you on MeetUp AI — an app that uses AI to find the perfect spots to hang out.</p>
+          ${noteLine}
+          <p style="margin-top:20px;">
+            <a href="${appUrl}/login" style="background:linear-gradient(135deg,#f97316,#a855f7);color:#ffffff;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:700;display:inline-block;font-size:16px;">
+              Join for free →
+            </a>
+          </p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+        </div>
+      `,
+    })
+    return true
+  } catch (e) {
+    console.error('Send app invite email:', e)
+    return false
+  }
+}
