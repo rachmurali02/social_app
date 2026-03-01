@@ -81,10 +81,22 @@ export default function MeetupDetailPage() {
   const address = (meetup.selectedOption as { address?: string })?.address
   const mapUrl = (meetup.selectedOption as { mapUrl?: string })?.mapUrl
   const time = meetup.preferences?.time
+  const date = meetup.preferences?.date
   const activity = meetup.preferences?.activity
   const isCreator = meetup.creator.id === session?.user?.id
 
-  const dateForCalendar = meetup.preferences?.date || new Date().toISOString().split('T')[0]
+  const dateForCalendar = date || new Date().toISOString().split('T')[0]
+
+  const formattedDateTime = (() => {
+    if (!date && !time) return null
+    if (date && time) {
+      const dt = new Date(`${date}T${time}`)
+      return dt.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) +
+        ' at ' + dt.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+    }
+    if (date) return new Date(date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+    return time
+  })()
   const addToCalendar = () => {
     if (!time) return null
     const creatorName = meetup.creator.name || meetup.creator.email
@@ -198,12 +210,12 @@ export default function MeetupDetailPage() {
               </div>
             </div>
           )}
-          {time && (
+          {formattedDateTime && (
             <div className="flex items-center gap-3 text-neutral-800 dark:text-white/90">
               <Clock size={20} className="shrink-0" />
               <div>
-                <p className="font-medium">Time</p>
-                <p>{time}</p>
+                <p className="font-medium">Date &amp; Time</p>
+                <p>{formattedDateTime}</p>
               </div>
             </div>
           )}
@@ -250,7 +262,7 @@ export default function MeetupDetailPage() {
               </button>
             </div>
           )}
-          {time && meetup.status !== 'cancelled' && (
+          {(time || date) && meetup.status !== 'cancelled' && (
             <a
               href={addToCalendar() || '#'}
               target="_blank"

@@ -16,6 +16,7 @@ interface Invitation {
       location: string
       radius: number
       time: string
+      date?: string
       activity: string
     }
     selectedOption: {
@@ -113,26 +114,16 @@ export default function InvitationsPage() {
     const creatorName = invitation.meetup.creator.name || invitation.meetup.creator.email
     const youName = session?.user?.name || session?.user?.email || 'You'
     const withLine = `With: ${creatorName}, ${youName}`
-
-    const event = {
-      title: `Meetup at ${invitation.meetup.selectedOption.name}`,
-      description: `${invitation.meetup.preferences.activity} meetup\n${invitation.meetup.selectedOption.reason}\n\n${withLine}`,
-      location: invitation.meetup.selectedOption.address,
-      startTime: new Date(`${new Date().toISOString().split('T')[0]}T${invitation.meetup.preferences.time}`),
-      endTime: new Date(`${new Date().toISOString().split('T')[0]}T${invitation.meetup.preferences.time}`),
-    }
-
-    event.endTime.setHours(event.endTime.getHours() + 2)
-
-    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-      event.title
-    )}&dates=${event.startTime.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${event.endTime
-      .toISOString()
-      .replace(/[-:]/g, '')
-      .split('.')[0]}Z&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(
-      event.location
-    )}`
-
+    const prefs = invitation.meetup.preferences
+    const dateStr = prefs.date || new Date().toISOString().split('T')[0]
+    const timeStr = prefs.time || '18:00'
+    const startTime = new Date(`${dateStr}T${timeStr}`)
+    const endTime = new Date(startTime)
+    endTime.setHours(endTime.getHours() + 2)
+    const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+    const title = `Meetup at ${invitation.meetup.selectedOption.name}`
+    const description = `${prefs.activity} meetup\n${invitation.meetup.selectedOption.reason}\n\n${withLine}`
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${fmt(startTime)}/${fmt(endTime)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(invitation.meetup.selectedOption.address)}`
     return { googleCalendarUrl }
   }
 
@@ -246,7 +237,11 @@ export default function InvitationsPage() {
                         </span>
                         <span className="flex items-center gap-1.5">
                           <Clock size={16} />
-                          {invitation.meetup.preferences.time}
+                          {invitation.meetup.preferences.date && invitation.meetup.preferences.time
+                            ? new Date(`${invitation.meetup.preferences.date}T${invitation.meetup.preferences.time}`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' · ' + invitation.meetup.preferences.time
+                            : invitation.meetup.preferences.date
+                              ? new Date(invitation.meetup.preferences.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                              : invitation.meetup.preferences.time}
                         </span>
                         <span className="flex items-center gap-1.5">
                           <Users size={16} />

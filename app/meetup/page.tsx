@@ -12,6 +12,7 @@ interface UserPreferences {
   location: string
   radius: number
   time: string
+  date: string
   activity: string
   friendIds: string[]
 }
@@ -65,6 +66,18 @@ function MeetupPageContent() {
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const [isSwiping, setIsSwiping] = useState(false)
+
+  // Smart defaults: round current time up to next 30-min slot, today's date
+  const smartDefaults = (() => {
+    const now = new Date()
+    now.setMinutes(now.getMinutes() < 30 ? 30 : 60, 0, 0)
+    const hh = String(now.getHours()).padStart(2, '0')
+    const mm = String(now.getMinutes()).padStart(2, '0')
+    const yyyy = now.getFullYear()
+    const mo = String(now.getMonth() + 1).padStart(2, '0')
+    const dd = String(now.getDate()).padStart(2, '0')
+    return { time: `${hh}:${mm}`, date: `${yyyy}-${mo}-${dd}` }
+  })()
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -169,7 +182,8 @@ function MeetupPageContent() {
     const preferences: UserPreferences = {
       location: prefs.location || '',
       radius: prefs.radius || 5,
-      time: prefs.time || '18:00',
+      time: prefs.time || smartDefaults.time,
+      date: prefs.date || smartDefaults.date,
       activity: prefs.activity || '',
       friendIds: state.selectedFriends,
     }
@@ -269,35 +283,20 @@ function MeetupPageContent() {
     const attendeeList = [youName, ...friendNames].join(', ')
     const withLine = `With: ${attendeeList}`
 
-    const event = {
-      title: `Meetup at ${state.selectedOption.name}`,
-      description: `${state.preferences.activity} meetup\n${state.selectedOption.reason}\n\n${withLine}`,
-      location: state.selectedOption.address,
-      startTime: new Date(`${new Date().toISOString().split('T')[0]}T${state.preferences.time}`),
-      endTime: new Date(`${new Date().toISOString().split('T')[0]}T${state.preferences.time}`),
-    }
+    const dateStr = state.preferences.date || new Date().toISOString().split('T')[0]
+    const timeStr = state.preferences.time || '18:00'
 
-    event.endTime.setHours(event.endTime.getHours() + 2)
+    const startTime = new Date(`${dateStr}T${timeStr}`)
+    const endTime = new Date(startTime)
+    endTime.setHours(endTime.getHours() + 2)
 
-    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-      event.title
-    )}&dates=${event.startTime.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${event.endTime
-      .toISOString()
-      .replace(/[-:]/g, '')
-      .split('.')[0]}Z&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(
-      event.location
-    )}`
+    const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+    const title = `Meetup at ${state.selectedOption.name}`
+    const description = `${state.preferences.activity} meetup\n${state.selectedOption.reason}\n\n${withLine}`
 
-    const icalData = `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-DTSTART:${event.startTime.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-DTEND:${event.endTime.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-SUMMARY:${event.title}
-DESCRIPTION:${event.description.replace(/\n/g, '\\n')}
-LOCATION:${event.location}
-END:VEVENT
-END:VCALENDAR`
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${fmt(startTime)}/${fmt(endTime)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(state.selectedOption.address)}`
+
+    const icalData = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${fmt(startTime)}\nDTEND:${fmt(endTime)}\nSUMMARY:${title}\nDESCRIPTION:${description.replace(/\n/g, '\\n')}\nLOCATION:${state.selectedOption.address}\nEND:VEVENT\nEND:VCALENDAR`
 
     return { googleCalendarUrl, icalData }
   }
@@ -369,6 +368,7 @@ END:VCALENDAR`
                       location: formData.get('location') as string,
                       radius: Number(formData.get('radius')),
                       time: formData.get('time') as string,
+                      date: formData.get('date') as string,
                       activity: formData.get('activity') as string,
                     })
                   }}
@@ -423,7 +423,7 @@ END:VCALENDAR`
                       </button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
                         <TrendingUp className="inline mr-2" size={20} />
@@ -441,13 +441,27 @@ END:VCALENDAR`
                     </div>
                     <div>
                       <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
+                        <Calendar className="inline mr-2" size={20} />
+                        Date
+                      </label>
+                      <input
+                        name="date"
+                        type="date"
+                        defaultValue={smartDefaults.date}
+                        min={smartDefaults.date}
+                        className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
                         <Clock className="inline mr-2" size={20} />
                         Time
                       </label>
                       <input
                         name="time"
                         type="time"
-                        defaultValue="18:00"
+                        defaultValue={smartDefaults.time}
                         className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
@@ -618,8 +632,18 @@ END:VCALENDAR`
               <div className="glass-panel rounded-3xl p-8">
                 <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">🎉 Activity Selected!</h2>
                 <div className="bg-gradient-to-r from-orange-50 to-purple-50 dark:from-orange-900/30 dark:to-purple-900/30 rounded-2xl p-6 mb-6 border border-neutral-200 dark:border-neutral-600">
-                  <p className="text-neutral-900 dark:text-white text-lg mb-2">📍 {state.selectedOption.name}</p>
-                  <p className="text-neutral-600 dark:text-neutral-400 mb-3">{state.selectedOption.address}</p>
+                  <p className="text-neutral-900 dark:text-white text-lg mb-1">📍 {state.selectedOption.name}</p>
+                  <p className="text-neutral-600 dark:text-neutral-400 mb-1">{state.selectedOption.address}</p>
+                  {state.preferences?.date && state.preferences?.time && (
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+                      🗓 {new Date(`${state.preferences.date}T${state.preferences.time}`).toLocaleDateString(undefined, {
+                        weekday: 'short', month: 'short', day: 'numeric',
+                      })}{' '}at{' '}
+                      {new Date(`${state.preferences.date}T${state.preferences.time}`).toLocaleTimeString(undefined, {
+                        hour: '2-digit', minute: '2-digit',
+                      })}
+                    </p>
+                  )}
                   <div className="flex gap-3 mt-4">
                     <button
                       onClick={() => {
@@ -667,9 +691,19 @@ END:VCALENDAR`
               <div className="glass-panel rounded-3xl p-12 text-center border-2 border-green-200 dark:border-green-700/50">
                 <div className="text-7xl mb-6 animate-bounce">🎉</div>
                 <h2 className="text-4xl font-black text-neutral-900 dark:text-white mb-4">All Set!</h2>
-                <p className="text-neutral-700 dark:text-neutral-300 text-xl mb-6">
+                <p className="text-neutral-700 dark:text-neutral-300 text-xl mb-2">
                   Meetup at <span className="font-bold">{state.selectedOption.name}</span>
                 </p>
+                {state.preferences?.date && state.preferences?.time && (
+                  <p className="text-neutral-500 dark:text-neutral-400 text-base mb-4">
+                    {new Date(`${state.preferences.date}T${state.preferences.time}`).toLocaleDateString(undefined, {
+                      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+                    })}{' '}at{' '}
+                    {new Date(`${state.preferences.date}T${state.preferences.time}`).toLocaleTimeString(undefined, {
+                      hour: '2-digit', minute: '2-digit',
+                    })}
+                  </p>
+                )}
                 {state.selectedFriends.length > 0 && (
                   <p className="text-neutral-600 dark:text-neutral-400 mb-4">
                     + {state.selectedFriends.length} friend{state.selectedFriends.length > 1 ? 's' : ''}{' '}
@@ -680,17 +714,35 @@ END:VCALENDAR`
                   <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4 text-neutral-900 dark:text-white flex items-center justify-between border border-neutral-200 dark:border-neutral-600">
                     <div className="flex items-center gap-2">
                       <Calendar className="inline" />
-                      <span>Calendar Event</span>
+                      <span>Add to Calendar</span>
                     </div>
-                    <button
-                      onClick={() => {
-                        const cal = addToCalendar()
-                        if (cal) window.open(cal.googleCalendarUrl, '_blank')
-                      }}
-                      className="btn-primary px-4 py-2 text-sm"
-                    >
-                      Open Calendar
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          const cal = addToCalendar()
+                          if (cal) window.open(cal.googleCalendarUrl, '_blank')
+                        }}
+                        className="btn-primary px-4 py-2 text-sm"
+                      >
+                        Google
+                      </button>
+                      <button
+                        onClick={() => {
+                          const cal = addToCalendar()
+                          if (cal) {
+                            const blob = new Blob([cal.icalData], { type: 'text/calendar' })
+                            const url = URL.createObjectURL(blob)
+                            const a = document.createElement('a')
+                            a.href = url
+                            a.download = 'meetup.ics'
+                            a.click()
+                          }
+                        }}
+                        className="bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white px-4 py-2 rounded-lg font-semibold transition-all text-sm"
+                      >
+                        .ics
+                      </button>
+                    </div>
                   </div>
                   <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4 text-neutral-900 dark:text-white flex items-center justify-between border border-neutral-200 dark:border-neutral-600">
                     <div className="flex items-center gap-2">
