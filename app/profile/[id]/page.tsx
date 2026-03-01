@@ -5,7 +5,9 @@ import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { User, ArrowLeft, Calendar, MapPin, Clock, ChevronRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import BottomNav from '../../components/BottomNav'
+import { classifyActivity, getActivityPhotoUrl, CATEGORY_EMOJI } from '../../../lib/activityPhoto'
 
 type Meetup = {
   id: string
@@ -27,48 +29,45 @@ type UserProfile = {
   upcomingMeetups: Meetup[]
 }
 
-function getActivityGradient(activity?: string): { gradient: string; emoji: string } {
-  const a = (activity || '').toLowerCase()
-  if (/coffee|cafe|latte|espresso/.test(a)) return { gradient: 'from-amber-700 to-amber-500', emoji: '☕' }
-  if (/food|restaurant|pizza|sushi|dinner|lunch|brunch|eat/.test(a)) return { gradient: 'from-orange-600 to-rose-500', emoji: '🍽' }
-  if (/bar|drinks|pub|cocktail|wine|brewery/.test(a)) return { gradient: 'from-purple-700 to-indigo-600', emoji: '🍻' }
-  if (/dessert|ice.?cream|gelato|sweet|bakery/.test(a)) return { gradient: 'from-pink-500 to-rose-400', emoji: '🍦' }
-  if (/bowl/.test(a)) return { gradient: 'from-blue-600 to-cyan-500', emoji: '🎳' }
-  if (/cinem|movie|film/.test(a)) return { gradient: 'from-neutral-800 to-neutral-600', emoji: '🎬' }
-  if (/outdoor|park|hike|trail|nature|walk/.test(a)) return { gradient: 'from-green-700 to-emerald-500', emoji: '🏃' }
-  if (/shop|mall|market|retail/.test(a)) return { gradient: 'from-fuchsia-600 to-pink-500', emoji: '🛍' }
-  if (/gam|arcade|esport/.test(a)) return { gradient: 'from-violet-700 to-purple-500', emoji: '🎮' }
-  if (/art|museum|gallery|theatre|theater/.test(a)) return { gradient: 'from-teal-600 to-cyan-500', emoji: '🎭' }
-  if (/gym|fitness|sport|yoga|climb|pool|swim/.test(a)) return { gradient: 'from-red-600 to-orange-500', emoji: '💪' }
-  return { gradient: 'from-orange-500 to-purple-600', emoji: '✨' }
-}
-
 function MeetupCard({ m }: { m: Meetup }) {
   const placeName = (m.selectedOption as { name?: string })?.name || m.preferences?.activity || 'Meetup'
   const address = (m.selectedOption as { address?: string })?.address
   const time = m.preferences?.time
   const activity = m.preferences?.activity
-  const { gradient, emoji } = getActivityGradient(activity)
+  const category = classifyActivity(activity)
+  const photoUrl = getActivityPhotoUrl(category, 400, 200)
+  const emoji = CATEGORY_EMOJI[category]
 
   return (
     <Link
       href={`/meetups/${m.id}`}
       className="block glass-panel rounded-2xl overflow-hidden hover:bg-neutral-200/60 dark:hover:bg-white/[0.08] transition-all"
     >
-      <div className={`relative h-24 bg-gradient-to-br ${gradient} flex items-center justify-between px-4`}>
-        <div className="min-w-0">
-          <h3 className="text-white font-semibold truncate">{placeName}</h3>
-          <p className="text-white/80 text-sm capitalize">{activity || 'Meetup'}</p>
-        </div>
-        <div className="shrink-0 flex flex-col items-end gap-1.5 ml-3">
-          <span className="text-2xl">{emoji}</span>
-          <span
-            className={`px-2 py-0.5 rounded text-xs font-medium ${
-              m.status === 'confirmed' ? 'bg-black/30 text-emerald-200' : 'bg-black/20 text-amber-100'
-            }`}
-          >
-            {m.status === 'confirmed' ? 'Confirmed' : 'Pending'}
-          </span>
+      <div className="relative h-24 overflow-hidden">
+        <Image
+          src={photoUrl}
+          alt={activity || 'Meetup'}
+          fill
+          sizes="(max-width: 640px) 50vw, 300px"
+          className="object-cover"
+          unoptimized
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
+          <div className="min-w-0">
+            <h3 className="text-white font-semibold truncate drop-shadow text-sm">{placeName}</h3>
+            <p className="text-white/80 text-xs capitalize">{activity || 'Meetup'}</p>
+          </div>
+          <div className="shrink-0 flex flex-col items-end gap-1 ml-2">
+            <span className="text-lg">{emoji}</span>
+            <span
+              className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                m.status === 'confirmed' ? 'bg-black/40 text-emerald-200' : 'bg-black/30 text-amber-100'
+              }`}
+            >
+              {m.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+            </span>
+          </div>
         </div>
       </div>
       <div className="p-3 space-y-1">
