@@ -324,24 +324,24 @@ END:VCALENDAR`
 
   if (status === 'loading' || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-100">
-        <div className="text-neutral-600 text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-950">
+        <div className="text-neutral-600 dark:text-neutral-400 text-xl">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-neutral-100">
+    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950">
       <div className="relative z-10 p-6 pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-5xl font-black text-neutral-900 mb-2">MeetUp AI</h1>
-              <p className="text-neutral-600 text-lg">Plan your meetup</p>
+              <h1 className="text-5xl font-black text-neutral-900 dark:text-white mb-2">MeetUp AI</h1>
+              <p className="text-neutral-600 dark:text-neutral-400 text-lg">Plan your meetup</p>
             </div>
             <Link
               href="/dashboard"
-              className="glass-panel px-6 py-3 rounded-xl text-neutral-900 hover:shadow-md transition-all"
+              className="glass-panel px-6 py-3 rounded-xl text-neutral-900 dark:text-white hover:shadow-md transition-all"
             >
               ← Dashboard
             </Link>
@@ -350,7 +350,7 @@ END:VCALENDAR`
           {state.step === 'setup' && (
             <div className="max-w-2xl mx-auto">
               <div className="glass-panel rounded-3xl p-8">
-                <h2 className="text-3xl font-bold text-neutral-900 mb-6">Plan Your Meetup</h2>
+                <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mb-6">Plan Your Meetup</h2>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -365,7 +365,7 @@ END:VCALENDAR`
                   className="space-y-5"
                 >
                   <div>
-                    <label className="block text-neutral-900 font-semibold mb-2">
+                    <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
                       <MapPin className="inline mr-2" size={20} />
                       Location
                     </label>
@@ -378,7 +378,7 @@ END:VCALENDAR`
                         key={defaultLocation}
                         defaultValue={defaultLocation || ''}
                         placeholder="e.g. Virginia, USA or Dubai Marina"
-                        className="flex-1 p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        className="flex-1 p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
                       <button
@@ -402,7 +402,7 @@ END:VCALENDAR`
                           )
                         }}
                         disabled={locationLoading}
-                        className="shrink-0 p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50 disabled:opacity-50 flex items-center"
+                        className="shrink-0 p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 flex items-center"
                         title="Use my location"
                       >
                         {locationLoading ? (
@@ -415,7 +415,7 @@ END:VCALENDAR`
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-neutral-900 font-semibold mb-2">
+                      <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
                         <TrendingUp className="inline mr-2" size={20} />
                         Radius (km)
                       </label>
@@ -425,12 +425,12 @@ END:VCALENDAR`
                         min="1"
                         max="50"
                         defaultValue="5"
-                        className="w-full p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-neutral-900 font-semibold mb-2">
+                      <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
                         <Clock className="inline mr-2" size={20} />
                         Time
                       </label>
@@ -438,36 +438,36 @@ END:VCALENDAR`
                         name="time"
                         type="time"
                         defaultValue="18:00"
-                        className="w-full p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-neutral-900 font-semibold mb-2">
+                    <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
                       <Zap className="inline mr-2" size={20} />
                       Activity
                     </label>
                     <input
                       name="activity"
                       defaultValue="coffee"
-                      className="w-full p-4 rounded-xl bg-white border border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                      className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-neutral-900 font-semibold mb-2">
+                    <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
                       <Users className="inline mr-2" size={20} />
                       Invite Friends
                     </label>
-                    <div className="bg-neutral-50 rounded-xl p-4 border border-neutral-200 max-h-48 overflow-y-auto space-y-2">
+                    <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 max-h-48 overflow-y-auto space-y-2">
                       {friends.length === 0 ? (
-                        <p className="text-neutral-600 text-sm">No friends yet. <Link href="/discover" className="text-orange-600 underline">Discover people</Link></p>
+                        <p className="text-neutral-600 dark:text-neutral-400 text-sm">No friends yet. <Link href="/discover" className="text-orange-500 underline">Discover people</Link></p>
                       ) : (
                         friends.map((friend) => (
                           <label
                             key={friend.id}
-                            className="flex items-center gap-3 cursor-pointer hover:bg-neutral-100 p-2 rounded-lg"
+                            className="flex items-center gap-3 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-700/50 p-2 rounded-lg"
                           >
                             <input
                               type="checkbox"
@@ -478,17 +478,17 @@ END:VCALENDAR`
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
                               {(friend.name || friend.email)[0].toUpperCase()}
                             </div>
-                            <span className="text-neutral-900">{friend.name || friend.email}</span>
+                            <span className="text-neutral-900 dark:text-neutral-100">{friend.name || friend.email}</span>
                           </label>
                         ))
                       )}
                     </div>
                   </div>
                   {loading && (
-                    <div className="flex flex-col items-center gap-3 py-4 text-neutral-600">
+                    <div className="flex flex-col items-center gap-3 py-4 text-neutral-600 dark:text-neutral-400">
                       <Loader2 className="animate-spin" size={40} />
                       <p className="font-semibold">Finding spots...</p>
-                      <p className="text-neutral-500 text-sm">Searching nearby for {state.preferences?.activity || 'places'}</p>
+                      <p className="text-neutral-500 dark:text-neutral-500 text-sm">Searching nearby for {state.preferences?.activity || 'places'}</p>
                     </div>
                   )}
                   <button
@@ -512,7 +512,7 @@ END:VCALENDAR`
 
           {state.step === 'options' && state.options.length > 0 && (
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold text-neutral-900 text-center mb-8">Where should we go?</h2>
+              <h2 className="text-3xl font-bold text-neutral-900 dark:text-white text-center mb-8">Where should we go?</h2>
               <div
                 className="relative h-[500px] perspective-1000"
                 onTouchStart={handleTouchStart}
@@ -704,7 +704,7 @@ END:VCALENDAR`
 
 export default function MeetupPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-neutral-100"><div className="text-neutral-600 text-xl">Loading...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-950"><div className="text-neutral-600 dark:text-neutral-400 text-xl">Loading...</div></div>}>
       <MeetupPageContent />
     </Suspense>
   )
