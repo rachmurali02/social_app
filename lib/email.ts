@@ -4,7 +4,7 @@ const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com'
 const SMTP_PORT = Number(process.env.SMTP_PORT) || 587
 const SMTP_USER = process.env.SMTP_USER
 const SMTP_PASS = process.env.SMTP_PASS
-const EMAIL_FROM = process.env.EMAIL_FROM || 'MeetUp AI <noreply@example.com>'
+const EMAIL_FROM = process.env.EMAIL_FROM || 'Loom <noreply@example.com>'
 
 function getTransporter() {
   if (!SMTP_USER || !SMTP_PASS) return null
@@ -24,14 +24,14 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<boolea
     await transporter.sendMail({
       from: EMAIL_FROM,
       to,
-      subject: 'Welcome to MeetUp AI',
+      subject: 'Welcome to Loom',
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-          <h1 style="color: #4f46e5;">Welcome to MeetUp AI</h1>
+          <h1 style="color: #4f46e5;">Welcome to Loom</h1>
           <p>Hi ${displayName},</p>
           <p>You're in! Plan meetups with friends and get AI-powered spot recommendations.</p>
           <p>Open the app on your phone or computer to start connecting.</p>
-          <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">— The MeetUp AI community</p>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">— The Loom community</p>
         </div>
       `,
     })
@@ -54,7 +54,7 @@ export async function sendPasswordResetEmail(
     await transporter.sendMail({
       from: EMAIL_FROM,
       to,
-      subject: 'Reset your MeetUp AI password',
+      subject: 'Reset your Loom password',
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
           <h1 style="color: #4f46e5;">Reset your password</h1>
@@ -62,7 +62,7 @@ export async function sendPasswordResetEmail(
           <p>We received a request to reset your password. Click the link below (valid for 1 hour):</p>
           <p><a href="${resetUrl}" style="color: #6366f1; font-weight: 600;">${resetUrl}</a></p>
           <p>If you didn't request this, you can ignore this email.</p>
-          <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">— MeetUp AI</p>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">— Loom</p>
         </div>
       `,
     })
@@ -188,7 +188,7 @@ export async function sendMeetupInviteEmail(params: {
           <p style="color:#6b7280;font-size:13px;margin-top:24px;">
             If you weren’t expecting this, you can ignore this email.
           </p>
-          <p style="color:#6b7280;font-size:13px;margin-top:8px;">— MeetUp AI</p>
+          <p style="color:#6b7280;font-size:13px;margin-top:8px;">— Loom</p>
         </div>
       `,
     })
@@ -252,7 +252,7 @@ export async function sendMeetupConfirmedToInvitee(params: {
               Add to Google Calendar
             </a>
           </p>
-          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— Loom</p>
         </div>
       `,
     })
@@ -291,7 +291,7 @@ export async function sendMeetupCancelledEmail(params: {
           <p>Hi ${displayName},</p>
           <p><strong>${safeCreator}</strong> cancelled the ${safeActivity} meetup at ${safePlace}.</p>
           <p><a href="${baseUrl}/meetups" style="color:#6366f1;font-weight:600;">View meetups</a></p>
-          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— Loom</p>
         </div>
       `,
     })
@@ -353,7 +353,7 @@ export async function sendMeetupRescheduledEmail(params: {
           </div>
           <p><a href="${googleUrl}" style="background:#34a853;color:#ffffff;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600;display:inline-block;">Add to Google Calendar</a></p>
           <p style="margin-top: 16px;"><a href="${meetupUrl}" style="color:#6366f1;font-weight:600;">View meetups</a></p>
-          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— Loom</p>
         </div>
       `,
     })
@@ -416,7 +416,7 @@ export async function sendMeetupAcceptedToCreator(params: {
           <p style="margin-top: 16px;">
             <a href="${meetupsUrl}" style="color:#6366f1;font-weight:600;">View meetups</a>
           </p>
-          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— Loom</p>
         </div>
       `,
     })
@@ -443,19 +443,19 @@ export async function sendAppInviteEmail(params: {
     await transporter.sendMail({
       from: EMAIL_FROM,
       to,
-      subject: `${inviterName} invited you to MeetUp AI`,
+      subject: `${inviterName} invited you to Loom`,
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:0 auto;">
-          <h1 style="color:#f97316;">You're invited to MeetUp AI 🎉</h1>
+          <h1 style="color:#f97316;">You're invited to Loom 🎉</h1>
           <p>Hi there,</p>
-          <p><strong>${inviterName}</strong> wants to plan meetups with you on MeetUp AI — an app that uses AI to find the perfect spots to hang out.</p>
+          <p><strong>${inviterName}</strong> wants to plan meetups with you on Loom — an app that uses AI to find the perfect spots to hang out.</p>
           ${noteLine}
           <p style="margin-top:20px;">
             <a href="${appUrl}/login" style="background:linear-gradient(135deg,#f97316,#a855f7);color:#ffffff;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:700;display:inline-block;font-size:16px;">
               Join for free →
             </a>
           </p>
-          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— MeetUp AI</p>
+          <p style="color:#6b7280;font-size:13px;margin-top:24px;">— Loom</p>
         </div>
       `,
     })

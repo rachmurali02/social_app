@@ -1,4 +1,4 @@
-# MeetUp AI - Social Coordination App
+# Loom - Social Coordination App
 
 A Next.js app for planning meetups with AI-powered place recommendations.
 

@@ -1,6 +1,6 @@
 # Complete Installation Guide
 
-Follow these steps in order to set up and run the MeetUp AI app.
+Follow these steps in order to set up and run the Loom app.
 
 ## Prerequisites
 
@@ -444,4 +444,4 @@ npm run check-node
 3. ✅ Find and add friends at `/friends?search=true`
 4. ✅ Create your first meetup at `/meetup`
 
-Enjoy your MeetUp AI app! 🎉
+Enjoy your Loom app! 🎉

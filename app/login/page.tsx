@@ -66,10 +66,10 @@ export default function LoginPage() {
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center text-white font-black text-xl shadow-lg">
-              M
+              L
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">MeetUp AI</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">Loom</p>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Smart social coordination</p>
             </div>
           </div>

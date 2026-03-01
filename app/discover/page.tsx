@@ -275,7 +275,7 @@ function DiscoverContent() {
                 <textarea
                   value={inviteNote}
                   onChange={(e) => setInviteNote(e.target.value)}
-                  placeholder="Hey, come join me on MeetUp AI!"
+                  placeholder="Hey, come join me on Loom!"
                   maxLength={300}
                   rows={2}
                   className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400/60 text-sm resize-none"

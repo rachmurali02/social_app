@@ -57,7 +57,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-black text-white mb-2 drop-shadow-lg">MeetUp AI</h1>
+          <h1 className="text-5xl font-black text-white mb-2 drop-shadow-lg">Loom</h1>
           <p className="text-white/80 text-lg">Smart social coordination</p>
         </div>
 

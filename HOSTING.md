@@ -1,4 +1,4 @@
-# Hosting MeetUp AI (share with others on a domain)
+# Hosting Loom (share with others on a domain)
 
 You can host this app so anyone can use it at a URL (e.g. `https://yourapp.com`) instead of only on your machine. Below are options in the **free to ~$10/month** range.
 

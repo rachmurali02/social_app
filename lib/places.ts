@@ -1,6 +1,6 @@
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search'
 const OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
-const USER_AGENT = 'MeetUpAI/1.0 (social app; contact optional)'
+const USER_AGENT = 'Loom/1.0 (social app; contact optional)'
 
 export interface PlaceResult {
   name: string

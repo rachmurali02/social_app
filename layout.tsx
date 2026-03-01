@@ -3,7 +3,7 @@ import Providers from './providers'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'MeetUp AI - Smart Social Coordination',
+  title: 'Loom - Smart Social Coordination',
   description: 'Plan meetups with AI-powered recommendations',
 }
 

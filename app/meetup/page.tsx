@@ -363,7 +363,7 @@ function MeetupPageContent() {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-5xl font-black text-neutral-900 dark:text-white mb-2">MeetUp AI</h1>
+              <h1 className="text-5xl font-black text-neutral-900 dark:text-white mb-2">Loom</h1>
               <p className="text-neutral-600 dark:text-neutral-400 text-lg">Plan your meetup</p>
             </div>
             <Link
