@@ -141,10 +141,6 @@ function isOpenAtTime(openingHours: string, time: string): boolean | null {
 
   const reqMinutes = reqHour * 60 + (reqMin || 0)
 
-  const DAY_MAP: Record<string, number> = {
-    Mo: 0, Tu: 1, We: 2, Th: 3, Fr: 4, Sa: 5, Su: 6,
-  }
-
   // Split on semicolons first, then split any segment on commas that precede a day-prefix
   // e.g. "Mo-Fr 06:00-17:00, Sa-Su 07:00-13:00" → two rules
   const rawSegments = openingHours.split(';').map((r) => r.trim()).filter(Boolean)
@@ -153,6 +149,7 @@ function isOpenAtTime(openingHours: string, time: string): boolean | null {
     // Split on ", " only when followed by a day abbreviation (Mo,Tu,We,Th,Fr,Sa,Su)
     const parts = seg.split(/,\s*(?=[A-Z][a-z])/)
     for (const p of parts) rules.push(p.trim())
+  }
 
   let parsedAnyTimeRule = false
 
