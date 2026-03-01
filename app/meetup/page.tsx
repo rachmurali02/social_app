@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
@@ -38,9 +38,11 @@ interface AppState {
   selectedFriends: string[]
 }
 
-export default function MeetupPage() {
+function MeetupPageContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const prefilledFriendId = searchParams?.get('friend') || null
   const [friends, setFriends] = useState<any[]>([])
 
   const [state, setState] = useState<AppState>({
@@ -52,7 +54,7 @@ export default function MeetupPage() {
     seenPlaces: [],
     activeTile: 0,
     sessionId: null,
-    selectedFriends: [],
+    selectedFriends: prefilledFriendId ? [prefilledFriendId] : [],
   })
 
   const [loading, setLoading] = useState(false)
@@ -189,6 +191,7 @@ export default function MeetupPage() {
           location: preferences.location,
           radiusKm: preferences.radius,
           activity: preferences.activity,
+          time: preferences.time,
           excludeNames: [...new Set([...state.seenPlaces, ...visitedPlaces])],
         }),
       })
@@ -696,5 +699,13 @@ END:VCALENDAR`
       </div>
       <BottomNav />
     </div>
+  )
+}
+
+export default function MeetupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-neutral-100"><div className="text-neutral-600 text-xl">Loading...</div></div>}>
+      <MeetupPageContent />
+    </Suspense>
   )
 }

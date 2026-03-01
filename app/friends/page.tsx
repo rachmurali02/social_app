@@ -228,7 +228,7 @@ function FriendsContent() {
                       </div>
                     </div>
                     <Link
-                      href="/meetup"
+                      href={`/meetup?friend=${friend.id}`}
                       className="shrink-0 p-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-orange-600 transition-colors"
                       title="Invite to meetup"
                     >

@@ -7,6 +7,7 @@ const schema = z.object({
   location: z.string().min(1),
   radiusKm: z.number().min(0.5).max(50),
   activity: z.string().optional(),
+  time: z.string().optional(),
   excludeNames: z.array(z.string()).optional(),
 })
 
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    const { location, radiusKm, activity = '', excludeNames = [] } = parsed.data
+    const { location, radiusKm, activity = '', time, excludeNames = [] } = parsed.data
 
     const coords = await geocode(location)
     if (!coords) {
@@ -35,7 +36,8 @@ export async function POST(request: NextRequest) {
       coords.lon,
       radiusKm,
       activity,
-      excludeNames
+      excludeNames,
+      time
     )
 
     if (places.length === 0) {
