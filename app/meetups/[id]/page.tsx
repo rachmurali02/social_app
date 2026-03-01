@@ -1,11 +1,11 @@
 'use client'
 
+import React from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Calendar, MapPin, Clock, Users, ArrowLeft, Loader2, X, CalendarX2, CalendarClock } from 'lucide-react'
+import { Calendar, MapPin, Clock, Users, ArrowLeft, Loader2, X, CalendarX2, CalendarClock, Coffee, Utensils, Beer, IceCream, Dumbbell, Film, TreePine, ShoppingBag, Gamepad2, Palette, Trophy } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 import BottomNav from '../../components/BottomNav'
 
 type Meetup = {
@@ -17,9 +17,20 @@ type Meetup = {
   participants: { user: { id: string; name: string | null; email: string }; status: string }[]
 }
 
-function getPlacePhoto(placeName?: string, meetupId?: string) {
-  const seed = (placeName || meetupId || 'meetup').replace(/[^a-zA-Z0-9]/g, '-')
-  return `https://picsum.photos/seed/${seed}/800/300`
+function getActivityStyle(activity?: string): { gradient: string; emoji: string } {
+  const a = (activity || '').toLowerCase()
+  if (/coffee|cafe|latte|espresso/.test(a)) return { gradient: 'from-amber-700 to-amber-500', emoji: '☕' }
+  if (/food|restaurant|pizza|sushi|dinner|lunch|brunch|eat/.test(a)) return { gradient: 'from-orange-600 to-rose-500', emoji: '🍽' }
+  if (/bar|drinks|pub|cocktail|wine|brewery/.test(a)) return { gradient: 'from-purple-700 to-indigo-600', emoji: '🍻' }
+  if (/dessert|ice.?cream|gelato|sweet|bakery/.test(a)) return { gradient: 'from-pink-500 to-rose-400', emoji: '🍦' }
+  if (/bowl/.test(a)) return { gradient: 'from-blue-600 to-cyan-500', emoji: '🎳' }
+  if (/cinem|movie|film/.test(a)) return { gradient: 'from-neutral-800 to-neutral-600', emoji: '🎬' }
+  if (/outdoor|park|hike|trail|nature|walk/.test(a)) return { gradient: 'from-green-700 to-emerald-500', emoji: '🏃' }
+  if (/shop|mall|market|retail/.test(a)) return { gradient: 'from-fuchsia-600 to-pink-500', emoji: '🛍' }
+  if (/gam|arcade|esport/.test(a)) return { gradient: 'from-violet-700 to-purple-500', emoji: '🎮' }
+  if (/art|museum|gallery|theatre|theater/.test(a)) return { gradient: 'from-teal-600 to-cyan-500', emoji: '🎭' }
+  if (/gym|fitness|sport|yoga|climb|pool|swim/.test(a)) return { gradient: 'from-red-600 to-orange-500', emoji: '💪' }
+  return { gradient: 'from-orange-500 to-purple-600', emoji: '✨' }
 }
 
 export default function MeetupDetailPage() {
@@ -84,6 +95,7 @@ export default function MeetupDetailPage() {
   const date = meetup.preferences?.date
   const activity = meetup.preferences?.activity
   const isCreator = meetup.creator.id === session?.user?.id
+  const { gradient, emoji } = getActivityStyle(activity)
 
   const dateForCalendar = date || new Date().toISOString().split('T')[0]
 
@@ -166,30 +178,24 @@ export default function MeetupDetailPage() {
           <ArrowLeft size={22} /> Back
         </Link>
 
-        <div className="relative h-48 sm:h-56 rounded-2xl overflow-hidden mx-4 mb-6">
-          <Image
-            src={getPlacePhoto(placeName, meetup.id)}
-            alt=""
-            fill
-            className="object-cover img-premium"
-            unoptimized
-          />
-          <div className="absolute inset-0 hero-overlay" />
-          <div className="absolute inset-0 hero-vignette" />
-          <div className="absolute bottom-4 left-4 right-4">
-            <h1 className="text-2xl font-bold text-white">{placeName}</h1>
-            <p className="text-white/90">{activity || 'Meetup'}</p>
+        <div className={`relative h-44 sm:h-52 rounded-2xl overflow-hidden mx-4 mb-6 bg-gradient-to-br ${gradient} flex items-end justify-between p-5`}>
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold text-white truncate">{placeName}</h1>
+            <p className="text-white/80 capitalize">{activity || 'Meetup'}</p>
             <span
-              className={`inline-block mt-2 px-2 py-1 rounded text-sm font-medium ${
+              className={`inline-block mt-2 px-2.5 py-1 rounded-full text-sm font-medium ${
                 meetup.status === 'cancelled'
-                  ? 'bg-red-500/30 text-red-200'
+                  ? 'bg-black/30 text-red-200'
                   : meetup.status === 'confirmed'
-                    ? 'bg-emerald-500/30 text-emerald-200'
-                    : 'bg-amber-500/30 text-amber-200'
+                    ? 'bg-black/30 text-emerald-200'
+                    : 'bg-black/20 text-amber-100'
               }`}
             >
               {meetup.status === 'cancelled' ? 'Cancelled' : meetup.status === 'confirmed' ? 'Confirmed' : 'Pending'}
             </span>
+          </div>
+          <div className="shrink-0 w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-4xl ml-4">
+            {emoji}
           </div>
         </div>
 

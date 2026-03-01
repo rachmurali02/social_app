@@ -1,11 +1,11 @@
 'use client'
 
+import React from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Calendar, MapPin, Clock, Users, ChevronRight, Loader2, History } from 'lucide-react'
+import { Calendar, MapPin, Clock, Users, ChevronRight, Loader2, History, Coffee, Utensils, Beer, IceCream, Dumbbell, Film, TreePine, ShoppingBag, Gamepad2, Palette, Trophy } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 import BottomNav from '../components/BottomNav'
 
 type Meetup = {
@@ -18,9 +18,20 @@ type Meetup = {
   participants: { user: { id: string; name: string | null; email: string }; status: string }[]
 }
 
-function getPlacePhoto(placeName?: string, meetupId?: string) {
-  const seed = (placeName || meetupId || 'meetup').replace(/[^a-zA-Z0-9]/g, '-')
-  return `https://picsum.photos/seed/${seed}/800/300`
+function getActivityStyle(activity?: string): { gradient: string; Icon: React.ElementType; emoji: string } {
+  const a = (activity || '').toLowerCase()
+  if (/coffee|cafe|latte|espresso/.test(a)) return { gradient: 'from-amber-700 to-amber-500', Icon: Coffee, emoji: '☕' }
+  if (/food|restaurant|pizza|sushi|dinner|lunch|brunch|eat/.test(a)) return { gradient: 'from-orange-600 to-rose-500', Icon: Utensils, emoji: '🍽' }
+  if (/bar|drinks|pub|cocktail|wine|brewery/.test(a)) return { gradient: 'from-purple-700 to-indigo-600', Icon: Beer, emoji: '🍻' }
+  if (/dessert|ice.?cream|gelato|sweet|bakery/.test(a)) return { gradient: 'from-pink-500 to-rose-400', Icon: IceCream, emoji: '🍦' }
+  if (/bowl/.test(a)) return { gradient: 'from-blue-600 to-cyan-500', Icon: Trophy, emoji: '🎳' }
+  if (/cinem|movie|film/.test(a)) return { gradient: 'from-neutral-800 to-neutral-600', Icon: Film, emoji: '🎬' }
+  if (/outdoor|park|hike|trail|nature|walk/.test(a)) return { gradient: 'from-green-700 to-emerald-500', Icon: TreePine, emoji: '🏃' }
+  if (/shop|mall|market|retail/.test(a)) return { gradient: 'from-fuchsia-600 to-pink-500', Icon: ShoppingBag, emoji: '🛍' }
+  if (/gam|arcade|esport/.test(a)) return { gradient: 'from-violet-700 to-purple-500', Icon: Gamepad2, emoji: '🎮' }
+  if (/art|museum|gallery|theatre|theater/.test(a)) return { gradient: 'from-teal-600 to-cyan-500', Icon: Palette, emoji: '🎭' }
+  if (/gym|fitness|sport|yoga|climb|pool|swim/.test(a)) return { gradient: 'from-red-600 to-orange-500', Icon: Dumbbell, emoji: '💪' }
+  return { gradient: 'from-orange-500 to-purple-600', Icon: Calendar, emoji: '✨' }
 }
 
 function getMeetupDate(m: Meetup): Date {
@@ -46,37 +57,33 @@ function MeetupCard({ m, userId }: { m: Meetup; userId: string }) {
     ? new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : null
 
+  const { gradient, Icon, emoji } = getActivityStyle(activity)
+
   return (
     <Link
       href={`/meetups/${m.id}`}
       className="group block glass-panel rounded-2xl overflow-hidden hover:bg-neutral-200/60 dark:hover:bg-white/[0.08] hover:shadow-card-hover transition-all duration-300"
     >
-      <div className="relative h-36 sm:h-40 overflow-hidden">
-        <Image
-          src={getPlacePhoto(placeName, m.id)}
-          alt=""
-          fill
-          className="object-cover img-premium group-hover:scale-105 transition-transform duration-500"
-          unoptimized
-        />
-        <div className="absolute inset-0 hero-overlay" />
-        <div className="absolute inset-0 hero-vignette" />
-        <div className="absolute bottom-3 left-4 right-4">
+      <div className={`relative h-28 sm:h-32 bg-gradient-to-br ${gradient} flex items-center justify-between px-5`}>
+        <div className="min-w-0">
           <h2 className="text-lg font-bold text-white truncate">{placeName}</h2>
-          <p className="text-white/90 text-sm truncate">{activity || 'Meetup'}</p>
+          <p className="text-white/80 text-sm capitalize">{activity || 'Meetup'}</p>
           <span
-            className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium ${
+            className={`inline-block mt-1.5 px-2 py-0.5 rounded text-xs font-medium ${
               m.status === 'cancelled'
-                ? 'bg-red-500/30 text-red-200'
+                ? 'bg-black/30 text-red-200'
                 : m.status === 'confirmed'
-                  ? 'bg-emerald-500/30 text-emerald-200'
-                  : 'bg-amber-500/30 text-amber-200'
+                  ? 'bg-black/30 text-emerald-200'
+                  : 'bg-black/20 text-amber-100'
             }`}
           >
             {m.status === 'cancelled' ? 'Cancelled' : m.status === 'confirmed' ? 'Confirmed' : 'Pending'}
             {isCreator && ' · by you'}
             {!isCreator && myStatus && ` · ${myStatus}`}
           </span>
+        </div>
+        <div className="shrink-0 w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl ml-4">
+          {emoji}
         </div>
       </div>
       <div className="p-4 flex items-center justify-between gap-4">
