@@ -149,27 +149,27 @@ function FriendsContent() {
               {friendRequests.map((request) => (
                 <div
                   key={request.id}
-                  className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex items-center justify-between"
+                  className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center gap-3"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="w-10 h-10 rounded-full border border-neutral-200 dark:border-neutral-600 flex items-center justify-center text-white font-bold shrink-0" style={avatarGradient(request.senderId)}>
                       {(request.sender.name || request.sender.email)[0].toUpperCase()}
                     </div>
-                    <div>
-                      <p className="text-neutral-900 dark:text-white font-semibold">{request.sender.name || request.sender.email}</p>
-                      <p className="text-neutral-500 dark:text-neutral-400 text-sm">{request.sender.email}</p>
+                    <div className="min-w-0">
+                      <p className="text-neutral-900 dark:text-white font-semibold truncate">{request.sender.name || request.sender.email}</p>
+                      <p className="text-neutral-500 dark:text-neutral-400 text-sm truncate">{request.sender.email}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 shrink-0">
                     <button
                       onClick={() => handleAcceptRequest(request.senderId)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2"
+                      className="flex-1 sm:flex-none min-h-[44px] bg-green-500 hover:bg-green-600 active:bg-green-700 text-white px-4 py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 touch-manipulation"
                     >
                       <Check size={18} /> Accept
                     </button>
                     <button
                       onClick={() => handleDeclineRequest(request.senderId)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2"
+                      className="flex-1 sm:flex-none min-h-[44px] bg-red-500 hover:bg-red-600 active:bg-red-700 text-white px-4 py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 touch-manipulation"
                     >
                       <X size={18} /> Decline
                     </button>
