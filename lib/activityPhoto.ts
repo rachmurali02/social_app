@@ -1,25 +1,23 @@
 /**
- * Returns a stable, category-specific Unsplash photo URL for a given activity.
- * Uses Unsplash Source (no API key required) with a fixed keyword per category
- * so the same category always resolves to the same photo.
- *
- * The results are cached in module-level Maps so repeated calls within a session
- * never trigger extra network requests.
+ * Returns a stable, category-specific photo URL using Picsum Photos.
+ * Picsum uses a numeric seed — the same seed always returns the same image.
+ * No API key required, CDN-backed, highly reliable.
  */
 
-const CATEGORY_KEYWORDS: Record<string, string> = {
-  coffee:   'coffee-shop-cozy',
-  food:     'restaurant-food',
-  drinks:   'cocktail-bar-night',
-  dessert:  'dessert-sweet-cafe',
-  bowling:  'bowling-alley',
-  cinema:   'movie-theater-cinema',
-  outdoors: 'nature-park-hiking',
-  shopping: 'shopping-mall-retail',
-  gaming:   'video-game-arcade',
-  arts:     'art-museum-gallery',
-  fitness:  'gym-fitness-workout',
-  default:  'city-meetup-friends',
+// Hand-picked Picsum IDs that visually match each category
+const CATEGORY_SEEDS: Record<string, number> = {
+  coffee:   431,   // warm coffee shop interior
+  food:     292,   // restaurant / food table
+  drinks:   274,   // bar / night atmosphere
+  dessert:  403,   // sweet / pastel bakery
+  bowling:  325,   // indoor sport / lanes
+  cinema:   384,   // dark cinematic mood
+  outdoors: 280,   // nature / park / greenery
+  shopping: 399,   // bright retail / city street
+  gaming:   367,   // screens / tech glow
+  arts:     355,   // gallery / colourful art
+  fitness:  312,   // gym / workout space
+  default:  338,   // city / social scene
 }
 
 export type ActivityCategory =
@@ -59,16 +57,15 @@ export const CATEGORY_EMOJI: Record<ActivityCategory, string> = {
 }
 
 /**
- * Returns the Unsplash Source URL for a category.
- * width/height control the image size requested.
+ * Returns a Picsum Photos URL for the given category.
+ * Uses a fixed seed per category so the image is always the same.
+ * Format: https://picsum.photos/seed/{id}/{width}/{height}
  */
 export function getActivityPhotoUrl(
   category: ActivityCategory,
   width = 800,
   height = 400
 ): string {
-  const keyword = CATEGORY_KEYWORDS[category] ?? CATEGORY_KEYWORDS.default
-  // Unsplash Source is stable per keyword — same keyword always returns the same photo.
-  // Adding width/height gives an appropriately sized image.
-  return `https://source.unsplash.com/featured/${width}x${height}/?${encodeURIComponent(keyword)}`
+  const seed = CATEGORY_SEEDS[category] ?? CATEGORY_SEEDS.default
+  return `https://picsum.photos/id/${seed}/${width}/${height}`
 }

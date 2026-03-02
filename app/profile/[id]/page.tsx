@@ -50,7 +50,6 @@ function MeetupCard({ m }: { m: Meetup }) {
           fill
           sizes="(max-width: 640px) 50vw, 300px"
           className="object-cover"
-          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
