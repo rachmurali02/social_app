@@ -788,7 +788,7 @@ function MeetupPageContent() {
                           name: customPlaceName.trim(),
                           address: customPlaceAddress.trim() || '',
                           rating: 0,
-                          hours: '',
+                          popularity: '',
                           reason: 'Manually chosen',
                           mapUrl: customPlaceAddress.trim()
                             ? `https://www.google.com/maps/search/${encodeURIComponent(customPlaceName.trim() + ' ' + customPlaceAddress.trim())}`
