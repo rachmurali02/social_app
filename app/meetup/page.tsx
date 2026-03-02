@@ -137,11 +137,25 @@ function MeetupPageContent() {
         .then((r) => r.json())
         .then((d) => {
           const upcoming = (d.meetups || []).filter((m: { status: string }) => m.status !== 'cancelled')
-          setExistingMeetups(upcoming.map((m: { preferences?: { date?: string; time?: string }; selectedOption?: { name?: string } }) => ({
+          const mapped = upcoming.map((m: { preferences?: { date?: string; time?: string }; selectedOption?: { name?: string } }) => ({
             date: m.preferences?.date,
             time: m.preferences?.time,
             placeName: (m.selectedOption as { name?: string } | undefined)?.name,
-          })))
+          }))
+          setExistingMeetups(mapped)
+          // Check conflict against current form defaults once meetups load
+          const warn = mapped.reduce((found: string | null, m: { date?: string; time?: string; placeName?: string }) => {
+            if (found || !m.date || !m.time) return found
+            const proposed = new Date(`${smartDefaults.date}T${smartDefaults.time}`)
+            const existing = new Date(`${m.date}T${m.time}`)
+            if (Math.abs(proposed.getTime() - existing.getTime()) < 30 * 60 * 1000) {
+              const label = m.placeName ? `"${m.placeName}"` : 'another meetup'
+              const timeStr = existing.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+              return `You already have ${label} at ${timeStr} within 30 minutes of this time.`
+            }
+            return null
+          }, null)
+          if (warn) setConflictWarning(warn)
         })
         .catch(() => {})
     }

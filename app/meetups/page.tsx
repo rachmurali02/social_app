@@ -144,7 +144,7 @@ function MeetupCard({ m, userId }: { m: Meetup; userId: string }) {
   const myStatus = m.participants.find((p) => p.user.id === userId)?.status
 
   const displayDate = date
-    ? new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    ? new Date(`${date}T00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : null
 
   const category = classifyActivity(activity)

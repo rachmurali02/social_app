@@ -94,7 +94,7 @@ export default function MeetupDetailPage() {
       return dt.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) +
         ' at ' + dt.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
     }
-    if (date) return new Date(date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+    if (date) return new Date(`${date}T00:00`).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
     return time
   })()
   const addToCalendar = () => {
