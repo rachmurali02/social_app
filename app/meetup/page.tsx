@@ -66,12 +66,6 @@ function MeetupPageContent() {
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const [isSwiping, setIsSwiping] = useState(false)
-  const [existingMeetups, setExistingMeetups] = useState<Array<{ date?: string; time?: string; placeName?: string }>>([])
-  const [conflictWarning, setConflictWarning] = useState<string | null>(null)
-  const [conflictDismissed, setConflictDismissed] = useState(false)
-  const [formDate, setFormDate] = useState(smartDefaults.date)
-  const [formTime, setFormTime] = useState(smartDefaults.time)
-
   // Smart defaults: round current time up to next 30-min slot, today's date
   const smartDefaults = (() => {
     const now = new Date()
@@ -83,6 +77,12 @@ function MeetupPageContent() {
     const dd = String(now.getDate()).padStart(2, '0')
     return { time: `${hh}:${mm}`, date: `${yyyy}-${mo}-${dd}` }
   })()
+
+  const [existingMeetups, setExistingMeetups] = useState<Array<{ date?: string; time?: string; placeName?: string }>>([])
+  const [conflictWarning, setConflictWarning] = useState<string | null>(null)
+  const [conflictDismissed, setConflictDismissed] = useState(false)
+  const [formDate, setFormDate] = useState(smartDefaults.date)
+  const [formTime, setFormTime] = useState(smartDefaults.time)
 
   const ACTIVITY_CHIPS = [
     { label: '☕ Coffee', value: 'coffee' },
