@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair, PenLine } from 'lucide-react'
+import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair, PenLine, AlertTriangle, X } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
 import LocationAutocomplete from '../components/LocationAutocomplete'
@@ -66,6 +66,11 @@ function MeetupPageContent() {
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const [isSwiping, setIsSwiping] = useState(false)
+  const [existingMeetups, setExistingMeetups] = useState<Array<{ date?: string; time?: string; placeName?: string }>>([])
+  const [conflictWarning, setConflictWarning] = useState<string | null>(null)
+  const [conflictDismissed, setConflictDismissed] = useState(false)
+  const [formDate, setFormDate] = useState(smartDefaults.date)
+  const [formTime, setFormTime] = useState(smartDefaults.time)
 
   // Smart defaults: round current time up to next 30-min slot, today's date
   const smartDefaults = (() => {
@@ -97,6 +102,24 @@ function MeetupPageContent() {
   const [selectedActivity, setSelectedActivity] = useState('coffee')
   const [customActivity, setCustomActivity] = useState('')
 
+  const checkConflict = (date: string, time: string) => {
+    if (!date || !time) return null
+    const proposed = new Date(`${date}T${time}`)
+    for (const m of existingMeetups) {
+      if (!m.date || !m.time) continue
+      const existing = new Date(`${m.date}T${m.time}`)
+      const diffMs = Math.abs(proposed.getTime() - existing.getTime())
+      if (diffMs < 30 * 60 * 1000) {
+        const label = m.placeName ? `"${m.placeName}"` : 'another meetup'
+        const timeStr = new Date(`${m.date}T${m.time}`).toLocaleString([], {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+        })
+        return `You already have ${label} at ${timeStr} within 30 minutes of this time.`
+      }
+    }
+    return null
+  }
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
@@ -109,6 +132,17 @@ function MeetupPageContent() {
       fetch('/api/me/visited-places')
         .then((r) => r.json())
         .then((d) => setVisitedPlaces(d.placeNames || []))
+        .catch(() => {})
+      fetch('/api/meetups')
+        .then((r) => r.json())
+        .then((d) => {
+          const upcoming = (d.meetups || []).filter((m: { status: string }) => m.status !== 'cancelled')
+          setExistingMeetups(upcoming.map((m: { preferences?: { date?: string; time?: string }; selectedOption?: { name?: string } }) => ({
+            date: m.preferences?.date,
+            time: m.preferences?.time,
+            placeName: (m.selectedOption as { name?: string } | undefined)?.name,
+          })))
+        })
         .catch(() => {})
     }
   }, [session])
@@ -403,17 +437,18 @@ function MeetupPageContent() {
                     {placeError && (
                       <p className="text-amber-600 text-sm mb-2">{placeError}</p>
                     )}
-                    <div className="flex gap-2">
+                    <div className="relative">
                       <LocationAutocomplete
                         name="location"
                         key={defaultLocation}
                         defaultValue={defaultLocation || ''}
                         placeholder="e.g. Virginia, USA or Dubai Marina"
-                        className="flex-1 p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        className="w-full p-4 pr-14 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
                       <button
                         type="button"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-neutral-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors touch-manipulation"
                         onClick={async () => {
                           if (!navigator.geolocation) return
                           setLocationLoading(true)
@@ -433,13 +468,12 @@ function MeetupPageContent() {
                           )
                         }}
                         disabled={locationLoading}
-                        className="shrink-0 p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 flex items-center"
                         title="Use my location"
                       >
                         {locationLoading ? (
-                          <Loader2 size={22} className="animate-spin" />
+                          <Loader2 size={20} className="animate-spin" />
                         ) : (
-                          <Crosshair size={22} />
+                          <Crosshair size={20} />
                         )}
                       </button>
                     </div>
@@ -468,8 +502,13 @@ function MeetupPageContent() {
                       <input
                         name="date"
                         type="date"
-                        defaultValue={smartDefaults.date}
+                        value={formDate}
                         min={smartDefaults.date}
+                        onChange={(e) => {
+                          setFormDate(e.target.value)
+                          setConflictDismissed(false)
+                          setConflictWarning(checkConflict(e.target.value, formTime))
+                        }}
                         className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
@@ -482,7 +521,12 @@ function MeetupPageContent() {
                       <input
                         name="time"
                         type="time"
-                        defaultValue={smartDefaults.time}
+                        value={formTime}
+                        onChange={(e) => {
+                          setFormTime(e.target.value)
+                          setConflictDismissed(false)
+                          setConflictWarning(checkConflict(formDate, e.target.value))
+                        }}
                         className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
@@ -551,6 +595,23 @@ function MeetupPageContent() {
                       )}
                     </div>
                   </div>
+                  {conflictWarning && !conflictDismissed && (
+                    <div className="flex items-start gap-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-600 rounded-xl p-4">
+                      <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={20} />
+                      <div className="flex-1 text-sm text-amber-800 dark:text-amber-200">
+                        <p className="font-semibold mb-0.5">Scheduling conflict</p>
+                        <p>{conflictWarning}</p>
+                        <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">You can still proceed — just click the button below to continue anyway.</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setConflictDismissed(true)}
+                        className="text-amber-500 hover:text-amber-700 shrink-0 touch-manipulation"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  )}
                   {loading && (
                     <div className="flex flex-col items-center gap-3 py-4 text-neutral-600 dark:text-neutral-400">
                       <Loader2 className="animate-spin" size={40} />
