@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair, PenLine, AlertTriangle, X } from 'lucide-react'
+import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair, PenLine, AlertTriangle, X, PlusCircle } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
 import LocationAutocomplete from '../components/LocationAutocomplete'
@@ -83,6 +83,9 @@ function MeetupPageContent() {
   const [conflictDismissed, setConflictDismissed] = useState(false)
   const [formDate, setFormDate] = useState(smartDefaults.date)
   const [formTime, setFormTime] = useState(smartDefaults.time)
+  const [showCustomPlace, setShowCustomPlace] = useState(false)
+  const [customPlaceName, setCustomPlaceName] = useState('')
+  const [customPlaceAddress, setCustomPlaceAddress] = useState('')
 
   const ACTIVITY_CHIPS = [
     { label: '☕ Coffee', value: 'coffee' },
@@ -741,6 +744,66 @@ function MeetupPageContent() {
                     />
                   </button>
                 ))}
+              </div>
+
+              {/* Custom place override */}
+              <div className="max-w-xl mx-auto mt-6">
+                {!showCustomPlace ? (
+                  <button
+                    onClick={() => setShowCustomPlace(true)}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-orange-400 hover:text-orange-500 dark:hover:border-orange-500 dark:hover:text-orange-400 transition-colors text-sm font-medium touch-manipulation"
+                  >
+                    <PlusCircle size={16} /> None of these? Enter your own place
+                  </button>
+                ) : (
+                  <div className="glass-panel rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-semibold text-neutral-900 dark:text-white text-sm">Enter your own place</p>
+                      <button
+                        onClick={() => setShowCustomPlace(false)}
+                        className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 touch-manipulation"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Place name (e.g. Blue Bottle Coffee)"
+                      value={customPlaceName}
+                      onChange={(e) => setCustomPlaceName(e.target.value)}
+                      className="w-full p-3 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Address (optional)"
+                      value={customPlaceAddress}
+                      onChange={(e) => setCustomPlaceAddress(e.target.value)}
+                      className="w-full p-3 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                    />
+                    <button
+                      disabled={!customPlaceName.trim()}
+                      onClick={() => {
+                        if (!customPlaceName.trim()) return
+                        handleSelectOption({
+                          name: customPlaceName.trim(),
+                          address: customPlaceAddress.trim() || '',
+                          rating: 0,
+                          hours: '',
+                          reason: 'Manually chosen',
+                          mapUrl: customPlaceAddress.trim()
+                            ? `https://www.google.com/maps/search/${encodeURIComponent(customPlaceName.trim() + ' ' + customPlaceAddress.trim())}`
+                            : `https://www.google.com/maps/search/${encodeURIComponent(customPlaceName.trim())}`,
+                        })
+                        setShowCustomPlace(false)
+                        setCustomPlaceName('')
+                        setCustomPlaceAddress('')
+                      }}
+                      className="w-full btn-primary py-3 text-sm disabled:opacity-50 touch-manipulation"
+                    >
+                      Use this place
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
