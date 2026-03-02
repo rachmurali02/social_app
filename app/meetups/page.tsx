@@ -38,8 +38,16 @@ function gcalUrl(m: Meetup): string {
   const start = new Date(`${date}T${time || '00:00'}`)
   const end = new Date(start)
   end.setHours(end.getHours() + 2)
-  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
-  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${activity} at ${placeName}`)}&dates=${fmt(start)}/${fmt(end)}&location=${encodeURIComponent(address)}`
+  const fmtLocal = (d: Date) => [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0'),
+    'T',
+    String(d.getHours()).padStart(2, '0'),
+    String(d.getMinutes()).padStart(2, '0'),
+    '00',
+  ].join('')
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${activity} at ${placeName}`)}&dates=${fmtLocal(start)}/${fmtLocal(end)}&location=${encodeURIComponent(address)}`
 }
 
 const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']

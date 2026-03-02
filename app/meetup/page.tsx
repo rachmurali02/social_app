@@ -359,13 +359,22 @@ function MeetupPageContent() {
     const endTime = new Date(startTime)
     endTime.setHours(endTime.getHours() + 2)
 
-    const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+    // Format as local time (no Z) so Google Calendar keeps the time as-is in the user's timezone
+    const fmtLocal = (d: Date) => [
+      d.getFullYear(),
+      String(d.getMonth() + 1).padStart(2, '0'),
+      String(d.getDate()).padStart(2, '0'),
+      'T',
+      String(d.getHours()).padStart(2, '0'),
+      String(d.getMinutes()).padStart(2, '0'),
+      '00',
+    ].join('')
     const title = `Meetup at ${state.selectedOption.name}`
     const description = `${state.preferences.activity} meetup\n${state.selectedOption.reason}\n\n${withLine}`
 
-    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${fmt(startTime)}/${fmt(endTime)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(state.selectedOption.address)}`
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${fmtLocal(startTime)}/${fmtLocal(endTime)}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(state.selectedOption.address)}`
 
-    const icalData = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${fmt(startTime)}\nDTEND:${fmt(endTime)}\nSUMMARY:${title}\nDESCRIPTION:${description.replace(/\n/g, '\\n')}\nLOCATION:${state.selectedOption.address}\nEND:VEVENT\nEND:VCALENDAR`
+    const icalData = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${fmtLocal(startTime)}\nDTEND:${fmtLocal(endTime)}\nSUMMARY:${title}\nDESCRIPTION:${description.replace(/\n/g, '\\n')}\nLOCATION:${state.selectedOption.address}\nEND:VEVENT\nEND:VCALENDAR`
 
     return { googleCalendarUrl, icalData }
   }
