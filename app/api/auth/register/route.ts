@@ -54,7 +54,8 @@ const registerSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, password, name } = registerSchema.parse(body)
+    const { email: rawEmail, password, name } = registerSchema.parse(body)
+    const email = rawEmail.toLowerCase().trim()
 
     if (isBlockedDomain(email)) {
       return NextResponse.json(
