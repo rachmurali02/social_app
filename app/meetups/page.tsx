@@ -21,14 +21,12 @@ type Meetup = {
 }
 
 
-function getMeetupDate(m: Meetup): Date {
+function getMeetupDate(m: Meetup): Date | null {
   const dateStr = m.preferences?.date
   const timeStr = m.preferences?.time
-  if (dateStr) {
-    return new Date(timeStr ? `${dateStr}T${timeStr}` : dateStr)
-  }
-  // No date stored — fall back to createdAt
-  return new Date(m.createdAt)
+  if (!dateStr) return null
+  // Parse as local time: "2026-03-10T18:00" is local; bare "2026-03-10" would be UTC midnight
+  return new Date(`${dateStr}T${timeStr || '00:00'}`)
 }
 
 function MeetupCard({ m, userId }: { m: Meetup; userId: string }) {
@@ -141,13 +139,21 @@ export default function MeetupsPage() {
   }
 
   const now = new Date()
-  const upcoming = meetups.filter((m) => m.status !== 'cancelled' && getMeetupDate(m) >= now)
-  const past = meetups.filter((m) => m.status === 'cancelled' || getMeetupDate(m) < now)
+  const upcoming = meetups.filter((m) => {
+    if (m.status === 'cancelled') return false
+    const d = getMeetupDate(m)
+    return d === null || d >= now
+  })
+  const past = meetups.filter((m) => {
+    if (m.status === 'cancelled') return true
+    const d = getMeetupDate(m)
+    return d !== null && d < now
+  })
 
   const displayed = activeTab === 'upcoming' ? upcoming : past
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe lg:pl-60">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">

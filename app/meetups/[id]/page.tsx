@@ -157,7 +157,7 @@ export default function MeetupDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 pb-24 pb-safe lg:pl-56">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/meetups"

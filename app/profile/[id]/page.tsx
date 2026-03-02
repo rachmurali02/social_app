@@ -149,7 +149,7 @@ export default function UserProfilePage() {
   const location = user.profile?.location
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe lg:pl-60">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/friends"

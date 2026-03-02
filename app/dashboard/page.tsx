@@ -77,7 +77,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 lg:pl-56">
       <div className="relative z-10 p-4 sm:p-6 pt-[max(1rem,env(safe-area-inset-top))] pb-24 min-h-screen">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">

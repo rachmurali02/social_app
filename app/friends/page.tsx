@@ -124,7 +124,7 @@ function FriendsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-6 pb-24">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-6 pb-24 lg:pl-60">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Link
