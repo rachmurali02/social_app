@@ -260,7 +260,7 @@ export async function POST(request: NextRequest) {
       if (!m) return NextResponse.json({ error: 'Meetup not found or not creator' }, { status: 404 })
       if (m.status === 'cancelled') return NextResponse.json({ error: 'Cannot reschedule cancelled meetup' }, { status: 400 })
       const currentPrefs = (m.preferences || {}) as Record<string, unknown>
-      const merged = { ...currentPrefs, ...newPrefs }
+      const merged = { ...currentPrefs, ...newPrefs, lastRescheduledAt: new Date().toISOString() }
       const updated = await prisma.meetupSession.update({
         where: { id: mid },
         data: { preferences: merged },

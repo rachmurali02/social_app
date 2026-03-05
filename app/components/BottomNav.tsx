@@ -2,7 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Home, Calendar, Users, Search, CalendarDays } from 'lucide-react'
+import NotificationBar from './NotificationBar'
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home },
@@ -14,9 +16,15 @@ const navItems = [
 
 export default function BottomNav() {
   const pathname = usePathname()
+  const { data: session, status } = useSession()
 
   return (
     <>
+      {status === 'authenticated' && session && (
+        <div className="fixed top-4 right-4 z-50 pt-safe" style={{ paddingTop: 'env(safe-area-inset-top, 0)' }}>
+          <NotificationBar />
+        </div>
+      )}
       {/* ── Desktop: fixed left sidebar ── */}
       <aside className="hidden lg:flex flex-col fixed left-0 top-0 bottom-0 w-56 z-50 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md border-r border-neutral-200/60 dark:border-neutral-800/60 py-8 px-4">
         <span className="text-xl font-bold text-orange-500 tracking-tight mb-10 px-2">Loom</span>
