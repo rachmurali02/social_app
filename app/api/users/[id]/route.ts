@@ -28,17 +28,6 @@ export async function GET(
       return NextResponse.json({ error: 'Use /profile for your own profile' }, { status: 400 })
     }
 
-    const friendships = await prisma.friendship.findMany({
-      where: {
-        OR: [{ senderId: session.user.id }, { receiverId: session.user.id }],
-        status: 'accepted',
-      },
-    })
-
-    if (!isFriend(session.user.id, friendships, userId)) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    }
-
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { profile: true },
@@ -46,6 +35,29 @@ export async function GET(
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    const friendships = await prisma.friendship.findMany({
+      where: {
+        OR: [{ senderId: session.user.id }, { receiverId: session.user.id }],
+        status: 'accepted',
+      },
+    })
+
+    const isFriendOf = isFriend(session.user.id, friendships, userId)
+
+    if (!isFriendOf) {
+      return NextResponse.json({
+        user: {
+          id: user.id,
+          name: user.name,
+          email: null,
+          profile: user.profile ? { avatar: user.profile.avatar, location: user.profile.location } : null,
+        },
+        pastMeetups: [],
+        upcomingMeetups: [],
+        isFriend: false,
+      })
     }
 
     const meetups = await prisma.meetupSession.findMany({
@@ -78,6 +90,7 @@ export async function GET(
       },
       pastMeetups,
       upcomingMeetups,
+      isFriend: true,
     })
   } catch (error) {
     console.error('User profile fetch error:', error)

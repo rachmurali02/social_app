@@ -22,11 +22,12 @@ type UserProfile = {
   user: {
     id: string
     name: string | null
-    email: string
+    email: string | null
     profile?: { avatar?: string | null; location?: string | null }
   }
   pastMeetups: Meetup[]
   upcomingMeetups: Meetup[]
+  isFriend?: boolean
 }
 
 function MeetupCard({ m }: { m: Meetup }) {
@@ -93,6 +94,24 @@ export default function UserProfilePage() {
   const [data, setData] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [requestStatus, setRequestStatus] = useState<'idle' | 'sending' | 'sent' | 'already'>('idle')
+
+  const handleAddFriend = async () => {
+    if (!id || requestStatus !== 'idle') return
+    setRequestStatus('sending')
+    try {
+      const r = await fetch('/api/friends', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'request', userId: id }),
+      })
+      const res = await r.json()
+      if (!r.ok) setRequestStatus(res.error?.includes('already') ? 'already' : 'idle')
+      else setRequestStatus('sent')
+    } catch {
+      setRequestStatus('idle')
+    }
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login')
@@ -168,13 +187,35 @@ export default function UserProfilePage() {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-xl sm:text-2xl font-semibold text-neutral-900 dark:text-white truncate">
-                {user.name || user.email}
+                {user.name || user.email || 'Unknown'}
               </h1>
-              <p className="text-neutral-500 dark:text-white/60 text-sm truncate">{user.email}</p>
+              {user.email && (
+                <p className="text-neutral-500 dark:text-white/60 text-sm truncate">{user.email}</p>
+              )}
               {location && (
                 <p className="text-neutral-600 dark:text-white/70 text-sm mt-1 flex items-center gap-1">
                   <MapPin size={14} /> {location}
                 </p>
+              )}
+              {data.isFriend === false && (
+                <div className="mt-3">
+                  {requestStatus === 'idle' && (
+                    <button
+                      onClick={handleAddFriend}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-purple-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+                    >
+                      Add friend
+                    </button>
+                  )}
+                  {requestStatus === 'sending' && (
+                    <span className="text-neutral-500 dark:text-white/60 text-sm">Sending...</span>
+                  )}
+                  {(requestStatus === 'sent' || requestStatus === 'already') && (
+                    <span className="text-neutral-500 dark:text-white/60 text-sm">
+                      {requestStatus === 'sent' ? 'Friend request sent' : 'Request already pending'}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           </div>
