@@ -418,17 +418,17 @@ function MeetupPageContent() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 lg:pl-56">
+    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 lg:pl-56 pr-14 sm:pr-6">
       <div className="relative z-10 p-6 pb-24">
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-5xl font-black text-neutral-900 dark:text-white mb-2">Loom</h1>
+          <div className="flex justify-between items-center gap-4 mb-8">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-5xl font-black text-neutral-900 dark:text-white mb-2 truncate">Loom</h1>
               <p className="text-neutral-600 dark:text-neutral-400 text-lg">Plan your meetup</p>
             </div>
             <Link
               href="/dashboard"
-              className="glass-panel px-6 py-3 rounded-xl text-neutral-900 dark:text-white hover:shadow-md transition-all"
+              className="shrink-0 glass-panel px-6 py-3 rounded-xl text-neutral-900 dark:text-white hover:shadow-md transition-all"
             >
               ← Dashboard
             </Link>
@@ -834,15 +834,15 @@ function MeetupPageContent() {
                       })}
                     </p>
                   )}
-                  <div className="flex gap-3 mt-4">
+                  <div className="flex flex-col sm:flex-row gap-3 mt-4">
                     <button
                       onClick={() => {
                         const cal = addToCalendar()
                         if (cal) window.open(cal.googleCalendarUrl, '_blank')
                       }}
-                      className="flex-1 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600 text-neutral-900 dark:text-white hover:bg-neutral-50 dark:hover:bg-neutral-700 py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+                      className="flex-1 min-w-0 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-600 text-neutral-900 dark:text-white hover:bg-neutral-50 dark:hover:bg-neutral-700 py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
                     >
-                      <Calendar size={20} /> Google Calendar
+                      <Calendar size={20} className="shrink-0" /> <span className="truncate">Google Calendar</span>
                     </button>
                     <button
                       onClick={() => {
@@ -856,9 +856,9 @@ function MeetupPageContent() {
                           a.click()
                         }
                       }}
-                      className="flex-1 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+                      className="flex-1 min-w-0 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
                     >
-                      <Calendar size={20} /> Apple/Outlook
+                      <Calendar size={20} className="shrink-0" /> <span className="truncate">Apple/Outlook</span>
                     </button>
                   </div>
                 </div>
