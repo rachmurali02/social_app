@@ -284,7 +284,7 @@ export default function MeetupsPage() {
     : baseDisplayed
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe lg:pl-60">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 p-4 sm:p-6 pb-24 pb-safe lg:pl-60 pr-14 sm:pr-6">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">

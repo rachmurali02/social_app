@@ -78,7 +78,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 lg:pl-56">
-      <div className="relative z-10 p-4 sm:p-6 pt-[max(1rem,env(safe-area-inset-top))] pb-24 min-h-screen">
+      <div className="relative z-10 p-4 sm:p-6 pt-[max(1rem,env(safe-area-inset-top))] pb-24 pr-14 sm:pr-6 min-h-screen">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
             <div className="min-w-0">
@@ -115,7 +115,17 @@ export default function DashboardPage() {
                   <h2 className="text-xl sm:text-2xl font-semibold text-neutral-900 dark:text-white mb-0.5">Plan Meetup</h2>
                   <p className="text-neutral-600 dark:text-neutral-400 text-sm">
                     {nextMeetup
-                      ? `${(nextMeetup.selectedOption as { name?: string })?.name || nextMeetup.preferences?.activity || 'Meetup'} ${nextMeetup.preferences?.time ? `at ${nextMeetup.preferences.time}` : ''}`
+                      ? (() => {
+                          const name = (nextMeetup.selectedOption as { name?: string })?.name || nextMeetup.preferences?.activity || 'Meetup'
+                          const date = nextMeetup.preferences?.date as string | undefined
+                          const time = nextMeetup.preferences?.time as string | undefined
+                          const dateStr = date ? new Date(`${date}T00:00`).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : ''
+                          const timeStr = time ? new Date(`2000-01-01T${time}`).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : ''
+                          const parts = [name]
+                          if (dateStr) parts.push(dateStr)
+                          if (timeStr) parts.push(timeStr)
+                          return parts.join(' · ')
+                        })()
                       : 'Create a new meetup with friends'}
                   </p>
                 </div>

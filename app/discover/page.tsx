@@ -137,6 +137,85 @@ function DiscoverContent() {
           </p>
         </div>
 
+        {/* Invite someone not on the app - prominent, above search */}
+        <div className="mb-6 glass-panel rounded-2xl overflow-hidden">
+          <button
+            onClick={() => { setInviteOpen((o) => !o); setInviteStatus('idle') }}
+            className="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-100/60 dark:hover:bg-white/5 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0">
+                <Mail size={18} className="text-orange-500" />
+              </div>
+              <div>
+                <p className="text-neutral-900 dark:text-white font-semibold text-sm">Invite someone not on the app</p>
+                <p className="text-neutral-500 dark:text-neutral-400 text-xs">Send them an email invite to join</p>
+              </div>
+            </div>
+            {inviteOpen ? (
+              <ChevronUp size={20} className="text-neutral-400 dark:text-neutral-500 shrink-0" />
+            ) : (
+              <ChevronDown size={20} className="text-neutral-400 dark:text-neutral-500 shrink-0" />
+            )}
+          </button>
+
+          {inviteOpen && (
+            <form onSubmit={handleInvite} className="px-4 pb-4 space-y-3 border-t border-neutral-200 dark:border-neutral-700 pt-4">
+              {inviteStatus === 'sent' && (
+                <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl text-sm font-medium">
+                  ✓ Invite sent! They&apos;ll get an email with a link to join.
+                </div>
+              )}
+              {inviteStatus === 'error' && (
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl text-sm">
+                  {inviteError}
+                </div>
+              )}
+              <div>
+                <label className="block text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1.5">
+                  Email address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="friend@example.com"
+                  required
+                  className="w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400/60 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1.5">
+                  Personal note <span className="text-neutral-400 font-normal">(optional)</span>
+                </label>
+                <textarea
+                  value={inviteNote}
+                  onChange={(e) => setInviteNote(e.target.value)}
+                  placeholder="Hey, come join me on Loom!"
+                  maxLength={300}
+                  rows={2}
+                  className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400/60 text-sm resize-none"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={inviteSending || !inviteEmail.trim()}
+                className="w-full min-h-[44px] btn-primary flex items-center justify-center gap-2 disabled:opacity-50 touch-manipulation"
+              >
+                {inviteSending ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <Send size={18} />
+                )}
+                {inviteSending ? 'Sending…' : 'Send invite'}
+              </button>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center">
+                They&apos;ll get an email with a link to create a free account.
+              </p>
+            </form>
+          )}
+        </div>
+
         <div className="relative mb-6">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" size={22} />
           <input
@@ -220,85 +299,6 @@ function DiscoverContent() {
             ))}
           </ul>
         )}
-
-        {/* Invite someone not on the app */}
-        <div className="mt-8 glass-panel rounded-2xl overflow-hidden">
-          <button
-            onClick={() => { setInviteOpen((o) => !o); setInviteStatus('idle') }}
-            className="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-100/60 dark:hover:bg-white/5 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0">
-                <Mail size={18} className="text-orange-500" />
-              </div>
-              <div>
-                <p className="text-neutral-900 dark:text-white font-semibold text-sm">Invite someone not on the app</p>
-                <p className="text-neutral-500 dark:text-neutral-400 text-xs">Send them an email invite to join</p>
-              </div>
-            </div>
-            {inviteOpen ? (
-              <ChevronUp size={20} className="text-neutral-400 dark:text-neutral-500 shrink-0" />
-            ) : (
-              <ChevronDown size={20} className="text-neutral-400 dark:text-neutral-500 shrink-0" />
-            )}
-          </button>
-
-          {inviteOpen && (
-            <form onSubmit={handleInvite} className="px-4 pb-4 space-y-3 border-t border-neutral-200 dark:border-neutral-700 pt-4">
-              {inviteStatus === 'sent' && (
-                <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl text-sm font-medium">
-                  ✓ Invite sent! They&apos;ll get an email with a link to join.
-                </div>
-              )}
-              {inviteStatus === 'error' && (
-                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl text-sm">
-                  {inviteError}
-                </div>
-              )}
-              <div>
-                <label className="block text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1.5">
-                  Email address <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="friend@example.com"
-                  required
-                  className="w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400/60 text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1.5">
-                  Personal note <span className="text-neutral-400 font-normal">(optional)</span>
-                </label>
-                <textarea
-                  value={inviteNote}
-                  onChange={(e) => setInviteNote(e.target.value)}
-                  placeholder="Hey, come join me on Loom!"
-                  maxLength={300}
-                  rows={2}
-                  className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400/60 text-sm resize-none"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={inviteSending || !inviteEmail.trim()}
-                className="w-full min-h-[44px] btn-primary flex items-center justify-center gap-2 disabled:opacity-50 touch-manipulation"
-              >
-                {inviteSending ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <Send size={18} />
-                )}
-                {inviteSending ? 'Sending…' : 'Send invite'}
-              </button>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center">
-                They&apos;ll get an email with a link to create a free account.
-              </p>
-            </form>
-          )}
-        </div>
       </div>
       <BottomNav />
     </div>
