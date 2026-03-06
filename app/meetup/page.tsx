@@ -418,7 +418,7 @@ function MeetupPageContent() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 lg:pl-56 pr-14 sm:pr-6">
+    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 lg:pl-56 pr-20 sm:pr-16">
       <div className="relative z-10 p-6 pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center gap-4 mb-8">
