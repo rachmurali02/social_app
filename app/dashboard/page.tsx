@@ -13,7 +13,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const [friends, setFriends] = useState<any[]>([])
   const [pendingInvitations, setPendingInvitations] = useState(0)
-  const [nextMeetup, setNextMeetup] = useState<{ id: string; status: string; preferences?: { time?: string; activity?: string }; selectedOption?: { name?: string } } | null>(null)
+  const [nextMeetup, setNextMeetup] = useState<{ id: string; status: string; preferences?: { date?: string; time?: string; activity?: string }; selectedOption?: { name?: string } } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
