@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback, Suspense } from 'react'
-import { Users, ArrowLeft, Search, UserPlus, Loader2, Mail, Send, ChevronDown, ChevronUp } from 'lucide-react'
+import { Users, ArrowLeft, Search, UserPlus, Loader2, Mail, Send, Share2, ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '../components/BottomNav'
 
@@ -138,25 +138,38 @@ function DiscoverContent() {
 
         {/* Invite someone not on the app - prominent, above search */}
         <div className="mb-6 glass-panel rounded-2xl overflow-hidden">
-          <button
-            onClick={() => { setInviteOpen((o) => !o); setInviteStatus('idle') }}
-            className="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-100/60 dark:hover:bg-white/5 transition-colors"
-          >
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 p-4 border-b border-neutral-200 dark:border-neutral-700">
+            <Link
+              href="/invite"
+              className="flex-1 flex items-center gap-3 p-3 rounded-xl bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 border border-orange-200/60 dark:border-orange-500/30 transition-colors"
+            >
               <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0">
-                <Mail size={18} className="text-orange-500" />
+                <Share2 size={18} className="text-orange-500" />
+              </div>
+              <div className="text-left">
+                <p className="text-neutral-900 dark:text-white font-semibold text-sm">Share invite link</p>
+                <p className="text-neutral-500 dark:text-neutral-400 text-xs">Get a link to send via message</p>
+              </div>
+              <ChevronDown size={18} className="text-orange-500 shrink-0 rotate-[-90deg] sm:rotate-0 sm:ml-auto" />
+            </Link>
+            <button
+              onClick={() => { setInviteOpen((o) => !o); setInviteStatus('idle') }}
+              className="flex-1 flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-100/60 dark:hover:bg-white/5 transition-colors text-left"
+            >
+              <div className="w-9 h-9 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                <Mail size={18} className="text-neutral-500" />
               </div>
               <div>
-                <p className="text-neutral-900 dark:text-white font-semibold text-sm">Invite someone not on the app</p>
-                <p className="text-neutral-500 dark:text-neutral-400 text-xs">Send them an email invite to join</p>
+                <p className="text-neutral-900 dark:text-white font-semibold text-sm">Send email invite</p>
+                <p className="text-neutral-500 dark:text-neutral-400 text-xs">Email them a signup link</p>
               </div>
-            </div>
-            {inviteOpen ? (
-              <ChevronUp size={20} className="text-neutral-400 dark:text-neutral-500 shrink-0" />
-            ) : (
-              <ChevronDown size={20} className="text-neutral-400 dark:text-neutral-500 shrink-0" />
-            )}
-          </button>
+              {inviteOpen ? (
+                <ChevronUp size={20} className="text-neutral-400 dark:text-neutral-500 shrink-0 ml-auto" />
+              ) : (
+                <ChevronDown size={20} className="text-neutral-400 dark:text-neutral-500 shrink-0 ml-auto" />
+              )}
+            </button>
+          </div>
 
           {inviteOpen && (
             <form onSubmit={handleInvite} className="px-4 pb-4 space-y-3 border-t border-neutral-200 dark:border-neutral-700 pt-4">
