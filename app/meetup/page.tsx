@@ -432,6 +432,7 @@ function MeetupPageContent() {
             >
               ← Dashboard
             </Link>
+            <div className="lg:hidden w-20 shrink-0" aria-hidden />
           </div>
 
           {state.step === 'setup' && (
