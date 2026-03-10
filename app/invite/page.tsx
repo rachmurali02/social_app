@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Share2, Copy, Check, ArrowLeft, UserPlus } from 'lucide-react'
+import { Share2, Copy, Check, ArrowLeft } from 'lucide-react'
 
 export default function InvitePage() {
   const [copied, setCopied] = useState(false)
@@ -92,15 +92,6 @@ export default function InvitePage() {
           <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-400">
             They can use the link to create a free account and start planning meetups with you.
           </p>
-        </div>
-
-        <div className="mt-8 text-center">
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 dark:text-orange-400 font-medium"
-          >
-            <UserPlus size={18} /> Create an account
-          </Link>
         </div>
       </div>
     </div>
