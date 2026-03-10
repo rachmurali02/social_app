@@ -62,6 +62,9 @@ function MeetupPageContent() {
   const [placeError, setPlaceError] = useState('')
   const [defaultLocation, setDefaultLocation] = useState('')
   const [locationLoading, setLocationLoading] = useState(false)
+  const [locationError, setLocationError] = useState<string | null>(null)
+
+  const geoOptions: PositionOptions = { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
   const [visitedPlaces, setVisitedPlaces] = useState<string[]>([])
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
@@ -185,7 +188,8 @@ function MeetupPageContent() {
             if (revd.displayName) setDefaultLocation(revd.displayName)
           } catch {}
         },
-        () => {}
+        () => {},
+        { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
       )
     }
     init()
@@ -460,8 +464,8 @@ function MeetupPageContent() {
                       <MapPin className="inline mr-2" size={20} />
                       Location
                     </label>
-                    {placeError && (
-                      <p className="text-amber-600 text-sm mb-2">{placeError}</p>
+                    {(placeError || locationError) && (
+                      <p className="text-amber-600 dark:text-amber-400 text-sm mb-2">{placeError || locationError}</p>
                     )}
                     <div className="relative">
                       <LocationAutocomplete
@@ -476,7 +480,11 @@ function MeetupPageContent() {
                         type="button"
                         className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-neutral-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors touch-manipulation"
                         onClick={async () => {
-                          if (!navigator.geolocation) return
+                          if (!navigator.geolocation) {
+                            setLocationError('Location is not supported')
+                            return
+                          }
+                          setLocationError(null)
                           setLocationLoading(true)
                           navigator.geolocation.getCurrentPosition(
                             async (pos) => {
@@ -486,11 +494,20 @@ function MeetupPageContent() {
                                 )
                                 const d = await r.json()
                                 if (d.displayName) setDefaultLocation(d.displayName)
+                                else setLocationError('Could not determine address')
+                              } catch {
+                                setLocationError('Failed to fetch location')
                               } finally {
                                 setLocationLoading(false)
                               }
                             },
-                            () => setLocationLoading(false)
+                            (err) => {
+                              setLocationLoading(false)
+                              setLocationError(
+                                err.code === 1 ? 'Location access denied' : err.code === 3 ? 'Location timed out' : 'Could not get location'
+                              )
+                            },
+                            geoOptions
                           )
                         }}
                         disabled={locationLoading}

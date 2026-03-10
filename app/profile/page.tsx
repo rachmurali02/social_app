@@ -23,6 +23,9 @@ export default function ProfilePage() {
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [location, setLocation] = useState('')
   const [locationLoading, setLocationLoading] = useState(false)
+  const [locationError, setLocationError] = useState<string | null>(null)
+
+  const geoOptions: PositionOptions = { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
   const locationFetchedOnMount = useRef(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -107,6 +110,7 @@ export default function ProfilePage() {
     locationFetchedOnMount.current = true
     if (!navigator.geolocation) return
     setLocationLoading(true)
+    setLocationError(null)
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
@@ -117,7 +121,8 @@ export default function ProfilePage() {
           setLocationLoading(false)
         }
       },
-      () => setLocationLoading(false)
+      () => setLocationLoading(false),
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
     )
   }, [session?.user?.id])
 
@@ -262,11 +267,18 @@ export default function ProfilePage() {
               <label className="block text-neutral-900 dark:text-white font-semibold mb-2 flex items-center gap-2">
                 <MapPin size={18} /> Location (used for meetup suggestions)
               </label>
+              {locationError && (
+                <p className="text-amber-600 dark:text-amber-400 text-sm mb-2">{locationError}</p>
+              )}
               <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   type="button"
                   onClick={() => {
-                    if (!navigator.geolocation) return
+                    if (!navigator.geolocation) {
+                      setLocationError('Location is not supported')
+                      return
+                    }
+                    setLocationError(null)
                     setLocationLoading(true)
                     navigator.geolocation.getCurrentPosition(
                       async (pos) => {
@@ -276,11 +288,20 @@ export default function ProfilePage() {
                           )
                           const d = await r.json()
                           if (d.displayName) setLocation(d.displayName)
+                          else setLocationError('Could not determine address')
+                        } catch {
+                          setLocationError('Failed to fetch location')
                         } finally {
                           setLocationLoading(false)
                         }
                       },
-                      () => setLocationLoading(false)
+                      (err) => {
+                        setLocationLoading(false)
+                        setLocationError(
+                          err.code === 1 ? 'Location access denied' : err.code === 3 ? 'Location timed out' : 'Could not get location'
+                        )
+                      },
+                      geoOptions
                     )
                   }}
                   disabled={locationLoading}
@@ -292,7 +313,7 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={(e) => { setLocation(e.target.value); setLocationError(null) }}
                   className="flex-1 min-h-[48px] px-4 rounded-xl bg-white dark:bg-white/10 border border-neutral-200 dark:border-white/20 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400 text-base"
                   placeholder="e.g. Dubai Marina, San Francisco"
                 />
