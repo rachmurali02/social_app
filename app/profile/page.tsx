@@ -230,24 +230,14 @@ export default function ProfilePage() {
                   <Upload size={24} className="text-white" />
                 </div>
               </div>
-              <div className="flex-1 min-w-0 space-y-2">
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="shrink-0 min-h-[44px] px-4 rounded-xl bg-neutral-200 dark:bg-white/10 border border-neutral-200 dark:border-white/20 hover:bg-neutral-300 dark:hover:bg-white/20 text-neutral-900 dark:text-white flex items-center gap-2 text-sm font-medium"
-                  >
-                    <Upload size={18} /> Upload photo
-                  </button>
-                </div>
-                <label className="block text-neutral-600 dark:text-neutral-400 text-sm">or paste URL</label>
-                <input
-                  type="url"
-                  value={avatar?.startsWith('data:') ? '' : avatar}
-                  onChange={(e) => setAvatar(e.target.value)}
-                  className="w-full min-h-[44px] px-4 rounded-xl bg-white dark:bg-white/10 border border-neutral-200 dark:border-white/20 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-400 text-base"
-                  placeholder="https://..."
-                />
+              <div className="flex-1 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="min-h-[44px] px-4 rounded-xl bg-neutral-200 dark:bg-white/10 border border-neutral-200 dark:border-white/20 hover:bg-neutral-300 dark:hover:bg-white/20 text-neutral-900 dark:text-white flex items-center gap-2 text-sm font-medium"
+                >
+                  <Upload size={18} /> Upload photo
+                </button>
               </div>
             </div>
 
