@@ -99,9 +99,9 @@ export default function MeetupDetailPage() {
   })()
   const addToCalendar = () => {
     if (!time) return null
-    const creatorName = meetup.creator.name || meetup.creator.email
+    const creatorName = meetup.creator.name || 'Someone'
     const participantNames = meetup.participants
-      .map((p) => p.user.name || p.user.email)
+      .map((p) => p.user.name || 'Unknown')
       .filter(Boolean)
     const attendeeList = [creatorName, ...participantNames].join(', ')
     const title = `Meetup at ${placeName}`
@@ -228,12 +228,12 @@ export default function MeetupDetailPage() {
             <div>
               <p className="font-medium">Participants</p>
               <p>
-                {isCreator ? 'Created by you' : `By ${meetup.creator.name || meetup.creator.email}`}
+                {isCreator ? 'Created by you' : `By ${meetup.creator.name || 'Someone'}`}
               </p>
               <ul className="mt-1 text-neutral-600 dark:text-white/70 text-sm space-y-1">
                 {meetup.participants.map((p) => (
                   <li key={p.user.id}>
-                    {p.user.name || p.user.email} — {p.status}
+                    {p.user.name || 'Unknown'} — {p.status}
                   </li>
                 ))}
               </ul>

@@ -22,7 +22,6 @@ type UserProfile = {
   user: {
     id: string
     name: string | null
-    email: string | null
     profile?: { avatar?: string | null; location?: string | null }
   }
   pastMeetups: Meetup[]
@@ -187,11 +186,8 @@ export default function UserProfilePage() {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-xl sm:text-2xl font-semibold text-neutral-900 dark:text-white truncate">
-                {user.name || user.email || 'Unknown'}
+                {user.name || 'Unknown'}
               </h1>
-              {user.email && (
-                <p className="text-neutral-500 dark:text-white/60 text-sm truncate">{user.email}</p>
-              )}
               {location && (
                 <p className="text-neutral-600 dark:text-white/70 text-sm mt-1 flex items-center gap-1">
                   <MapPin size={14} /> {location}

@@ -13,7 +13,6 @@ function DiscoverContent() {
   const [query, setQuery] = useState('')
   const [users, setUsers] = useState<Array<{
     id: string
-    email: string
     name: string | null
     profile: unknown
     friendshipStatus: string | null
@@ -260,13 +259,12 @@ function DiscoverContent() {
                       <img src={(user.profile as { avatar: string }).avatar} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-white font-bold text-lg">
-                        {(user.name || user.email)[0].toUpperCase()}
+                        {(user.name || '?')[0].toUpperCase()}
                       </span>
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-neutral-900 dark:text-white font-semibold truncate">{user.name || user.email}</p>
-                    <p className="text-neutral-500 dark:text-neutral-400 text-sm truncate">{user.email}</p>
+                    <p className="text-neutral-900 dark:text-white font-semibold truncate">{user.name || 'Unknown'}</p>
                   </div>
                 </Link>
                 <div className="shrink-0">

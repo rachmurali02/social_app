@@ -247,16 +247,6 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="block text-neutral-900 dark:text-white font-semibold mb-2">Email</label>
-              <input
-                type="email"
-                value={session.user?.email || ''}
-                disabled
-                className="w-full min-h-[48px] px-4 rounded-xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-neutral-500 dark:text-neutral-400 cursor-not-allowed text-base"
-              />
-            </div>
-
-            <div>
               <label className="block text-neutral-900 dark:text-white font-semibold mb-2">Name</label>
               <input
                 type="text"

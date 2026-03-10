@@ -83,7 +83,7 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
             <div className="min-w-0">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-neutral-900 dark:text-white mb-1 sm:mb-2 truncate">Loom</h1>
-              <p className="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base truncate">Hello, {session.user?.name || session.user?.email}!</p>
+              <p className="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base truncate">Hello, {session.user?.name || 'there'}!</p>
             </div>
             <div className="flex gap-2 sm:gap-4 shrink-0 items-center">
               <ThemeToggle />
@@ -206,13 +206,12 @@ export default function DashboardPage() {
                           <img src={friend.profile.avatar} alt="" className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-white font-bold text-lg">
-                            {(friend.name || friend.email)[0].toUpperCase()}
+                            {(friend.name || '?')[0].toUpperCase()}
                           </span>
                         )}
                       </div>
                       <div>
-                        <p className="text-neutral-900 dark:text-white font-semibold">{friend.name || friend.email}</p>
-                        <p className="text-neutral-500 dark:text-neutral-400 text-sm">{friend.email}</p>
+                        <p className="text-neutral-900 dark:text-white font-semibold">{friend.name || 'Unknown'}</p>
                       </div>
                     </div>
                   </Link>

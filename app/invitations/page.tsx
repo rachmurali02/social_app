@@ -111,8 +111,8 @@ export default function InvitationsPage() {
 
   const addToCalendar = (invitation: Invitation) => {
     if (!invitation.meetup.selectedOption || !invitation.meetup.preferences) return null
-    const creatorName = invitation.meetup.creator.name || invitation.meetup.creator.email
-    const youName = session?.user?.name || session?.user?.email || 'You'
+    const creatorName = invitation.meetup.creator.name || 'Someone'
+    const youName = session?.user?.name || 'You'
     const withLine = `With: ${creatorName}, ${youName}`
     const prefs = invitation.meetup.preferences
     const dateStr = prefs.date || new Date().toISOString().split('T')[0]
@@ -175,11 +175,11 @@ export default function InvitationsPage() {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-200 dark:bg-white/10 border border-neutral-300 dark:border-white/20 flex items-center justify-center text-neutral-900 dark:text-white font-bold text-base shrink-0 overflow-hidden">
-                      {(invitation.meetup.creator.name || invitation.meetup.creator.email)[0].toUpperCase()}
+                      {(invitation.meetup.creator.name || '?')[0].toUpperCase()}
                     </div>
                     <div className="min-w-0">
                       <p className="text-neutral-900 dark:text-white font-semibold text-base sm:text-lg truncate">
-                        {invitation.meetup.creator.name || invitation.meetup.creator.email} invited you
+                        {invitation.meetup.creator.name || 'Someone'} invited you
                       </p>
                       <p className="text-neutral-500 dark:text-white/60 text-xs sm:text-sm">
                         {new Date(invitation.createdAt).toLocaleDateString('en-US', {

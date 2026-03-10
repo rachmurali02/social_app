@@ -345,9 +345,9 @@ function MeetupPageContent() {
 
   const addToCalendar = () => {
     if (!state.selectedOption || !state.preferences) return null
-    const youName = session?.user?.name || session?.user?.email || 'You'
+    const youName = session?.user?.name || 'You'
     const friendNames = state.selectedFriends
-      .map((id) => friends.find((f) => f.id === id)?.name || friends.find((f) => f.id === id)?.email)
+      .map((id) => friends.find((f) => f.id === id)?.name || 'Unknown')
       .filter(Boolean)
     const attendeeList = [youName, ...friendNames].join(', ')
     const withLine = `With: ${attendeeList}`
@@ -613,9 +613,9 @@ function MeetupPageContent() {
                               className="w-5 h-5 rounded border-neutral-300 text-orange-500 focus:ring-2 focus:ring-orange-400"
                             />
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
-                              {(friend.name || friend.email)[0].toUpperCase()}
+                              {(friend.name || '?')[0].toUpperCase()}
                             </div>
-                            <span className="text-neutral-900 dark:text-neutral-100">{friend.name || friend.email}</span>
+                            <span className="text-neutral-900 dark:text-neutral-100">{friend.name || 'Unknown'}</span>
                           </label>
                         ))
                       )}

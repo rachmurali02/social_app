@@ -74,7 +74,7 @@ export async function GET() {
     ])
 
     for (const fr of friendRequests) {
-      const name = fr.sender.name || fr.sender.email
+      const name = fr.sender.name || 'Someone'
       notifications.push({
         id: `fr-${fr.id}`,
         type: 'friend_request',
@@ -88,7 +88,7 @@ export async function GET() {
 
     for (const f of recentFriendships) {
       const other = f.senderId === session.user.id ? f.receiver : f.sender
-      const name = other.name || other.email
+      const name = other.name || 'Someone'
       notifications.push({
         id: `accepted-${f.id}`,
         type: 'friendship_accepted',
@@ -102,7 +102,7 @@ export async function GET() {
 
     for (const p of staleInvites) {
       const prefs = (p.meetup.preferences || {}) as { activity?: string; date?: string; time?: string }
-      const creatorName = p.meetup.creator?.name || p.meetup.creator?.email || 'Someone'
+      const creatorName = p.meetup.creator?.name || 'Someone'
       const activity = prefs.activity || 'meetup'
       notifications.push({
         id: `invite-${p.id}`,
@@ -120,7 +120,7 @@ export async function GET() {
       const rescheduledAt = prefs.lastRescheduledAt ? new Date(prefs.lastRescheduledAt) : null
       if (!rescheduledAt || rescheduledAt < rescheduledCutoff) continue
       const placeName = (meetup.selectedOption as { name?: string } | null)?.name
-      const creatorName = meetup.creator?.name || meetup.creator?.email || 'Someone'
+      const creatorName = meetup.creator?.name || 'Someone'
       const label = placeName || prefs.activity || 'Meetup'
       notifications.push({
         id: `reschedule-${meetup.id}`,

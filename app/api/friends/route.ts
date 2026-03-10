@@ -46,7 +46,6 @@ export async function GET(request: NextRequest) {
         )
         return {
           id: user.id,
-          email: user.email,
           name: user.name,
           profile: user.profile,
           friendshipStatus: friendship?.status || null,
@@ -73,9 +72,10 @@ export async function GET(request: NextRequest) {
         },
       })
 
-      const friends = friendships.map((f) =>
-        f.senderId === session.user.id ? f.receiver : f.sender
-      )
+      const friends = friendships.map((f) => {
+        const u = f.senderId === session.user.id ? f.receiver : f.sender
+        return { id: u.id, name: u.name, profile: u.profile }
+      })
 
       return NextResponse.json({ friends })
     }
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
           status: 'pending',
         },
         include: {
-          sender: { include: { profile: true } },
+          sender: { select: { id: true, name: true, profile: true } },
         },
       })
 
@@ -136,7 +136,6 @@ export async function GET(request: NextRequest) {
         )
         return {
           id: user.id,
-          email: user.email,
           name: user.name,
           profile: user.profile,
           friendshipStatus: fr?.status || null,

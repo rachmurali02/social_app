@@ -153,11 +153,10 @@ function FriendsContent() {
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="w-10 h-10 rounded-full border border-neutral-200 dark:border-neutral-600 flex items-center justify-center text-white font-bold shrink-0" style={avatarGradient(request.senderId)}>
-                      {(request.sender.name || request.sender.email)[0].toUpperCase()}
+                      {(request.sender.name || '?')[0].toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-neutral-900 dark:text-white font-semibold truncate">{request.sender.name || request.sender.email}</p>
-                      <p className="text-neutral-500 dark:text-neutral-400 text-sm truncate">{request.sender.email}</p>
+                      <p className="text-neutral-900 dark:text-white font-semibold truncate">{request.sender.name || 'Unknown'}</p>
                     </div>
                   </div>
                   <div className="flex gap-2 shrink-0">
@@ -218,13 +217,12 @@ function FriendsContent() {
                           <img src={friend.profile.avatar} alt="" className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-white font-bold text-lg">
-                            {(friend.name || friend.email)[0].toUpperCase()}
+                            {(friend.name || '?')[0].toUpperCase()}
                           </span>
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-neutral-900 dark:text-white font-semibold truncate">{friend.name || friend.email}</p>
-                        <p className="text-neutral-500 dark:text-neutral-400 text-sm truncate">{friend.email}</p>
+                        <p className="text-neutral-900 dark:text-white font-semibold truncate">{friend.name || 'Unknown'}</p>
                       </div>
                     </div>
                     <Link
