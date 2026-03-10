@@ -9,7 +9,7 @@ import ThemeToggle from '../components/ThemeToggle'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -107,25 +107,33 @@ export default function LoginPage() {
             <div className="h-full w-1/3 rounded-full bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500" />
           </div>
 
-          <div className="inline-flex mb-6 rounded-full bg-neutral-200 p-1 border border-neutral-200">
-            <button
-              type="button"
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                isLogin ? 'bg-white text-neutral-900 shadow-md' : 'text-neutral-600 hover:text-neutral-900'
-              }`}
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                !isLogin ? 'bg-white text-neutral-900 shadow-md' : 'text-neutral-600 hover:text-neutral-900'
-              }`}
-            >
-              Sign Up
-            </button>
+          <div className="mb-4">
+            <div className="inline-flex rounded-full bg-neutral-200 dark:bg-neutral-800 p-1 border border-neutral-200 dark:border-neutral-700">
+              <button
+                type="button"
+                onClick={() => setIsLogin(false)}
+                className={`flex-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  !isLogin ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-md' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                }`}
+              >
+                Sign Up
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsLogin(true)}
+                className={`flex-1 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  isLogin ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-md' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                }`}
+              >
+                Log in
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-center text-neutral-500 dark:text-neutral-400">
+              {isLogin ? 'New here?' : 'Already have an account?'}{' '}
+              <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-orange-500 hover:text-orange-600 dark:text-orange-400 font-medium">
+                {isLogin ? 'Sign up' : 'Log in'}
+              </button>
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
