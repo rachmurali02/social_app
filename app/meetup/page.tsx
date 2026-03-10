@@ -418,21 +418,20 @@ function MeetupPageContent() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 lg:pl-56 pr-20 sm:pr-16">
+    <div className="min-h-screen relative overflow-hidden bg-neutral-100 dark:bg-neutral-950 lg:pl-56 pr-16 sm:pr-6">
       <div className="relative z-10 p-6 pb-24">
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center gap-4 mb-8">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-5xl font-black text-neutral-900 dark:text-white mb-2 truncate">Loom</h1>
-              <p className="text-neutral-600 dark:text-neutral-400 text-lg">Plan your meetup</p>
+          <div className="flex flex-col gap-4 mb-8 lg:flex-row lg:justify-between lg:items-center">
+            <div>
+              <h1 className="text-3xl sm:text-5xl font-black text-neutral-900 dark:text-white mb-1">Loom</h1>
+              <p className="text-neutral-600 dark:text-neutral-400 text-base sm:text-lg">Plan your meetup</p>
             </div>
             <Link
               href="/dashboard"
-              className="shrink-0 glass-panel px-6 py-3 rounded-xl text-neutral-900 dark:text-white hover:shadow-md transition-all"
+              className="self-start glass-panel px-5 py-2.5 rounded-xl text-neutral-900 dark:text-white hover:shadow-md transition-all text-sm sm:text-base w-fit"
             >
               ← Dashboard
             </Link>
-            <div className="lg:hidden w-20 shrink-0" aria-hidden />
           </div>
 
           {state.step === 'setup' && (
