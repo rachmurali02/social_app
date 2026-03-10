@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, Suspense } from 'react'
+import React, { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Calendar, MapPin, Clock, Users, Star, TrendingUp, Zap, Loader2, Crosshair, PenLine, AlertTriangle, X, PlusCircle } from 'lucide-react'
@@ -65,6 +65,14 @@ function MeetupPageContent() {
   const [locationError, setLocationError] = useState<string | null>(null)
 
   const geoOptions: PositionOptions = { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+
+  const useMiles = useMemo(() => {
+    const loc = defaultLocation.toLowerCase()
+    const milesMatch = /\b(united states|usa|u\.s\.a\.|uk|united kingdom|myanmar|liberia)\b/.test(loc) ||
+      loc.endsWith(', us') || loc.includes(', united states') || loc.includes('usa')
+    const lang = typeof navigator !== 'undefined' ? navigator.language : ''
+    return milesMatch || lang.startsWith('en-US') || lang.startsWith('en-GB')
+  }, [defaultLocation])
   const [visitedPlaces, setVisitedPlaces] = useState<string[]>([])
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
@@ -449,9 +457,11 @@ function MeetupPageContent() {
                     const activity = selectedActivity === '_custom'
                       ? (customActivity.trim() || 'meetup')
                       : selectedActivity
+                    const radiusVal = Number(formData.get('radius'))
+                    const radiusKm = useMiles ? radiusVal * 1.60934 : radiusVal
                     handleSubmitPreferences({
                       location: formData.get('location') as string,
-                      radius: Number(formData.get('radius')),
+                      radius: Math.round(radiusKm * 10) / 10,
                       time: formData.get('time') as string,
                       date: formData.get('date') as string,
                       activity,
@@ -525,14 +535,14 @@ function MeetupPageContent() {
                     <div>
                       <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
                         <TrendingUp className="inline mr-2" size={20} />
-                        Radius (km)
+                        Radius ({useMiles ? 'mi' : 'km'})
                       </label>
                       <input
                         name="radius"
                         type="number"
-                        min="1"
-                        max="50"
-                        defaultValue="5"
+                        min={useMiles ? 1 : 1}
+                        max={useMiles ? 31 : 50}
+                        defaultValue={useMiles ? 3 : 5}
                         className="w-full p-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       />
