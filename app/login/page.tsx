@@ -1,17 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Users, Mail, Lock, UserPlus, Mic, Sparkles } from 'lucide-react'
 import ThemeToggle from '../components/ThemeToggle'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [isLogin, setIsLogin] = useState(false)
+  const searchParams = useSearchParams()
+  const [isLogin, setIsLogin] = useState(false) // default: Sign Up
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    const mode = searchParams.get('mode')
+    if (mode === 'login') {
+      setIsLogin(true)
+    } else if (mode === 'signup') {
+      setIsLogin(false)
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

@@ -620,13 +620,23 @@ function MeetupPageContent() {
                     )}
                   </div>
                   <div>
-                    <label className="block text-neutral-900 dark:text-neutral-100 font-semibold mb-2">
-                      <Users className="inline mr-2" size={20} />
-                      Invite Friends
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-neutral-900 dark:text-neutral-100 font-semibold">
+                        <Users className="inline mr-2" size={20} />
+                        Invite Friends
+                      </label>
+                      <Link
+                        href="/discover"
+                        className="text-xs font-medium text-orange-600 dark:text-orange-400 hover:underline"
+                      >
+                        Add more friends
+                      </Link>
+                    </div>
                     <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 max-h-48 overflow-y-auto space-y-2">
                       {friends.length === 0 ? (
-                        <p className="text-neutral-600 dark:text-neutral-400 text-sm">No friends yet. <Link href="/discover" className="text-orange-500 underline">Discover people</Link></p>
+                        <p className="text-neutral-600 dark:text-neutral-400 text-sm">
+                          No friends yet. <Link href="/discover" className="text-orange-500 underline">Discover people</Link>
+                        </p>
                       ) : (
                         friends.map((friend) => (
                           <label
