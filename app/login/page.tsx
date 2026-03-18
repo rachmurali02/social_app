@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -8,6 +8,20 @@ import { Users, Mail, Lock, UserPlus, Mic, Sparkles } from 'lucide-react'
 import ThemeToggle from '../components/ThemeToggle'
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-950">
+          <div className="text-neutral-600 dark:text-white text-xl">Loading...</div>
+        </div>
+      }
+    >
+      <LoginInner />
+    </Suspense>
+  )
+}
+
+function LoginInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isLogin, setIsLogin] = useState(false) // default: Sign Up
